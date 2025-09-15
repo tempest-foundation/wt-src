@@ -38,7 +38,7 @@ void
 
 	ksleep(POWEROFF_TIMEOUT_MS);
 	// If poweroff fails, log warning
-	debug.err("Legacy poweroff failed", "acpi", KNULL);
+	debug.err("acpi", "Legacy poweroff failed", KNULL);
 }
 
 void
@@ -49,7 +49,7 @@ void
 
 	ksleep(POWEROFF_TIMEOUT_MS);
 	// If reboot fails, log warning
-	debug.err("Legacy reboot failed", "acpi", KNULL);
+	debug.err("acpi", "Legacy reboot failed", KNULL);
 }
 
 struct Acpi acpi = {.poweroff = a_poweroff, .reboot = a_reboot};

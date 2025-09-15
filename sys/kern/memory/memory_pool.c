@@ -137,7 +137,7 @@ void
 	large_pool  = pool_create(256, 128);  // 32KB total
 
 	if (!small_pool || !medium_pool || !large_pool) {
-		debug.warn("Failed to create some memory pools", " mm ", KNULL);
+		debug.warn("mm", "Failed to create some memory pools", KNULL);
 	}
 }
 

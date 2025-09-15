@@ -46,7 +46,7 @@ void
 
 	ext2.set_block_device(ata.pio_read, KNULL);
 	if (ext2.mount(0) != 0)
-		debug.err("EXT2 mount failed", "fs", KNULL);
+		debug.err("fs", "EXT2 mount failed", KNULL);
 
 	kcpu_init_brand();
 	keyboard.init();

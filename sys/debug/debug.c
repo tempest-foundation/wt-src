@@ -19,23 +19,30 @@
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
 
-kbool              d_enabled          = kfalse;
-static const char *debug_type_message = "[    debug] ";
+kbool d_enabled = kfalse;
 
 void
-    d_puts (const char *s) {
+    d_puts (const char *subsystem, const char *s) {
 	if (!d_enabled) {
 		return;
 	}
 	if (!s || *s == '\0')
 		return;
-	serial.writes(debug_type_message);
+
+	serial.writes("[    debug");
+
+	if (subsystem && *subsystem != '\0') {
+		serial.writes("::");
+		serial.writes(subsystem);
+	}
+
+	serial.writes("] ");
 	serial.writes(s);
 	serial.write('\n');
 }
 
 int
-    d_printf (const char *format, ...) {
+    d_printf (const char *subsystem, const char *format, ...) {
 	if (!d_enabled)
 		return 0;
 
@@ -46,8 +53,18 @@ int
 	k_va_start(args, format);
 	int count = 0;
 
-	serial.writes(debug_type_message);
-	count += (int) kstrlen(debug_type_message);
+	// Write debug header with optional subsystem
+	serial.writes("[    debug");
+	count += 10;  // Length of "[    debug"
+
+	if (subsystem && *subsystem != '\0') {
+		serial.writes("::");
+		serial.writes(subsystem);
+		count += 2 + (int) kstrlen(subsystem);
+	}
+
+	serial.writes("] ");
+	count += 2;  // Length of "] "
 
 	for (const char *p = format; *p; ++p) {
 		if (*p != '%') {
@@ -201,37 +218,37 @@ static void
 }
 
 static void
-    d_crit (const char *m, const char *s, const char *e) {
+    d_crit (const char *s, const char *m, const char *e) {
 	d_dbgtype("crit", s, m, e);
 }
 
 static void
-    d_alert (const char *m, const char *s, const char *e) {
+    d_alert (const char *s, const char *m, const char *e) {
 	d_dbgtype("alert", s, m, e);
 }
 
 static void
-    d_emerg (const char *m, const char *s, const char *e) {
+    d_emerg (const char *s, const char *m, const char *e) {
 	d_dbgtype("emerg", s, m, e);
 }
 
 static void
-    d_warn (const char *m, const char *s, const char *e) {
+    d_warn (const char *s, const char *m, const char *e) {
 	d_dbgtype("warn", s, m, e);
 }
 
 static void
-    d_err (const char *m, const char *s, const char *e) {
+    d_err (const char *s, const char *m, const char *e) {
 	d_dbgtype("err", s, m, e);
 }
 
 static void
-    d_notice (const char *m, const char *s, const char *e) {
+    d_notice (const char *s, const char *m, const char *e) {
 	d_dbgtype("notice", s, m, e);
 }
 
 static void
-    d_info (const char *m, const char *s, const char *e) {
+    d_info (const char *s, const char *m, const char *e) {
 	d_dbgtype("info", s, m, e);
 }
 
