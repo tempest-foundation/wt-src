@@ -15,11 +15,12 @@
  */
 #include <debug/debug.h>
 #include <drivers/serial/serial.h>
+#include <drivers/video/video.h>
 #include <lib/kstdio/kstdbool.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
 
-kbool d_enabled = ktrue;
+kbool d_enabled = kfalse;
 
 void
     d_puts (const char *subsystem, const char *s) {
@@ -54,16 +55,16 @@ int
 	int count = 0;
 
 	// Write debug header with optional subsystem
-	kputs("[    debug");
+	video.puts("[    debug");
 	count += 10;  // Length of "[    debug"
 
 	if (subsystem && *subsystem != '\0') {
-		kputs("::");
-		kputs(subsystem);
+		video.puts("::");
+		video.puts(subsystem);
 		count += 2 + (int) kstrlen(subsystem);
 	}
 
-	kputs("] ");
+	video.puts("] ");
 	count += 2;  // Length of "] "
 
 	for (const char *p = format; *p; ++p) {
@@ -105,7 +106,7 @@ int
 					}
 				}
 
-				kputs(s);
+				video.puts(s);
 				count += len;
 
 				if (left_align) {
@@ -130,7 +131,7 @@ int
 				char *end_ptr = kutoa(
 				    ptr, buf + sizeof(buf) - 1, (unsigned int) n, 10, 0);
 				*end_ptr = '\0';
-				kputs(buf);
+				video.puts(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -141,7 +142,7 @@ int
 				char        *end_ptr =
 				    kutoa(buf, buf + sizeof(buf) - 1, n, 16, 0);
 				*end_ptr = '\0';
-				kputs(buf);
+				video.puts(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -160,7 +161,7 @@ int
 						          16,
 						          0);
 						*end_ptr = '\0';
-						kputs(buf);
+						video.puts(buf);
 						count += (int) (end_ptr - buf);
 						break;
 					}
