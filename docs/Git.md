@@ -5,27 +5,32 @@ This document defines the commit message convention used in the Wind/Tempest pro
 ## Commit Structure
 
 ```
-<subsystem>: Short description (no period)
+<subsystem>/<component>: Short description
 
 (Optional longer description explaining what changed, why it changed, and any side effects)
 (Or you can add additional parts of change in description)
 
+Fixes: <commit-hash> ("Original Commit Title") # optional
+Reported-by: Name <email>                      # optional
 Signed-off-by: Name <email>
 ```
 
 ## Examples
 
 ```
-kernel: Fix panic in division by zero
+kern/init: Fix panic in division by zero
 
-There is no check in start_kernel() and if the value is 0 then we panic.  This fixes that.
+There is no check in `start_kernel()` and if the value is 0 then we panic.
+This commit fixes this.
 
+Fixes: f5c3e8a7b1d9c2f4e6a7d8b9c0e1f2a3b4c5d6e7 ("kern/panic: Initial support for kpanic")
+Reported-by: Isaque Mota <isaque@tempestfoundation.org>
 Signed-off-by: Russian95CrE <russian95@tempestfoundation.org>
 ```
 
 ## Common Subsystems
 
-- `kernel:` core kernel logic
+- `kern:` core kernel logic
 - `arch:` platform-specific code (like x86, arm, etc...)
 - `mm:` memory management
 - `fs:` file systems
@@ -35,7 +40,6 @@ Signed-off-by: Russian95CrE <russian95@tempestfoundation.org>
 - `docs:` documentation
 - `debug:` debugging tools and logging
 - `lib:` shared helper libraries
-- `init:` system/kernel initialization
 - `ci:` CI (continuous integration)
 
 ## Quick Rules

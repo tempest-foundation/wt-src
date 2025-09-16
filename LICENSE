@@ -1,0 +1,108 @@
+The Liberty Software License
+                 Version 2.0
+
+All rights reserved. Tempest Foundation (C) 2025
+
+This license document may be copied and distributed verbatim by anybody, but it cannot be altered.
+
+- Introduction
+
+The Liberty Software License (LSL), which was developed with the principles of robust copyleft and software freedom in mind, was designed to safeguard users rights to use, modify, and distribute software while adding new clauses to address modern concerns like DRM restrictions and AI training.
+
+- TERMS AND CONDITIONS
+
+0. Definitions.
+
+	The following terms are used throughout this License:
+
+	* "This License": Refers to the Liberty Software License.
+
+	* "The Program": Refers to any software or work licensed under this License.
+
+	* "You" or "User": Any individual or legal entity exercising rights under this License
+
+	* "Source code": The format for program modifications, it includes all files, scripts, documentation, configuration and instructions that a competent developer would need to completely
+	build, test and alter the program without the need for extra proprietary, cryptic or purposefully obfuscated materials.
+
+	* "DRM (Digital Rights Management)": Any technology, mechanism, or system that restricts, controls, or limits a user's ability to access, use, modify, share, or distribute the Program, including but not limited to license enforcement, online activation, encryption, or proprietary control mechanisms.
+
+	* "Object Code": Any version of the software that is not source code.
+
+	* "Modify": To change the program or run it consistent with it.
+
+	* "Distribute": To make copies of the software or the program itself available to other people in any way.  Section 6, the "Liberty Clauses," deals with modern topics like AI and DRM (Digital Rights Management)
+
+1. Basic Permissions.
+
+	You may run the unmodified Program, copy and distribute verbatim copies, and modify and distribute modified versions under the terms of this License, provided you comply with all its terms.
+
+2. Conveying Modified Source Versions.
+
+	When you distribute a modified version, the entire work must be licensed under this License.  You must retain all notices referencing this License.
+
+3. Network Use / Online Services.
+
+	If the Program, or any derivative work, is used to provide functionality over a network or as a service to third parties, such use is considered distribution of that work. In such cases, the complete corresponding source code must be made available under this License to all users interacting with it. Use of the Program in AI systems or with DRM restrictions remains prohibited.
+
+4. Additional Terms.
+
+	You may not impose any further restrictions on the exercise of the rights granted herein except those expressly permitted by this License.
+
+5. Clauses of Liberty
+
+	* 5.1. No Use for AI Systems.
+
+		The Program and any derivative works may not be used, directly or indirectly, in any manner, to train, improve, validate, test, mine, or supply data to Artificial Intelligence or Machine Learning Systems ("AI Systems"), including but not limited to:
+
+		Collection, extraction, analysis, or incorporation of any part of the Program’s code, data, output, or documentation;
+
+		Providing the Program or its derivatives to third parties for the purpose of use in AI Systems;
+
+		Inclusion of the Program in datasets, pipelines, libraries, or services that feed, train, or fine-tune AI models.
+
+		Any attempt to circumvent this restriction, including anonymization, encryption, combination with other software, or indirect usage, shall be considered a serious violation of this License.
+
+		All users must maintain verifiable records of any interaction of the Program with automated systems or data processing and provide such records to the author upon request within 15 days.  Failure to comply with this requirement will result in immediate termination of rights under this License, without prejudice to further legal action.
+
+	* 5.2. Anti-DRM.
+
+		No part of this software may be included in or linked to any system, service, or product that restricts users ability to use, study, modify, or share the Program by any means, including but not limited to Digital Restrictions Management (DRM), license enforcement, online activation, or proprietary control mechanisms.
+
+	* 5.3. Source Code Access.
+
+		The Program or derivative works must be distributed with the complete, human-readable source code under this License, unencrypted, unobfuscated, and unrestricted in access.
+
+	* 5.4. Authorized Use.
+		For any purpose, including non-commercial, commercial, educational, or personal use, the program may be used, studied, modified, and distributed, provided that:
+			- All distributed versions, whether modified or not, contain the complete, human-readable source code under this License, unencrypted and unobfuscated
+			- Artificial intelligence systems are not trained, improved, validated, tested, or given data by the program.
+			- You don't incorporate the program into any system or product that enforces DRM or limits user freedoms.
+
+	* 5.5. Patent Grant
+		By contributing to, distributing, or using the Program, you agree that the authors and contributors grant you a worldwide, royalty-free, non-exclusive, irrevocable license under any of their patent claims that would be infringed by your use, modification, or distribution of the Program. This patent license applies only to the Program as distributed under this License and does not extend to any other software or combination with other software.
+
+6. No Additional limitations.
+
+	The rights granted by this License may not be subject to any additional restrictions.
+
+7. Termination.
+
+	Rights under this License terminate automatically if its terms are violated and not remedied within 30 days of notice.
+
+8. Acceptance Not Required for Having Copies.
+
+	Acceptance of this License is not required simply by using or owning a copy of the Program.
+
+9. Warranty Disclaimer and Limitation of Liability.
+
+	INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT, THE PROGRAM IS PROVIDED "AS IS" WITHOUT ANY EXPRESS OR IMPLIED WARRANTY.  In no case shall the authors or copyright holders be held accountable for any claim, damages, or other liability arising from or related to the program, whether in a contract action, tort action, or otherwise, including indirect, incidental, or consequential damages.
+
+10. Update of License.
+
+	This License can anytime be updated by the author.  You can either stick with the current version or adopt the latest one.  All rights and obligations under this License remain in effect even if you decide not to use the updated version.
+
+11. Universal Applicability.
+
+	This License is meant to be used everywhere.  The Program will be applied and interpreted as broadly as permitted by applicable local laws wherever it is used.  Disputes will be resolved in line with this License and recognized software freedom principles.
+
+(LICENSE END)

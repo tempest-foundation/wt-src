@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include <arch/amd64/kasm/kio.h>
@@ -56,8 +56,8 @@ static kbool
 
 // Get current BIOS time
 void
-    kget_bios_time (struct bios_time *time) {
-	if (!time)
+    time_get_bios (struct bios_time *bios_time_val) {
+	if (!bios_time_val)
 		return;
 
 	kbool is_bcd = krtc_is_bcd();
@@ -74,92 +74,101 @@ void
 
 	// Convert BCD to decimal if needed
 	if (is_bcd) {
-		time->second      = kbcd_to_decimal(seconds);
-		time->minute      = kbcd_to_decimal(minutes);
-		time->hour        = kbcd_to_decimal(hours);
-		time->day         = kbcd_to_decimal(day);
-		time->month       = kbcd_to_decimal(month);
-		time->year        = (kuint16_t) (kbcd_to_decimal(year)
-                                          + (kbcd_to_decimal(century) * 100));
-		time->day_of_week = kbcd_to_decimal(day_of_week);
+		bios_time_val->second      = kbcd_to_decimal(seconds);
+		bios_time_val->minute      = kbcd_to_decimal(minutes);
+		bios_time_val->hour        = kbcd_to_decimal(hours);
+		bios_time_val->day         = kbcd_to_decimal(day);
+		bios_time_val->month       = kbcd_to_decimal(month);
+		bios_time_val->year        = (kuint16_t) (kbcd_to_decimal(year)
+                                                   + (kbcd_to_decimal(century) * 100));
+		bios_time_val->day_of_week = kbcd_to_decimal(day_of_week);
 	} else {
-		time->second      = seconds;
-		time->minute      = minutes;
-		time->hour        = hours;
-		time->day         = day;
-		time->month       = month;
-		time->year        = (kuint16_t) (year + (century * 100));
-		time->day_of_week = day_of_week;
+		bios_time_val->second      = seconds;
+		bios_time_val->minute      = minutes;
+		bios_time_val->hour        = hours;
+		bios_time_val->day         = day;
+		bios_time_val->month       = month;
+		bios_time_val->year        = (kuint16_t) (year + (century * 100));
+		bios_time_val->day_of_week = day_of_week;
 	}
 
 	// Handle 12-hour format (bit 6 of hours register indicates PM)
 	if (!(hours & 0x80) && (hours & 0x40)) {
 		// 12-hour format, PM
-		time->hour = (kuint8_t) (((time->hour % 12) + 12) % 24);
+		bios_time_val->hour = (kuint8_t) (((bios_time_val->hour % 12) + 12) % 24);
 	} else if (!(hours & 0x80)) {
 		// 12-hour format, AM
-		time->hour = time->hour % 12;
+		bios_time_val->hour = bios_time_val->hour % 12;
 	}
 }
 
 // Get date string in DD-MM-YYYY format
 void
-    kget_date_string (char *buffer, ksize_t buffer_size) {
+    time_get_date_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 11)
 		return;
 
-	struct bios_time time;
-	kget_bios_time(&time);
+	struct bios_time bios_time_val;
+	time_get_bios(&bios_time_val);
 
 	// Format: DD-MM-YYYY
-	ksnprintf(buffer, buffer_size, "%02d/%02d/%04d", time.day, time.month, time.year);
+	ksnprintf(buffer,
+	          buffer_size,
+	          "%02d/%02d/%04d",
+	          bios_time_val.day,
+	          bios_time_val.month,
+	          bios_time_val.year);
 }
 
 // Get time string in HH:MM:SS format
 void
-    kget_time_string (char *buffer, ksize_t buffer_size) {
+    time_get_time_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 9)
 		return;
 
-	struct bios_time time;
-	kget_bios_time(&time);
+	struct bios_time bios_time_val;
+	time_get_bios(&bios_time_val);
 
 	// Format: HH:MM:SS
-	ksnprintf(
-	    buffer, buffer_size, "%02d:%02d:%02d", time.hour, time.minute, time.second);
+	ksnprintf(buffer,
+	          buffer_size,
+	          "%02d:%02d:%02d",
+	          bios_time_val.hour,
+	          bios_time_val.minute,
+	          bios_time_val.second);
 }
 
 // Get full date and time string
 void
-    kget_datetime_string (char *buffer, ksize_t buffer_size) {
+    time_get_datetime_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 16)
 		return;
 
-	struct bios_time time;
-	kget_bios_time(&time);
+	struct bios_time bios_time_val;
+	time_get_bios(&bios_time_val);
 
 	// Format: DD-MM-YYYY HH:MM
 	kprintf("%02d-%02d-%04d %02d:%02d",
-	        time.day,
-	        time.month,
-	        time.year,
-	        time.hour,
-	        time.minute);
+	        bios_time_val.day,
+	        bios_time_val.month,
+	        bios_time_val.year,
+	        bios_time_val.hour,
+	        bios_time_val.minute);
 
 	// Copy to buffer
 	ksnprintf(buffer,
 	          buffer_size,
 	          "%02d/%02d/%02d %02d:%02d",
-	          time.day,
-	          time.month,
-	          time.year % 100,
-	          time.hour,
-	          time.minute);
+	          bios_time_val.day,
+	          bios_time_val.month,
+	          bios_time_val.year % 100,
+	          bios_time_val.hour,
+	          bios_time_val.minute);
 }
 
 // Get day of week string
 const char *
-    kget_day_of_week_string (kuint8_t day_of_week) {
+    time_get_day_of_week_string (kuint8_t day_of_week) {
 	static const char *days[] = {
 	    "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
@@ -168,3 +177,11 @@ const char *
 	}
 	return "Unknown";
 }
+
+struct Time time = {
+    .get_bios            = time_get_bios,
+    .get_date_str        = time_get_date_string,
+    .get_time_str        = time_get_time_string,
+    .get_datetime_str    = time_get_datetime_string,
+    .get_day_of_week_str = time_get_day_of_week_string,
+};

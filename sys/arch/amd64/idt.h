@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #pragma once
@@ -23,3 +23,9 @@ void
 typedef void (*irq_handler_t)(registers_t *);
 void
     register_irq_handler (int irq, irq_handler_t handler);
+
+// Syscall support
+extern void
+    syscall_int_handler (void);
+void
+    idt_setup_syscall (void);

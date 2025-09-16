@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include "memory.h"
@@ -137,7 +137,7 @@ void
 	large_pool  = pool_create(256, 128);  // 32KB total
 
 	if (!small_pool || !medium_pool || !large_pool) {
-		debug.warn("Failed to create some memory pools", " mm ", KNULL);
+		debug.warn("mm", "Failed to create some memory pools", KNULL);
 	}
 }
 

@@ -18,12 +18,7 @@ docs/        - Documentation files
 include/     - Public header files
     ...
 sys/         - Kernel source code
-    arch/    - Architecture-specific files
-    core/    - Core kernel functions (memory manager, entry, kernel panic, etc.)
-    drivers/ - Hardware device drivers
-    fs/      - Filesystem implementation
-    klibc/   - Kernel libc library
-    shell/   - Hardcoded shell (placeholder)
+    ...
 share/       - README image and other files
     logo/    - Logo of Wind/Tempest
 	...

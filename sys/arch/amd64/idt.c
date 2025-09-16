@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,12 +10,13 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include "idt.h"
 
 #include <arch/amd64/kasm/kio.h>
+#include <debug/debug.h>
 #include <kern/panic/panic.h>
 #include <lib/kstdio/kstdio.h>
 
@@ -124,6 +125,9 @@ extern void
     irq14 (void);
 extern void
     irq15 (void);
+
+extern void
+    syscall_int_handler (void);
 
 extern void *isr_stub_table[];
 
@@ -318,6 +322,19 @@ void
 	idt_set_gate(46, (kuint64_t) irq14, 0x08, 0x8E);
 	idt_set_gate(47, (kuint64_t) irq15, 0x08, 0x8E);
 
+	// Set up syscalls
+	idt_setup_syscall();
+
 	// Load the IDT.
 	__asm__ volatile("lidt %0" : : "m"(idtp));
+}
+
+// Setup syscall interrupt handler
+void
+    idt_setup_syscall (void) {
+	// Register syscall interrupt handler (int 0x80)
+	// Use DPL=3 (0xEE) to allow user-mode access
+	idt_set_gate(0x80, (kuint64_t) syscall_int_handler, 0x08, 0xEE);
+
+	debug.printf("idt", "Syscall interrupt handler registered at 0x80\n");
 }

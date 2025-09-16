@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,17 +10,14 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #pragma once
 
-#include <lib/kstdio/kstddef.h>
 #include <lib/kstdio/kstdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+extern struct Time time;
 
 // BIOS time structure
 struct bios_time {
@@ -33,17 +30,10 @@ struct bios_time {
 	kuint8_t  day_of_week;
 };
 
-void
-    kget_bios_time (struct bios_time *time);
-void
-    kget_date_string (char *buffer, ksize_t buffer_size);
-void
-    kget_time_string (char *buffer, ksize_t buffer_size);
-void
-    kget_datetime_string (char *buffer, ksize_t buffer_size);
-const char *
-    kget_day_of_week_string (kuint8_t day_of_week);
-
-#ifdef __cplusplus
-}
-#endif
+struct Time {
+	void (*get_bios)(struct bios_time *time);
+	void (*get_date_str)(char *buffer, ksize_t buffer_size);
+	void (*get_time_str)(char *buffer, ksize_t buffer_size);
+	void (*get_datetime_str)(char *buffer, ksize_t buffer_size);
+	const char *(*get_day_of_week_str)(kuint8_t day_of_week);
+};

@@ -1,119 +1,272 @@
-# Compiler tools
-CC      := clang
-NASM    := nasm
-LD      := ld
-RM      := rm -rf
-
-# Directory structure
-SRC_DIR     := sys
-BUILD_DIR   := build
-IO_DIR      := include
-OBJDIR      := $(BUILD_DIR)/obj
-OUTDIR      := $(BUILD_DIR)/out
-ISODIR      := $(BUILD_DIR)/isodir
-BOOTDIR     := $(ISODIR)/boot
-PLATFORM    := amd64
-
-# Limine
-LIMINE_DIR   := stand/limine
-LIMINE_FILES := $(LIMINE_DIR)/limine-bios.sys \
-                $(LIMINE_DIR)/limine-bios-cd.bin \
-                $(LIMINE_DIR)/limine-uefi-cd.bin \
-                $(LIMINE_DIR)/BOOTX64.EFI
-LIMINE_CFG   := $(LIMINE_DIR)/limine.conf
-
-# Outputs
-ISO_PATH   := $(OUTDIR)/wt.iso
-DISK_PATH  := $(BUILD_DIR)/hard-drive.img
-
-# QEMU
-QEMU_COMMAND := qemu-system-x86_64 -cdrom $(ISO_PATH) \
-                -vga vmware -machine hpet=on -m 128M \
-                -serial mon:stdio -drive file=$(DISK_PATH),format=raw,if=ide
-
-# Build mode
+# Build configuration
 MODE ?= Release
+PLATFORM := amd64
 
-# C Flags
-COMMON_CFLAGS := -I$(SRC_DIR) -fno-pie -fno-stack-protector -ffreestanding \
-                 -m64 -std=c17 -Wall -Wextra -Wpedantic -Wconversion -Werror \
-                 -ffunction-sections -fdata-sections -Wundef -Wshadow \
-                 -Wno-unused-command-line-argument
+# ==============================================================================
+# Tool Configuration
+# ==============================================================================
+CC := clang
+NASM := nasm
+LD := ld
+RM := rm -rf
+STRIP := strip
+XORRISO := xorriso
+MKDIR := mkdir -p
 
-COMMON_CFLAGS += -I$(IO_DIR)
+# ==============================================================================
+# Directory Structure
+# ==============================================================================
+SRC_DIR := sys
+INCLUDE_DIR := include
+BUILD_DIR := build
+OBJ_DIR := $(BUILD_DIR)/obj
+OUT_DIR := $(BUILD_DIR)/out
+ISO_DIR := $(BUILD_DIR)/isodir
+BOOT_DIR := $(ISO_DIR)/boot
 
+# Limine bootloader
+LIMINE_DIR := stand/limine
+LIMINE_CFG := $(LIMINE_DIR)/limine.conf
+
+# ==============================================================================
+# Output Files
+# ==============================================================================
+KERNEL_ELF := $(OUT_DIR)/wt.elf
+KERNEL_BOOT := $(BOOT_DIR)/wt.elf
+ISO_FILE := $(OUT_DIR)/wt.iso
+DISK_FILE := $(BUILD_DIR)/hard-drive.img
+
+# ==============================================================================
+# Limine Files
+# ==============================================================================
+LIMINE_FILES := \
+	$(LIMINE_DIR)/limine-bios.sys \
+	$(LIMINE_DIR)/limine-bios-cd.bin \
+	$(LIMINE_DIR)/limine-uefi-cd.bin \
+	$(LIMINE_DIR)/BOOTX64.EFI
+
+# ==============================================================================
+# Compiler Flags
+# ==============================================================================
+# Base C flags (common to all modes)
+BASE_CFLAGS := \
+	-std=c17 \
+	-ffreestanding \
+	-fno-pie \
+	-fno-stack-protector \
+	-m64 \
+	-I$(SRC_DIR) \
+	-I$(INCLUDE_DIR)
+
+# Warning flags
+WARNING_CFLAGS := \
+	-Wall \
+	-Wextra \
+	-Wpedantic \
+	-Wconversion \
+	-Werror \
+	-Wundef \
+	-Wshadow \
+	-Wno-unused-command-line-argument
+
+# Optimization flags
+OPTIMIZE_CFLAGS := \
+	-ffunction-sections \
+	-fdata-sections
+
+# Mode-specific flags
 ifeq ($(MODE),Debug)
-    CFLAGS  := $(COMMON_CFLAGS) -Og -g1
+    MODE_CFLAGS := -Og -g1
+    STRIP_DEBUG := false
 else ifeq ($(MODE),Release)
-    CFLAGS  := $(COMMON_CFLAGS) -O3 -march=x86-64 -mtune=generic -fno-omit-frame-pointer
+    MODE_CFLAGS := -O3 -march=x86-64 -mtune=generic -fno-omit-frame-pointer
+    STRIP_DEBUG := true
 else
-    $(error "INVALID MODE": use Debug or Release)
+    $(error Invalid MODE '$(MODE)'. Use 'Debug' or 'Release')
 endif
 
-LDFLAGS := -no-pie -fno-stack-protector -ffreestanding -m64 -nostdinc -nostdlib -Wl,--gc-sections
+# Combined C flags
+CFLAGS := $(BASE_CFLAGS) $(WARNING_CFLAGS) $(OPTIMIZE_CFLAGS) $(MODE_CFLAGS)
 
-# Dependency generation
+# Linker flags
+LDFLAGS := \
+	-no-pie \
+	-fno-stack-protector \
+	-ffreestanding \
+	-m64 \
+	-nostdinc \
+	-nostdlib \
+	-Wl,--gc-sections
+
+# Dependency generation flags
 DEPFLAGS := -MMD -MP
 
-# Sources
-C_SRCS   := $(shell find $(SRC_DIR) -name '*.c')
-ASM_SRCS := $(shell find $(SRC_DIR) -name '*.asm')
+# Assembly flags
+NASMFLAGS := -f elf64
 
-C_OBJS   := $(patsubst $(SRC_DIR)/%.c,$(OBJDIR)/%.o,$(C_SRCS))
-ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(OBJDIR)/%.o,$(ASM_SRCS))
-OBJS     := $(C_OBJS) $(ASM_OBJS)
+# ==============================================================================
+# Source Files and Objects
+# ==============================================================================
+C_SOURCES := $(shell find $(SRC_DIR) -name '*.c')
+ASM_SOURCES := $(shell find $(SRC_DIR) -name '*.asm')
 
-# Build everything by default
-.PHONY: all clean run
-all: $(ISO_PATH) $(DISK_PATH)
+C_OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SOURCES))
+ASM_OBJECTS := $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%.o,$(ASM_SOURCES))
+ALL_OBJECTS := $(C_OBJECTS) $(ASM_OBJECTS)
 
-# Create required directories
-$(OBJDIR) $(OUTDIR) $(BOOTDIR):
-	mkdir -p $@
+# Dependency files
+DEPS := $(C_OBJECTS:.o=.d)
 
-# Compile C files
-$(OBJDIR)/%.o: $(SRC_DIR)/%.c | $(OBJDIR)
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+# Linker script
+LINKER_SCRIPT := $(SRC_DIR)/arch/$(PLATFORM)/linker.ld
 
-# Assemble ASM files
-$(OBJDIR)/%.o: $(SRC_DIR)/%.asm | $(OBJDIR)
-	@mkdir -p $(dir $@)
-	$(NASM) -f elf64 $< -o $@
+# ==============================================================================
+# QEMU Configuration
+# ==============================================================================
+QEMU_FLAGS := \
+	-cdrom $(ISO_FILE) \
+	-vga vmware \
+	-machine hpet=on \
+	-m 128M \
+	-serial mon:stdio \
+	-drive file=$(DISK_FILE),format=raw,if=ide
 
-# Link
-$(OUTDIR)/wt.elf: $(OBJS) $(SRC_DIR)/arch/$(PLATFORM)/linker.ld | $(OUTDIR)
-	$(CC) $(LDFLAGS) -T $(SRC_DIR)/arch/$(PLATFORM)/linker.ld $(OBJS) -o $@
-ifeq ($(MODE),Release)
-	strip --strip-debug $@
+QEMU_CMD := qemu-system-x86_64 $(QEMU_FLAGS)
+
+# ==============================================================================
+# Build Targets
+# ==============================================================================
+
+# Default target
+.PHONY: all
+all: $(ISO_FILE) $(DISK_FILE)
+
+# ==============================================================================
+# Directory Creation
+# ==============================================================================
+$(OBJ_DIR) $(OUT_DIR) $(BOOT_DIR):
+	$(MKDIR) $@
+
+# ==============================================================================
+# Object File Generation
+# ==============================================================================
+
+# Compile C source files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@echo "  CC      $<"
+	@$(MKDIR) $(dir $@)
+	@$(CC) $(CFLAGS) $(DEPFLAGS) -c $< -o $@
+
+# Assemble ASM source files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.asm | $(OBJ_DIR)
+	@echo "  NASM    $<"
+	@$(MKDIR) $(dir $@)
+	@$(NASM) $(NASMFLAGS) $< -o $@
+
+# ==============================================================================
+# Kernel Binary
+# ==============================================================================
+$(KERNEL_ELF): $(ALL_OBJECTS) $(LINKER_SCRIPT) | $(OUT_DIR)
+	@echo "  LD      $@"
+	@$(CC) $(LDFLAGS) -T $(LINKER_SCRIPT) $(ALL_OBJECTS) -o $@
+ifeq ($(STRIP_DEBUG),true)
+	@echo "  STRIP   $@"
+	@$(STRIP) --strip-debug $@
 endif
 
-# Generate ISO
-$(ISO_PATH): $(OUTDIR)/wt.elf | $(BOOTDIR)
-	cp $< $(BOOTDIR)/wt.elf
-	cp $(LIMINE_CFG) $(ISODIR)/
-	cp $(LIMINE_FILES) $(ISODIR)/
-	xorriso -as mkisofs \
+# ==============================================================================
+# ISO Generation
+# ==============================================================================
+$(ISO_FILE): $(KERNEL_ELF) $(LIMINE_FILES) $(LIMINE_CFG) | $(BOOT_DIR)
+	@echo "  COPY    kernel to boot directory"
+	@cp $(KERNEL_ELF) $(KERNEL_BOOT)
+	@echo "  COPY    limine configuration"
+	@cp $(LIMINE_CFG) $(ISO_DIR)/
+	@echo "  COPY    limine files"
+	@cp $(LIMINE_FILES) $(ISO_DIR)/
+	@echo "  ISO     $@"
+	@$(XORRISO) -as mkisofs \
+		-quiet \
 		-o $@ \
-		-b limine-bios-cd.bin -no-emul-boot \
-		-boot-load-size 4 -boot-info-table \
-		-isohybrid-mbr $(ISODIR)/limine-bios.sys \
+		-b limine-bios-cd.bin \
+		-no-emul-boot \
+		-boot-load-size 4 \
+		-boot-info-table \
+		-isohybrid-mbr $(ISO_DIR)/limine-bios.sys \
 		-eltorito-alt-boot \
-		-e limine-uefi-cd.bin -no-emul-boot \
+		-e limine-uefi-cd.bin \
+		-no-emul-boot \
 		-isohybrid-gpt-basdat \
-		$(ISODIR)
+		$(ISO_DIR) 2>/dev/null
 
-# Bug reported by: John Alex (#2)
-$(DISK_PATH):
-	./tools/create_disk.sh
+# ==============================================================================
+# Disk Image
+# ==============================================================================
+$(DISK_FILE): tools/create_disk.sh
+	@echo "  DISK    $@"
+	@./tools/create_disk.sh
 
-# Run with QEMU
+# ==============================================================================
+# Utility Targets
+# ==============================================================================
+
+# Run in QEMU
+.PHONY: run
 run: all
-	@$(QEMU_COMMAND)
+	@echo "  QEMU    Starting virtual machine..."
+	@$(QEMU_CMD)
 
-# Include dependencies
--include $(C_OBJS:.o=.d)
+# Run in debug mode (with QEMU gdb server)
+.PHONY: debug
+debug: all
+	@echo "  QEMU    Starting virtual machine in debug mode..."
+	@$(QEMU_CMD) -s -S
 
-# Clean
+# Clean build artifacts
+.PHONY: clean
 clean:
-	$(RM) $(BUILD_DIR) $(DISK_PATH)
+	@echo "  CLEAN   $(BUILD_DIR)"
+	@$(RM) $(BUILD_DIR)
+
+# Show build configuration
+.PHONY: info
+info:
+	@echo "Mode:           $(MODE)"
+	@echo "Platform:       $(PLATFORM)"
+	@echo "Compiler:       $(CC)"
+	@echo "Assembler:      $(NASM)"
+	@echo "Source dir:     $(SRC_DIR)"
+	@echo "Build dir:      $(BUILD_DIR)"
+	@echo "C Sources:      $(words $(C_SOURCES)) files"
+	@echo "ASM Sources:    $(words $(ASM_SOURCES)) files"
+	@echo "Output ISO:     $(ISO_FILE)"
+	@echo "Kernel ELF:     $(KERNEL_ELF)"
+	@echo ""
+	@echo "Compiler flags: $(CFLAGS)"
+	@echo ""
+	@echo "Linker flags:   $(LDFLAGS)"
+
+# Force rebuild
+.PHONY: rebuild
+rebuild: clean all
+
+# Help target
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  all         - Build ISO and disk image (default)"
+	@echo "  run         - Build and run in QEMU"
+	@echo "  debug       - Build and run in QEMU with debug server"
+	@echo "  clean       - Remove all generated artifacts"
+	@echo "  rebuild     - Clean and build"
+	@echo "  info        - Show build configuration"
+	@echo "  help        - Show this help message"
+	@echo ""
+	@echo "Build modes (set MODE variable):"
+	@echo "  Debug       - Debug build with symbols"
+	@echo "  Release     - Optimized release build (default)"
+
+# ==============================================================================
+# Dependency Inclusion
+# ==============================================================================
+-include $(DEPS)

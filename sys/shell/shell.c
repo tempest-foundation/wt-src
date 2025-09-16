@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include "shell.h"
@@ -22,6 +22,8 @@
 #include <kern/framebuf/framebuf.h>
 #include <kern/memory/memory.h>
 #include <kern/panic/panic.h>
+#include <kern/syscall/integration.h>
+#include <kern/syscall/syscall.h>
 #include <lib/kgeneral/kerrno/kerrno.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kstdlib.h>
@@ -498,8 +500,8 @@ static void
 	char time_buffer[16];
 
 	// Retrieve date and time strings
-	kget_date_string(date_buffer, sizeof(date_buffer));
-	kget_time_string(time_buffer, sizeof(time_buffer));
+	time.get_date_str(date_buffer, sizeof(date_buffer));
+	time.get_time_str(time_buffer, sizeof(time_buffer));
 
 	kprintf("Date: %s\n", date_buffer);
 	kprintf("Time: %s\n", time_buffer);

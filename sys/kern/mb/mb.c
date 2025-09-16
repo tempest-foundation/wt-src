@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include "mb.h"
@@ -57,7 +57,7 @@ typedef enum {
 void
     parse_multiboot_info (void *mb_info) {
 	if (mb_info == KNULL) {
-		debug.puts("mb_info is NULL!");
+		debug.puts("mb", "mb_info is NULL!");
 		return;
 	}
 
@@ -65,23 +65,23 @@ void
 	kuint8_t *current    = (kuint8_t *) ((kuintptr_t) mb_info + 8);
 	kuint8_t *end        = (kuint8_t *) ((kuintptr_t) mb_info + total_size);
 
-	debug.puts("Parsing multiboot info...");
+	debug.puts("mb", "Parsing multiboot info...");
 
 	while (current < end) {
 		struct multiboot_tag *tag = (struct multiboot_tag *) current;
 
 		if (tag->size == 0) {
-			debug.err("Invalid tag size (0)", "multiboot", KNULL);
+			debug.err("mb", "Invalid tag size (0)", KNULL);
 			return;
 		}
 
 		switch ((multiboot_tag_type_t) tag->type) {
 			case MULTIBOOT_TAG_TYPE_END:
-				debug.puts("End tag found. Parsing complete.");
+				debug.puts("mb", "End tag found. Parsing complete.");
 				return;
 
 			case MULTIBOOT_TAG_TYPE_FRAMEBUFFER: {
-				debug.puts("Framebuffer tag found");
+				debug.puts("mb", "Framebuffer tag found");
 
 				struct multiboot_tag_framebuffer *fb_tag =
 				    (struct multiboot_tag_framebuffer *) tag;
@@ -112,5 +112,5 @@ void
 		current += (tag->size + 7) & (kuint32_t) ~7;  // align to 8 bytes
 	}
 
-	debug.puts("Reached end of multiboot info (no END tag)");
+	debug.puts("mb", "Reached end of multiboot info (no END tag)");
 }

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,32 +10,40 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #include <debug/debug.h>
 #include <drivers/serial/serial.h>
+#include <drivers/video/video.h>
 #include <lib/kstdio/kstdbool.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
 
-kbool              d_enabled          = kfalse;
-static const char *debug_type_message = "[    debug] ";
+kbool d_enabled = kfalse;
 
 void
-    d_puts (const char *s) {
+    d_puts (const char *subsystem, const char *s) {
 	if (!d_enabled) {
 		return;
 	}
 	if (!s || *s == '\0')
 		return;
-	serial.writes(debug_type_message);
-	serial.writes(s);
-	serial.write('\n');
+
+	kputs("[    debug");
+
+	if (subsystem && *subsystem != '\0') {
+		kputs("::");
+		kputs(subsystem);
+	}
+
+	kputs("] ");
+	kputs(s);
+	kputchar('\n');
 }
 
 int
-    d_printf (const char *format, ...) {
+    d_printf (const char *subsystem, const char *format, ...) {
 	if (!d_enabled)
 		return 0;
 
@@ -46,12 +54,22 @@ int
 	k_va_start(args, format);
 	int count = 0;
 
-	serial.writes(debug_type_message);
-	count += (int) kstrlen(debug_type_message);
+	// Write debug header with optional subsystem
+	video.puts("[    debug");
+	count += 10;  // Length of "[    debug"
+
+	if (subsystem && *subsystem != '\0') {
+		video.puts("::");
+		video.puts(subsystem);
+		count += 2 + (int) kstrlen(subsystem);
+	}
+
+	video.puts("] ");
+	count += 2;  // Length of "] "
 
 	for (const char *p = format; *p; ++p) {
 		if (*p != '%') {
-			serial.write(*p);
+			kputchar(*p);
 			count++;
 			continue;
 		}
@@ -83,17 +101,17 @@ int
 
 				if (!left_align) {
 					for (int i = 0; i < pad; ++i) {
-						serial.write(' ');
+						kputchar(' ');
 						count++;
 					}
 				}
 
-				serial.writes(s);
+				video.puts(s);
 				count += len;
 
 				if (left_align) {
 					for (int i = 0; i < pad; ++i) {
-						serial.write(' ');
+						kputchar(' ');
 						count++;
 					}
 				}
@@ -113,7 +131,7 @@ int
 				char *end_ptr = kutoa(
 				    ptr, buf + sizeof(buf) - 1, (unsigned int) n, 10, 0);
 				*end_ptr = '\0';
-				serial.writes(buf);
+				video.puts(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -124,7 +142,7 @@ int
 				char        *end_ptr =
 				    kutoa(buf, buf + sizeof(buf) - 1, n, 16, 0);
 				*end_ptr = '\0';
-				serial.writes(buf);
+				video.puts(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -143,7 +161,7 @@ int
 						          16,
 						          0);
 						*end_ptr = '\0';
-						serial.writes(buf);
+						video.puts(buf);
 						count += (int) (end_ptr - buf);
 						break;
 					}
@@ -154,21 +172,21 @@ int
 
 			case 'c': {
 				char c = (char) k_va_arg(args, int);
-				serial.write(c);
+				kputchar(c);
 				count++;
 				break;
 			}
 
 			case '%': {
-				serial.write('%');
+				kputchar('%');
 				count++;
 				break;
 			}
 
 			default:
 			default_case: {
-				serial.write('%');
-				serial.write(*p);
+				kputchar('%');
+				kputchar(*p);
 				count += 2;
 				break;
 			}
@@ -201,37 +219,37 @@ static void
 }
 
 static void
-    d_crit (const char *m, const char *s, const char *e) {
+    d_crit (const char *s, const char *m, const char *e) {
 	d_dbgtype("crit", s, m, e);
 }
 
 static void
-    d_alert (const char *m, const char *s, const char *e) {
+    d_alert (const char *s, const char *m, const char *e) {
 	d_dbgtype("alert", s, m, e);
 }
 
 static void
-    d_emerg (const char *m, const char *s, const char *e) {
+    d_emerg (const char *s, const char *m, const char *e) {
 	d_dbgtype("emerg", s, m, e);
 }
 
 static void
-    d_warn (const char *m, const char *s, const char *e) {
+    d_warn (const char *s, const char *m, const char *e) {
 	d_dbgtype("warn", s, m, e);
 }
 
 static void
-    d_err (const char *m, const char *s, const char *e) {
+    d_err (const char *s, const char *m, const char *e) {
 	d_dbgtype("err", s, m, e);
 }
 
 static void
-    d_notice (const char *m, const char *s, const char *e) {
+    d_notice (const char *s, const char *m, const char *e) {
 	d_dbgtype("notice", s, m, e);
 }
 
 static void
-    d_info (const char *m, const char *s, const char *e) {
+    d_info (const char *s, const char *m, const char *e) {
 	d_dbgtype("info", s, m, e);
 }
 

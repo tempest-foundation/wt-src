@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LSL-1.4
+// SPDX-License-Identifier: LSL-2.0
 /*
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
@@ -10,7 +10,7 @@
  * Link:        https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 1.4
+ * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
 #pragma once
@@ -25,6 +25,6 @@ struct Debug {
 	void (*err)(const char *, const char *, const char *);
 	void (*notice)(const char *, const char *, const char *);
 	void (*info)(const char *, const char *, const char *);
-	void (*puts)(const char *);
-	int (*printf)(const char *format, ...);
+	void (*puts)(const char *subsystem, const char *s);
+	int (*printf)(const char *subsystem, const char *format, ...);
 };
