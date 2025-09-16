@@ -19,7 +19,7 @@
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
 
-kbool d_enabled = kfalse;
+kbool d_enabled = ktrue;
 
 void
     d_puts (const char *subsystem, const char *s) {
