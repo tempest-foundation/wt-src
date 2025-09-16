@@ -29,16 +29,16 @@ void
 	if (!s || *s == '\0')
 		return;
 
-	serial.writes("[    debug");
+	kputs("[    debug");
 
 	if (subsystem && *subsystem != '\0') {
-		serial.writes("::");
-		serial.writes(subsystem);
+		kputs("::");
+		kputs(subsystem);
 	}
 
-	serial.writes("] ");
-	serial.writes(s);
-	serial.write('\n');
+	kputs("] ");
+	kputs(s);
+	kputchar('\n');
 }
 
 int
@@ -54,21 +54,21 @@ int
 	int count = 0;
 
 	// Write debug header with optional subsystem
-	serial.writes("[    debug");
+	kputs("[    debug");
 	count += 10;  // Length of "[    debug"
 
 	if (subsystem && *subsystem != '\0') {
-		serial.writes("::");
-		serial.writes(subsystem);
+		kputs("::");
+		kputs(subsystem);
 		count += 2 + (int) kstrlen(subsystem);
 	}
 
-	serial.writes("] ");
+	kputs("] ");
 	count += 2;  // Length of "] "
 
 	for (const char *p = format; *p; ++p) {
 		if (*p != '%') {
-			serial.write(*p);
+			kputchar(*p);
 			count++;
 			continue;
 		}
@@ -100,17 +100,17 @@ int
 
 				if (!left_align) {
 					for (int i = 0; i < pad; ++i) {
-						serial.write(' ');
+						kputchar(' ');
 						count++;
 					}
 				}
 
-				serial.writes(s);
+				kputs(s);
 				count += len;
 
 				if (left_align) {
 					for (int i = 0; i < pad; ++i) {
-						serial.write(' ');
+						kputchar(' ');
 						count++;
 					}
 				}
@@ -130,7 +130,7 @@ int
 				char *end_ptr = kutoa(
 				    ptr, buf + sizeof(buf) - 1, (unsigned int) n, 10, 0);
 				*end_ptr = '\0';
-				serial.writes(buf);
+				kputs(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -141,7 +141,7 @@ int
 				char        *end_ptr =
 				    kutoa(buf, buf + sizeof(buf) - 1, n, 16, 0);
 				*end_ptr = '\0';
-				serial.writes(buf);
+				kputs(buf);
 				count += (int) (end_ptr - buf);
 				break;
 			}
@@ -160,7 +160,7 @@ int
 						          16,
 						          0);
 						*end_ptr = '\0';
-						serial.writes(buf);
+						kputs(buf);
 						count += (int) (end_ptr - buf);
 						break;
 					}
@@ -171,21 +171,21 @@ int
 
 			case 'c': {
 				char c = (char) k_va_arg(args, int);
-				serial.write(c);
+				kputchar(c);
 				count++;
 				break;
 			}
 
 			case '%': {
-				serial.write('%');
+				kputchar('%');
 				count++;
 				break;
 			}
 
 			default:
 			default_case: {
-				serial.write('%');
-				serial.write(*p);
+				kputchar('%');
+				kputchar(*p);
 				count += 2;
 				break;
 			}
