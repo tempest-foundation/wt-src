@@ -23,7 +23,7 @@
 ## System Services & Architecture
 
 - [x] Syscall interface
-- [ ] User-space binary loading (.ELF or custom)
+- [ ] User-space binary loading (.ELF)
 - [x] Privilege separation (rings, even if basic)
 - [ ] Module loading (e.g., drivers)
 - [ ] Package manager (not sure yet)
