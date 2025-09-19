@@ -4,8 +4,8 @@
 ; The Wind/Tempest Project
 ;
 ; File:        sys/arch/amd64/isr.asm
-; Author(s):   Russian95 <russian95@tempestfoundation.org>
-;              (https://github.com/Russian95CrE)
+; Author(s):   Tempik25 <tempik25@tempestfoundation.org>
+;              (https://github.com/tempik25)
 ; Maintainer:  Tempest Foundation <development@tempestfoundation.org>
 ; Link:        https://wtsrc.tempestfoundation.org
 ;

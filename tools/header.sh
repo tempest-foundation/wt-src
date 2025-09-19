@@ -29,8 +29,8 @@ while IFS= read -r -d '' file; do
  * The Wind/Tempest Project
  *
  * File:        $relpath
- * Author(s):   Russian95 <russian95@tempestfoundation.org>
- *              (https://github.com/Russian95CrE)
+ * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
+ *              (https://github.com/tempik25)
  * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
  * Link:        https://wtsrc.tempestfoundation.org
  *
