@@ -36,7 +36,7 @@ void
 	syscalls.bind(SYS_EXIT, sys_exit, "exit", 1);
 	syscalls.bind(SYS_GETPID, sys_getpid, "getpid", 0);
 	syscalls.bind(SYS_READ, sys_read, "read", 3);
-	syscalls.bind(SYserial_write, syserial_write, "write", 3);
+	syscalls.bind(SYS_WRITE, sys_write, "write", 3);
 
 	debug.printf("syscall", "Initialized with %llu syscalls\n", syscall_count);
 }
@@ -233,13 +233,13 @@ kuint64_t
 }
 
 kuint64_t
-    syserial_write (kuint64_t syscall_no __attribute__((unused)),
-                    kuint64_t fd,
-                    kuint64_t buffer,
-                    kuint64_t count,
-                    kuint64_t arg3 __attribute__((unused)),
-                    kuint64_t arg4 __attribute__((unused)),
-                    kuint64_t arg5 __attribute__((unused))) {
+    sys_write (kuint64_t syscall_no __attribute__((unused)),
+               kuint64_t fd,
+               kuint64_t buffer,
+               kuint64_t count,
+               kuint64_t arg3 __attribute__((unused)),
+               kuint64_t arg4 __attribute__((unused)),
+               kuint64_t arg5 __attribute__((unused))) {
 	debug.printf(
 	    "syscall", "write: fd=%llu, buffer=0x%llx, count=%llu\n", fd, buffer, count);
 	// TODO: Implement actual file writing
