@@ -3,7 +3,7 @@
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
  *
- * File:        sys/kern/syscall/functions/process/exit.h
+ * File:        sys/kern/syscall/calls/io/read.h
  * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
  *              (https://github.com/tempik25)
  * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
@@ -17,10 +17,10 @@
 #include <lib/kstdio/kstdint.h>
 
 kuint64_t
-    sys_exit (kuint64_t syscall_no __attribute__((unused)),
-              kuint64_t status,
-              kuint64_t arg1 __attribute__((unused)),
-              kuint64_t arg2 __attribute__((unused)),
+    sys_read (kuint64_t syscall_no __attribute__((unused)),
+              kuint64_t fd,
+              kuint64_t buffer,
+              kuint64_t count,
               kuint64_t arg3 __attribute__((unused)),
               kuint64_t arg4 __attribute__((unused)),
               kuint64_t arg5 __attribute__((unused)));

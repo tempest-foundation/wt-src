@@ -16,7 +16,7 @@
 #include "syscall.h"
 
 #include <debug/debug.h>
-#include <kern/syscall/functions/sys.h>
+#include <kern/syscall/calls/sys.h>
 #include <lib/kstdio/kstdio.h>
 
 // Global syscall table

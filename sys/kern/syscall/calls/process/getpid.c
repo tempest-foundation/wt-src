@@ -3,7 +3,7 @@
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
  *
- * File:        sys/kern/syscall/functions/process/getpid.c
+ * File:        sys/kern/syscall/calls/process/getpid.c
  * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
  *              (https://github.com/tempik25)
  * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
