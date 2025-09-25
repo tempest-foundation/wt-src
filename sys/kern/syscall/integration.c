@@ -257,7 +257,7 @@ void
 		syscall_call_count[i] = 0;
 	}
 
-	debug.printf("syscall", "info", "Statistics reset\n");
+	debug.printf("syscall", "success", "Statistics reset\n");
 }
 
 // Enable/disable security checks
@@ -278,7 +278,7 @@ void
 		             "Rate limiting enabled: %llu calls/second\n",
 		             max_calls);
 	} else {
-		debug.printf("syscall", "info", "Rate limiting disabled\n");
+		debug.printf("syscall", "success", "Rate limiting disabled\n");
 	}
 }
 
@@ -288,7 +288,7 @@ void
 	debug.printf("syscall", "info", "Integrating with scheduler...\n");
 	// TODO: Implement scheduler integration
 	// This would involve registering syscalls like yield, sleep, etc.
-	debug.printf("syscall", "info", "Scheduler integration complete\n");
+	debug.printf("syscall", "success", "Scheduler integration complete\n");
 }
 
 void
@@ -296,7 +296,7 @@ void
 	debug.printf("syscall", "info", "Integrating with memory manager...\n");
 	// TODO: Implement memory manager integration
 	// This would involve registering syscalls like mmap, munmap, brk, etc.
-	debug.printf("syscall", "info", "Memory manager integration complete\n");
+	debug.printf("syscall", "success", "Memory manager integration complete\n");
 }
 
 void
@@ -304,7 +304,7 @@ void
 	debug.printf("syscall", "info", "Integrating with filesystem...\n");
 	// TODO: Implement filesystem integration
 	// This would involve registering syscalls like open, close, read, write, etc.
-	debug.printf("syscall", "info", "Filesystem integration complete\n");
+	debug.printf("syscall", "success", "Filesystem integration complete\n");
 }
 
 // Debugging utilities
@@ -387,9 +387,9 @@ void
 	registers_t mock_regs = {0};
 	mock_regs.rax         = SYS_GETPID;
 	syscalls.handler(&mock_regs);
-	debug.printf("syscall", "info", "getpid test returned: %llu\n", mock_regs.rax);
+	debug.printf("syscall", "notice", "getpid test returned: %llu\n", mock_regs.rax);
 
-	debug.printf("syscall", "info", "Quick test completed\n");
+	debug.printf("syscall", "success", "Quick test completed\n");
 }
 
 // Benchmark syscall performance
@@ -423,5 +423,5 @@ void
 	debug.printf("syscall", KNULL, "Benchmark results:\n");
 	debug.printf("syscall", "info", "Iterations requested: %u\n", iterations);
 	debug.printf("syscall", "info", "Actual calls made: %llu\n", calls_made);
-	debug.printf("syscall", "info", "Benchmark complete\n");
+	debug.printf("syscall", "success", "Benchmark complete\n");
 }

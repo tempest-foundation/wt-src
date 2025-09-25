@@ -40,7 +40,7 @@ void
 	syscalls.bind(SYS_WRITE, sys_write, "write", 3);
 
 	debug.printf(
-	    "syscall", "info", "Initialized with %llu syscalls\n", syscall_count);
+	    "syscall", "success", "Initialized with %llu syscalls\n", syscall_count);
 }
 
 // Register a new syscall handler
@@ -88,7 +88,7 @@ void
 	syscall_table[syscall_no].arg_count = arg_count;
 
 	debug.printf("syscall",
-	             "info",
+	             "success",
 	             "Registered syscall %llu: %s (args: %u)\n",
 	             syscall_no,
 	             name,
@@ -113,7 +113,7 @@ void
 	}
 
 	debug.printf("syscall",
-	             "info",
+	             "success",
 	             "Unregistered syscall %llu: %s\n",
 	             syscall_no,
 	             syscall_table[syscall_no].name);
@@ -183,7 +183,7 @@ void
 
 	// Log syscall for debugging (can be disabled in production)
 	debug.printf(
-	    "syscall", "info", "Calling syscall %llu: %s\n", syscall_no, entry->name);
+	    "syscall", "notice", "Calling syscall %llu: %s\n", syscall_no, entry->name);
 
 	// Call the syscall handler
 	kuint64_t result = entry->handler(syscall_no, arg0, arg1, arg2, arg3, arg4, arg5);
@@ -192,7 +192,7 @@ void
 	regs->rax = result;
 
 	debug.printf(
-	    "syscall", "info", "Syscall %llu returned %llu\n", syscall_no, result);
+	    "syscall", "success", "Syscall %llu returned %llu\n", syscall_no, result);
 }
 
 struct Syscalls syscalls = {
