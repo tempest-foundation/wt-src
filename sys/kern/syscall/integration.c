@@ -79,7 +79,7 @@ void
 	}
 
 	syscall_status = SYSCALL_STATUS_UNINITIALIZED;
-	debug.printf("syscall", "info", "Infrastructure shutdown complete\n");
+	debug.printf("syscall", "success", "Infrastructure shutdown complete\n");
 }
 
 // Get the current status of the syscall subsystem
@@ -208,7 +208,7 @@ kuint8_t
 	}
 
 	if (validation_passed) {
-		debug.printf("syscall", "info", "Infrastructure validation PASSED\n");
+		debug.printf("syscall", "success", "Infrastructure validation PASSED\n");
 	} else {
 		debug.printf("syscall", "error", "Infrastructure validation FAILED\n");
 	}
