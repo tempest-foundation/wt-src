@@ -16,6 +16,7 @@
 #include "syscall.h"
 
 #include <debug/debug.h>
+#include <kern/syscall/functions/sys.h>
 #include <lib/kstdio/kstdio.h>
 
 // Global syscall table
@@ -182,80 +183,6 @@ void
 	regs->rax = result;
 
 	debug.printf("syscall", "Syscall %llu returned %llu\n", syscall_no, result);
-}
-
-// Process management syscalls
-kuint64_t
-    sys_exit (kuint64_t syscall_no __attribute__((unused)),
-              kuint64_t status,
-              kuint64_t arg1 __attribute__((unused)),
-              kuint64_t arg2 __attribute__((unused)),
-              kuint64_t arg3 __attribute__((unused)),
-              kuint64_t arg4 __attribute__((unused)),
-              kuint64_t arg5 __attribute__((unused))) {
-	debug.printf("syscall", "Process exit with status %llu\n", status);
-	// TODO: Implement actual process termination
-	return SYSCALL_NOT_IMPLEMENTED;
-}
-
-kuint64_t
-    sys_getpid (kuint64_t syscall_no __attribute__((unused)),
-                kuint64_t arg0 __attribute__((unused)),
-                kuint64_t arg1 __attribute__((unused)),
-                kuint64_t arg2 __attribute__((unused)),
-                kuint64_t arg3 __attribute__((unused)),
-                kuint64_t arg4 __attribute__((unused)),
-                kuint64_t arg5 __attribute__((unused))) {
-	// TODO: Implement actual process ID retrieval
-	// For now, return a dummy PID
-	kuint64_t pid = 1;
-	debug.printf("syscall", "getpid returning PID %llu\n", pid);
-	return pid;
-}
-
-// File I/O syscalls
-kuint64_t
-    sys_read (kuint64_t syscall_no __attribute__((unused)),
-              kuint64_t fd,
-              kuint64_t buffer,
-              kuint64_t count,
-              kuint64_t arg3 __attribute__((unused)),
-              kuint64_t arg4 __attribute__((unused)),
-              kuint64_t arg5 __attribute__((unused))) {
-	debug.printf(
-	    "syscall", " read: fd=%llu, buffer=0x%llx, count=%llu\n", fd, buffer, count);
-	// TODO: Implement actual file reading
-	// Basic validation
-	if (buffer == 0 || count == 0) {
-		return SYSCALL_INVALID_ARGS;
-	}
-	return SYSCALL_NOT_IMPLEMENTED;
-}
-
-kuint64_t
-    sys_write (kuint64_t syscall_no __attribute__((unused)),
-               kuint64_t fd,
-               kuint64_t buffer,
-               kuint64_t count,
-               kuint64_t arg3 __attribute__((unused)),
-               kuint64_t arg4 __attribute__((unused)),
-               kuint64_t arg5 __attribute__((unused))) {
-	debug.printf(
-	    "syscall", "write: fd=%llu, buffer=0x%llx, count=%llu\n", fd, buffer, count);
-	// TODO: Implement actual file writing
-	// Basic validation
-	if (buffer == 0 || count == 0) {
-		return SYSCALL_INVALID_ARGS;
-	}
-
-	// For stdout (fd=1), we could implement a simple write to console
-	if (fd == 1) {
-		// TODO: Copy data from user buffer and write to console
-		debug.printf("syscall", "Write to stdout requested\n");
-		return count;  // Pretend we wrote all bytes
-	}
-
-	return SYSCALL_NOT_IMPLEMENTED;
 }
 
 struct Syscalls syscalls = {
