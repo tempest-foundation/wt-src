@@ -20,7 +20,7 @@
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
 
-kbool d_enabled = kfalse;
+kbool d_enabled = ktrue;
 
 void
     debug_puts (const char *subsystem, const char *type, const char *s) {
@@ -38,7 +38,7 @@ void
 	}
 
 	if (type && *type != '\0') {
-		kputs("::");
+		kputs("/");
 		kputs(type);
 	}
 
@@ -70,7 +70,7 @@ int
 	}
 
 	if (type && *type != '\0') {
-		video.puts("::");
+		video.puts("/");
 		video.puts(type);
 		count += 2 + (int) kstrlen(type);
 	}
