@@ -3,7 +3,7 @@
  * -- BEGIN LICENSE HEADER --
  * The Wind/Tempest Project
  *
- * File:        sys/kern/framebuf/framebuf.c
+ * File:        sys/kern/syscall/calls/io/read.h
  * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
  *              (https://github.com/tempik25)
  * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
@@ -13,19 +13,14 @@
  * Licensed under the Liberty Software License, Version 2.0
  * -- END OF LICENSE HEADER --
  */
-#include "framebuf.h"
-
-#include <debug/debug.h>
+#include <kern/syscall/syscall.h>
 #include <lib/kstdio/kstdint.h>
 
-struct framebuffer_info fb_info;
-
-void
-    map_framebuffer_address (kuint64_t phys_addr) {
-	kuint64_t virt_addr = 0xFFFF800000000000ULL + phys_addr;
-
-	debug.printf(
-	    "fb", "info", "Mapping framebuffer 0x%llx -> 0x%llx\n", phys_addr, virt_addr);
-
-	fb_info.addr = virt_addr;
-}
+kuint64_t
+    sys_read (kuint64_t syscall_no __attribute__((unused)),
+              kuint64_t fd,
+              kuint64_t buffer,
+              kuint64_t count,
+              kuint64_t arg3 __attribute__((unused)),
+              kuint64_t arg4 __attribute__((unused)),
+              kuint64_t arg5 __attribute__((unused)));
