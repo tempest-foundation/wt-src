@@ -32,7 +32,7 @@
 #define POWEROFF_TIMEOUT_MS 5000
 
 void
-    a_poweroff (void) {
+    acpi_poweroff (void) {
 	koutw(0x604, 0x2000);   // Port 0x604
 	koutw(0xB004, 0x2000);  // Port 0xB004
 
@@ -42,7 +42,7 @@ void
 }
 
 void
-    a_reboot (void) {
+    acpi_reboot (void) {
 	while (kinb(0x64) & 0x02)
 		;           // Wait for keyboard controller ready
 	koutb(0x64, 0xFE);  // Send reset command
@@ -52,4 +52,4 @@ void
 	debug.err("acpi", "Legacy reboot failed", KNULL);
 }
 
-struct Acpi acpi = {.poweroff = a_poweroff, .reboot = a_reboot};
+struct Acpi acpi = {.poweroff = acpi_poweroff, .reboot = acpi_reboot};

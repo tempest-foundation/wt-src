@@ -22,7 +22,7 @@
 #define PORT 0x3f8  // COM1
 
 kbool
-    s_is_available (void) {
+    serial_is_available (void) {
 	// Save original values.
 	unsigned char original_lcr = kinb(PORT + 3);
 	unsigned char original_mcr = kinb(PORT + 4);
@@ -53,8 +53,8 @@ kbool
 }
 
 void
-    s_init (void) {
-	if (!s_is_available())
+    serial_init (void) {
+	if (!serial_is_available())
 		return;         // Exit if serial not available.
 	koutb(PORT + 1, 0x00);  // Disable all interrupts.
 	koutb(PORT + 3, 0x80);  // Enable DLAB (set baud rate divisor).
@@ -67,39 +67,39 @@ void
 }
 
 static int
-    s_is_transmit_empty (void) {
+    serial_is_transmit_empty (void) {
 	return kinb(PORT + 5) & 0x20;
 }
 
 void
-    s_write (char a) {
-	if (!s_is_available() || !a)
+    serial_write (char a) {
+	if (!serial_is_available() || !a)
 		return;  // Exit if serial not available or if char is null.
-	while (s_is_transmit_empty() == 0)
+	while (serial_is_transmit_empty() == 0)
 		;
 	koutb(PORT, (unsigned char) a);
 }
 
 void
-    s_writes (const char *s) {
-	if (!s_is_available() || !s)
+    serial_writes (const char *s) {
+	if (!serial_is_available() || !s)
 		return;  // Exit if serial not available or if string is null.
 	while (*s) {
-		s_write(*s++);
+		serial_write(*s++);
 	}
 }
 
 void
-    s_write_int (int i) {
-	if (!s_is_available())
+    serial_write_int (int i) {
+	if (!serial_is_available())
 		return;  // Exit if serial not available.
 	char buf[16];
 	kitoa(buf, buf + 15, i, 10, 0);
 	serial.writes(buf);
 }
 
-struct Serial serial = {.init         = s_init,
-                        .write        = s_write,
-                        .writes       = s_writes,
-                        .write_int    = s_write_int,
-                        .is_available = s_is_available};
+struct Serial serial = {.init         = serial_init,
+                        .write        = serial_write,
+                        .writes       = serial_writes,
+                        .write_int    = serial_write_int,
+                        .is_available = serial_is_available};
