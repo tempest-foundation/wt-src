@@ -25,8 +25,12 @@ kuint64_t
               kuint64_t arg3 __attribute__((unused)),
               kuint64_t arg4 __attribute__((unused)),
               kuint64_t arg5 __attribute__((unused))) {
-	debug.printf(
-	    "syscall", " read: fd=%llu, buffer=0x%llx, count=%llu\n", fd, buffer, count);
+	debug.printf("syscall",
+	             "info",
+	             " read: fd=%llu, buffer=0x%llx, count=%llu\n",
+	             fd,
+	             buffer,
+	             count);
 	// TODO: Implement actual file reading
 	// Basic validation
 	if (buffer == 0 || count == 0) {

@@ -25,7 +25,7 @@ void
 	kuint64_t virt_addr = 0xFFFF800000000000ULL + phys_addr;
 
 	debug.printf(
-	    "fb", "Mapping framebuffer 0x%llx -> 0x%llx\n", phys_addr, virt_addr);
+	    "fb", "info", "Mapping framebuffer 0x%llx -> 0x%llx\n", phys_addr, virt_addr);
 
 	fb_info.addr = virt_addr;
 }

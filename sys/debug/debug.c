@@ -23,7 +23,7 @@
 kbool d_enabled = kfalse;
 
 void
-    d_puts (const char *subsystem, const char *s) {
+    debug_puts (const char *subsystem, const char *type, const char *s) {
 	if (!d_enabled) {
 		return;
 	}
@@ -37,13 +37,18 @@ void
 		kputs(subsystem);
 	}
 
+	if (type && *type != '\0') {
+		kputs("::");
+		kputs(type);
+	}
+
 	kputs("] ");
 	kputs(s);
 	kputchar('\n');
 }
 
 int
-    d_printf (const char *subsystem, const char *format, ...) {
+    debug_printf (const char *subsystem, const char *type, const char *format, ...) {
 	if (!d_enabled)
 		return 0;
 
@@ -54,7 +59,7 @@ int
 	k_va_start(args, format);
 	int count = 0;
 
-	// Write debug header with optional subsystem
+	// Write debug header with optional subsystem and type
 	video.puts("[    debug");
 	count += 10;  // Length of "[    debug"
 
@@ -62,6 +67,12 @@ int
 		video.puts("::");
 		video.puts(subsystem);
 		count += 2 + (int) kstrlen(subsystem);
+	}
+
+	if (type && *type != '\0') {
+		video.puts("::");
+		video.puts(type);
+		count += 2 + (int) kstrlen(type);
 	}
 
 	video.puts("] ");
@@ -198,10 +209,10 @@ int
 }
 
 static void
-    d_dbgtype (const char *type,
-               const char *subsystem,
-               const char *message,
-               const char *extra) {
+    debug_type (const char *type,
+                const char *subsystem,
+                const char *message,
+                const char *extra) {
 	if (!message || *message == '\0')
 		return;
 
@@ -219,46 +230,46 @@ static void
 }
 
 static void
-    d_crit (const char *s, const char *m, const char *e) {
-	d_dbgtype("crit", s, m, e);
+    debug_crit (const char *s, const char *m, const char *e) {
+	debug_type("crit", s, m, e);
 }
 
 static void
-    d_alert (const char *s, const char *m, const char *e) {
-	d_dbgtype("alert", s, m, e);
+    debug_alert (const char *s, const char *m, const char *e) {
+	debug_type("alert", s, m, e);
 }
 
 static void
-    d_emerg (const char *s, const char *m, const char *e) {
-	d_dbgtype("emerg", s, m, e);
+    debug_emerg (const char *s, const char *m, const char *e) {
+	debug_type("emerg", s, m, e);
 }
 
 static void
-    d_warn (const char *s, const char *m, const char *e) {
-	d_dbgtype("warn", s, m, e);
+    debug_warn (const char *s, const char *m, const char *e) {
+	debug_type("warn", s, m, e);
 }
 
 static void
-    d_err (const char *s, const char *m, const char *e) {
-	d_dbgtype("err", s, m, e);
+    debug_err (const char *s, const char *m, const char *e) {
+	debug_type("err", s, m, e);
 }
 
 static void
-    d_notice (const char *s, const char *m, const char *e) {
-	d_dbgtype("notice", s, m, e);
+    debug_notice (const char *s, const char *m, const char *e) {
+	debug_type("notice", s, m, e);
 }
 
 static void
-    d_info (const char *s, const char *m, const char *e) {
-	d_dbgtype("info", s, m, e);
+    debug_info (const char *s, const char *m, const char *e) {
+	debug_type("info", s, m, e);
 }
 
-struct Debug debug = {.crit   = d_crit,
-                      .alert  = d_alert,
-                      .emerg  = d_emerg,
-                      .warn   = d_warn,
-                      .err    = d_err,
-                      .notice = d_notice,
-                      .info   = d_info,
-                      .puts   = d_puts,
-                      .printf = d_printf};
+struct Debug debug = {.crit   = debug_crit,
+                      .alert  = debug_alert,
+                      .emerg  = debug_emerg,
+                      .warn   = debug_warn,
+                      .err    = debug_err,
+                      .notice = debug_notice,
+                      .info   = debug_info,
+                      .puts   = debug_puts,
+                      .printf = debug_printf};

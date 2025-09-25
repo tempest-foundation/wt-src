@@ -25,7 +25,7 @@ kuint64_t
               kuint64_t arg3 __attribute__((unused)),
               kuint64_t arg4 __attribute__((unused)),
               kuint64_t arg5 __attribute__((unused))) {
-	debug.printf("syscall", "Process exit with status %llu\n", status);
+	debug.printf("syscall", "info", "Process exit with status %llu\n", status);
 	// TODO: Implement actual process termination
 	return SYSCALL_NOT_IMPLEMENTED;
 }

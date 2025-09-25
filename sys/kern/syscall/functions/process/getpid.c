@@ -28,6 +28,6 @@ kuint64_t
 	// TODO: Implement actual process ID retrieval
 	// For now, return a dummy PID
 	kuint64_t pid = 1;
-	debug.printf("syscall", "getpid returning PID %llu\n", pid);
+	debug.printf("syscall", "info", "getpid returning PID %llu\n", pid);
 	return pid;
 }

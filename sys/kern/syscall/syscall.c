@@ -39,7 +39,8 @@ void
 	syscalls.bind(SYS_READ, sys_read, "read", 3);
 	syscalls.bind(SYS_WRITE, sys_write, "write", 3);
 
-	debug.printf("syscall", "Initialized with %llu syscalls\n", syscall_count);
+	debug.printf(
+	    "syscall", "info", "Initialized with %llu syscalls\n", syscall_count);
 }
 
 // Register a new syscall handler
@@ -57,14 +58,16 @@ void
                   kuint8_t          arg_count) {
 	if (syscall_no >= SYSCALL_MAX_COUNT) {
 		debug.printf("syscall",
-		             "ERROR: Syscall number %llu is out of range\n",
+		             "error",
+		             "Syscall number %llu is out of range\n",
 		             syscall_no);
 		return;
 	}
 
 	if (handler == KNULL) {
 		debug.printf("syscall",
-		             "ERROR: Cannot register NULL handler for syscall %llu\n",
+		             "error",
+		             "Cannot register NULL handler for syscall %llu\n",
 		             syscall_no);
 		return;
 	}
@@ -72,7 +75,8 @@ void
 	// Check if syscall is already registered
 	if (syscall_table[syscall_no].handler != KNULL) {
 		debug.printf("syscall",
-		             "WARNING: Overwriting existing syscall %llu (%s)\n",
+		             "warn",
+		             "Overwriting existing syscall %llu (%s)\n",
 		             syscall_no,
 		             syscall_table[syscall_no].name);
 	} else {
@@ -84,6 +88,7 @@ void
 	syscall_table[syscall_no].arg_count = arg_count;
 
 	debug.printf("syscall",
+	             "info",
 	             "Registered syscall %llu: %s (args: %u)\n",
 	             syscall_no,
 	             name,
@@ -95,18 +100,20 @@ void
     syscall_unbind (kuint64_t syscall_no) {
 	if (syscall_no >= SYSCALL_MAX_COUNT) {
 		debug.printf("syscall",
-		             "ERROR: Syscall number %llu is out of range\n",
+		             "error",
+		             "Syscall number %llu is out of range\n",
 		             syscall_no);
 		return;
 	}
 
 	if (syscall_table[syscall_no].handler == KNULL) {
 		debug.printf(
-		    "syscall", "WARNING: Syscall %llu is not registered\n", syscall_no);
+		    "syscall", "warn", "Syscall %llu is not registered\n", syscall_no);
 		return;
 	}
 
 	debug.printf("syscall",
+	             "info",
 	             "Unregistered syscall %llu: %s\n",
 	             syscall_no,
 	             syscall_table[syscall_no].name);
@@ -158,7 +165,7 @@ void
 	// Check if syscall is valid
 	if (!syscall_is_valid(syscall_no)) {
 		debug.printf(
-		    "syscall", "ERROR: Invalid syscall number %llu\n", syscall_no);
+		    "syscall", "error", "Invalid syscall number %llu\n", syscall_no);
 		regs->rax = SYSCALL_INVALID;
 		return;
 	}
@@ -167,14 +174,16 @@ void
 	const syscall_entry_t *entry = syscall_get_info(syscall_no);
 	if (entry == KNULL) {
 		debug.printf("syscall",
-		             "ERROR: Failed to get syscall info for %llu\n",
+		             "error",
+		             "Failed to get syscall info for %llu\n",
 		             syscall_no);
 		regs->rax = SYSCALL_ERROR;
 		return;
 	}
 
 	// Log syscall for debugging (can be disabled in production)
-	debug.printf("syscall", "Calling syscall %llu: %s\n", syscall_no, entry->name);
+	debug.printf(
+	    "syscall", "info", "Calling syscall %llu: %s\n", syscall_no, entry->name);
 
 	// Call the syscall handler
 	kuint64_t result = entry->handler(syscall_no, arg0, arg1, arg2, arg3, arg4, arg5);
@@ -182,7 +191,8 @@ void
 	// Return result in RAX
 	regs->rax = result;
 
-	debug.printf("syscall", "Syscall %llu returned %llu\n", syscall_no, result);
+	debug.printf(
+	    "syscall", "info", "Syscall %llu returned %llu\n", syscall_no, result);
 }
 
 struct Syscalls syscalls = {

@@ -25,6 +25,6 @@ struct Debug {
 	void (*err)(const char *, const char *, const char *);
 	void (*notice)(const char *, const char *, const char *);
 	void (*info)(const char *, const char *, const char *);
-	void (*puts)(const char *subsystem, const char *s);
-	int (*printf)(const char *subsystem, const char *format, ...);
+	void (*puts)(const char *subsystem, const char *type, const char *s);
+	int (*printf)(const char *subsystem, const char *type, const char *format, ...);
 };

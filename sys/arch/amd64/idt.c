@@ -336,5 +336,5 @@ void
 	// Use DPL=3 (0xEE) to allow user-mode access
 	idt_set_gate(0x80, (kuint64_t) syscall_int_handler, 0x08, 0xEE);
 
-	debug.printf("idt", "Syscall interrupt handler registered at 0x80\n");
+	debug.printf("idt", "info", "Syscall interrupt handler registered at 0x80\n");
 }
