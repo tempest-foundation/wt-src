@@ -264,12 +264,18 @@ static void
 	debug_type("info", s, m, e);
 }
 
-struct Debug debug = {.crit   = debug_crit,
-                      .alert  = debug_alert,
-                      .emerg  = debug_emerg,
-                      .warn   = debug_warn,
-                      .err    = debug_err,
-                      .notice = debug_notice,
-                      .info   = debug_info,
-                      .puts   = debug_puts,
-                      .printf = debug_printf};
+static void
+    debug_success (const char *s, const char *m, const char *e) {
+	debug_type("success", s, m, e);
+}
+
+struct Debug debug = {.crit    = debug_crit,
+                      .alert   = debug_alert,
+                      .emerg   = debug_emerg,
+                      .warn    = debug_warn,
+                      .err     = debug_err,
+                      .notice  = debug_notice,
+                      .info    = debug_info,
+                      .success = debug_success,
+                      .puts    = debug_puts,
+                      .printf  = debug_printf};
