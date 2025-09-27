@@ -13,9 +13,9 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+extern struct rand32 rand32;
 
-kuint32_t
-    k_u_rand32 (void);
-kint32_t
-    krand32 (void);
+struct rand32 {
+	kint32_t (*sign)(void);
+	kuint32_t (*uns)(void);
+};
