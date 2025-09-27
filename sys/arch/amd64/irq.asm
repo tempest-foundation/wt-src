@@ -1,17 +1,15 @@
 ; SPDX-License-Identifier: LSL-2.0
 ;
-; -- BEGIN LICENSE HEADER --
+; -- BEGIN METADATA HEADER --
 ; The Wind/Tempest Project
 ;
-; File:        sys/arch/amd64/irq.asm
-; Author(s):   Tempik25 <tempik25@tempestfoundation.org>
-;              (https://github.com/tempik25)
-; Maintainer:  Tempest Foundation <development@tempestfoundation.org>
-; Link:        https://wtsrc.tempestfoundation.org
+; File       : sys/arch/amd64/irq.asm
+; Author     : Tempik25 <tempik25@tempestfoundation.org>
+; Maintainer : Tempest Foundation <development@tempestfoundation.org>
+; Repo       : https://wtsrc.tempestfoundation.org
 ;
 ; Copyright (C) 2025 Tempest Foundation
-; Licensed under the Liberty Software License, Version 2.0
-; -- END OF LICENSE HEADER --
+; -- END OF METADATA HEADER --
 ;
 global irq0, irq1, irq2, irq3, irq4, irq5, irq6, irq7
 global irq8, irq9, irq10, irq11, irq12, irq13, irq14, irq15

@@ -1,17 +1,15 @@
 // SPDX-License-Identifier: LSL-2.0
 /*
- * -- BEGIN LICENSE HEADER --
+ * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File:        sys/lib/kmath/kmodf.c
- * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
- *              (https://github.com/tempik25)
- * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
- * Link:        https://wtsrc.tempestfoundation.org
+ * File       : sys/lib/kmath/kmodf.c
+ * Author     : Tempik25 <tempik25@tempestfoundation.org>
+ * Maintainer : Tempest Foundation <development@tempestfoundation.org>
+ * Repo       : https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 2.0
- * -- END OF LICENSE HEADER --
+ * -- END OF METADATA HEADER --
  */
 #include <lib/kmath/kmath.h>
 #include <lib/kmath/kmodf.h>
