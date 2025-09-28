@@ -13,7 +13,9 @@
  */
 #pragma once
 
-#include <arch/amd64/isr/registers.h>
+#ifdef ARCH_AMD64
+#	include <arch/amd64/isr/registers.h>
+#endif
 
 extern struct Panic panic;
 

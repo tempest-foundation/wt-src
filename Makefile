@@ -105,14 +105,35 @@ DEPFLAGS := -MMD -MP
 NASMFLAGS := -f elf64
 
 # ==============================================================================
+# Arch/Macro
+# ==============================================================================
+ifeq ($(PLATFORM),amd64)
+    ARCH_DEFS := -DARCH_AMD64
+    ARCH_INCLUDE := $(SRC_DIR)/arch/amd64/include
+else ifeq ($(PLATFORM),arm64)
+    ARCH_DEFS := -DARCH_AARCH64
+    ARCH_INCLUDE := $(SRC_DIR)/arch/arm64/include
+else
+    $(error Unknown arch: $(PLATFORM))
+endif
+
+CFLAGS := $(BASE_CFLAGS) $(WARNING_CFLAGS) $(OPTIMIZE_CFLAGS) $(MODE_CFLAGS) $(ARCH_DEFS) -I$(ARCH_INCLUDE)
+
+# ==============================================================================
 # Source Files and Objects
 # ==============================================================================
-C_SOURCES := $(shell find $(SRC_DIR) -name '*.c')
-ASM_SOURCES := $(shell find $(SRC_DIR) -name '*.asm')
+C_SOURCES := $(shell (find $(SRC_DIR) -type f -name '*.c' | grep -v '^$(SRC_DIR)/arch/' ; find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.c' 2>/dev/null) )
+ASM_SOURCES := $(shell (find $(SRC_DIR) -type f -name '*.asm' | grep -v '^$(SRC_DIR)/arch/' ; find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.asm' 2>/dev/null) )
 
 C_OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SOURCES))
 ASM_OBJECTS := $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%.o,$(ASM_SOURCES))
 ALL_OBJECTS := $(C_OBJECTS) $(ASM_OBJECTS)
+
+# Dependency files
+DEPS := $(C_OBJECTS:.o=.d)
+
+# Linker script
+LINKER_SCRIPT := $(SRC_DIR)/arch/$(PLATFORM)/linker.ld
 
 # Dependency files
 DEPS := $(C_OBJECTS:.o=.d)

@@ -13,8 +13,10 @@
  */
 #include "drv/keyboard/keyboard.h"
 
-#include <arch/amd64/asm/kio.h>
-#include <arch/amd64/idt/idt.h>
+#ifdef ARCH_AMD64
+#	include <arch/amd64/asm/kio.h>
+#	include <arch/amd64/idt/idt.h>
+#endif
 #include <lib/kstdio/kstdio.h>
 
 #define KBD_DATA_PORT   0x60

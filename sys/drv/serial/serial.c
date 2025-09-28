@@ -13,7 +13,9 @@
  */
 #include "serial.h"
 
-#include <arch/amd64/asm/kio.h>
+#ifdef ARCH_AMD64
+#	include <arch/amd64/asm/kio.h>
+#endif
 #include <lib/kstdio/kstdbool.h>
 #include <lib/kstdlib/kitoa.h>
 

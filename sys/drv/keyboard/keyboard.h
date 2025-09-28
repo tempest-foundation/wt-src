@@ -13,7 +13,9 @@
  */
 #pragma once
 
-#include <arch/amd64/idt/idt.h>
+#ifdef ARCH_AMD64
+#	include <arch/amd64/idt/idt.h>
+#endif
 
 extern struct Keyboard keyboard;
 
