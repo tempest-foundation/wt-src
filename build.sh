@@ -71,7 +71,7 @@ if [ ! -d "$TOOLS_PATH" ]; then
 fi
 
 if $SHOULD_BUILD; then
-	run_step "${TOOLS_PATH}/header.sh"
+	run_step "${TOOLS_PATH}/header.sh" "generate"
 	run_step "${TOOLS_PATH}/format.sh"
 	run_step make "-j${CPU_COUNT}"
 fi

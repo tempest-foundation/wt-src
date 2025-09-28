@@ -1,23 +1,21 @@
 // SPDX-License-Identifier: LSL-2.0
 /*
- * -- BEGIN LICENSE HEADER --
+ * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File:        include/lib/kunistd/krand.h
- * Author(s):   Tempik25 <tempik25@tempestfoundation.org>
- *              (https://github.com/tempik25)
- * Maintainer:  Tempest Foundation <development@tempestfoundation.org>
- * Link:        https://wtsrc.tempestfoundation.org
+ * File       : include/lib/kunistd/krand.h
+ * Author     : Tempik25 <tempik25@tempestfoundation.org>
+ * Maintainer : Tempest Foundation <development@tempestfoundation.org>
+ * Repo       : https://wtsrc.tempestfoundation.org
  *
  * Copyright (C) 2025 Tempest Foundation
- * Licensed under the Liberty Software License, Version 2.0
- * -- END OF LICENSE HEADER --
+ * -- END OF METADATA HEADER --
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+extern struct rand32 rand32;
 
-kuint32_t
-    k_u_rand32 (void);
-kint32_t
-    krand32 (void);
+struct rand32 {
+	kint32_t (*sign)(void);
+	kuint32_t (*uns)(void);
+};
