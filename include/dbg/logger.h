@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : include/debug/debug.h
+ * File       : include/dbg/logger.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,9 +13,9 @@
  */
 #pragma once
 
-extern struct Debug debug;
+extern struct Logger logger;
 
-struct Debug {
+struct Logger {
 	void (*crit)(const char *, const char *, const char *);
 	void (*alert)(const char *, const char *, const char *);
 	void (*emerg)(const char *, const char *, const char *);

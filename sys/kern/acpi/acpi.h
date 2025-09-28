@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/drivers/ata/ata.h
+ * File       : sys/dev/acpi/acpi.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,20 +13,9 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+extern struct Acpi acpi;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern struct Ata ata;
-
-struct Ata {
-	void (*io_wait)(void);
-	int (*poll)(void);
-	int (*pio_read)(kuint64_t lba, kuint32_t count, void *buf);
+struct Acpi {
+	void (*poweroff)(void);
+	void (*reboot)(void);
 };
-
-#ifdef __cplusplus
-}
-#endif

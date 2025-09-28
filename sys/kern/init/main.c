@@ -15,8 +15,8 @@
 
 #include <arch/amd64/cpuid.h>
 #include <arch/amd64/idt.h>
-#include <debug/debug.h>
-#include <drivers/driver.h>
+#include <dbg/logger.h>
+#include <dev/driver.h>
 #include <fs/ext2/ext2.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/mb/mb.h>
@@ -44,7 +44,7 @@ void
 
 	ext2.set_block_device(ata.pio_read, KNULL);
 	if (ext2.mount(0) != 0)
-		debug.err("fs", "EXT2 mount failed", KNULL);
+		logger.err("fs", "EXT2 mount failed", KNULL);
 
 	kcpu_init_brand();
 	keyboard.init();

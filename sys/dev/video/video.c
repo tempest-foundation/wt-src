@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/drivers/video/video.c
+ * File       : sys/dev/video/video.c
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,8 +13,8 @@
  */
 #include "video.h"
 
-#include <debug/debug.h>
-#include <drivers/video/font/font.h>
+#include <dbg/logger.h>
+#include <dev/video/font/font.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/init/main.h>
 #include <lib/kstdio/kstdbool.h>

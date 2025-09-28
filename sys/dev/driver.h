@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/drivers/acpi/acpi.h
+ * File       : sys/dev/driver.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,9 +13,7 @@
  */
 #pragma once
 
-extern struct Acpi acpi;
-
-struct Acpi {
-	void (*poweroff)(void);
-	void (*reboot)(void);
-};
+#include <dev/ata/ata.h>
+#include <dev/keyboard/keyboard.h>
+#include <dev/serial/serial.h>
+#include <dev/video/video.h>

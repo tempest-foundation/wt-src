@@ -14,7 +14,7 @@
 #include "idt.h"
 
 #include <arch/amd64/kasm/kio.h>
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <kern/panic/panic.h>
 #include <lib/kstdio/kstdio.h>
 
@@ -334,5 +334,5 @@ void
 	// Use DPL=3 (0xEE) to allow user-mode access
 	idt_set_gate(0x80, (kuint64_t) syscall_int_handler, 0x08, 0xEE);
 
-	debug.printf("idt", "info", "Syscall interrupt handler registered at 0x80\n");
+	logger.printf("idt", "info", "Syscall interrupt handler registered at 0x80\n");
 }

@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/drivers/video/font/font.h
+ * File       : sys/dev/keyboard/keyboard.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,11 +13,15 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <arch/amd64/idt.h>
 
-// A simple 8x8 font for rendering text to the framebuffer.
-// Each character is 8 pixels wide and 8 pixels tall.
-extern const kuint32_t FONT_WIDTH;
-extern const kuint32_t FONT_HEIGHT;
+extern struct Keyboard keyboard;
 
-extern const unsigned char font[128][8];
+int
+    getchar (void);
+
+struct Keyboard {
+	void (*init)(void);
+	void (*handle)(registers_t *regs);
+	unsigned char (*adjust_case)(unsigned char c);
+};

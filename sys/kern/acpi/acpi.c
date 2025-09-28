@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/drivers/acpi/acpi.c
+ * File       : sys/kern/acpi/acpi.c
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -14,7 +14,7 @@
 #include "acpi.h"
 
 #include <arch/amd64/kasm/kio.h>
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <lib/kstdio/kstddef.h>
 #include <lib/kunistd/ksleep.h>
 
@@ -36,7 +36,7 @@ void
 
 	ksleep(POWEROFF_TIMEOUT_MS);
 	// If poweroff fails, log warning
-	debug.err("acpi", "Legacy poweroff failed", KNULL);
+	logger.err("acpi", "Legacy poweroff failed", KNULL);
 }
 
 void
@@ -47,7 +47,7 @@ void
 
 	ksleep(POWEROFF_TIMEOUT_MS);
 	// If reboot fails, log warning
-	debug.err("acpi", "Legacy reboot failed", KNULL);
+	logger.err("acpi", "Legacy reboot failed", KNULL);
 }
 
 struct Acpi acpi = {.poweroff = acpi_poweroff, .reboot = acpi_reboot};

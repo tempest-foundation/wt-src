@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/debug/debug.c
+ * File       : sys/dbg/logger.c
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <debug/debug.h>
-#include <drivers/serial/serial.h>
-#include <drivers/video/video.h>
+#include <dbg/logger.h>
+#include <dev/serial/serial.h>
+#include <dev/video/video.h>
 #include <lib/kstdio/kstdbool.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>
@@ -21,7 +21,7 @@
 kbool d_enabled = kfalse;
 
 void
-    debug_puts (const char *subsystem, const char *type, const char *s) {
+    dbgLogger_puts (const char *subsystem, const char *type, const char *s) {
 	if (!d_enabled) {
 		return;
 	}
@@ -46,7 +46,7 @@ void
 }
 
 int
-    debug_printf (const char *subsystem, const char *type, const char *format, ...) {
+    dbgLogger_printf (const char *subsystem, const char *type, const char *format, ...) {
 	if (!d_enabled)
 		return 0;
 
@@ -207,10 +207,10 @@ int
 }
 
 static void
-    debug_type (const char *type,
-                const char *subsystem,
-                const char *message,
-                const char *extra) {
+    dbgLogger_type (const char *type,
+                    const char *subsystem,
+                    const char *message,
+                    const char *extra) {
 	if (!message || *message == '\0')
 		return;
 
@@ -228,52 +228,52 @@ static void
 }
 
 static void
-    debug_crit (const char *s, const char *m, const char *e) {
-	debug_type("crit", s, m, e);
+    dbgLogger_crit (const char *s, const char *m, const char *e) {
+	dbgLogger_type("crit", s, m, e);
 }
 
 static void
-    debug_alert (const char *s, const char *m, const char *e) {
-	debug_type("alert", s, m, e);
+    dbgLogger_alert (const char *s, const char *m, const char *e) {
+	dbgLogger_type("alert", s, m, e);
 }
 
 static void
-    debug_emerg (const char *s, const char *m, const char *e) {
-	debug_type("emerg", s, m, e);
+    dbgLogger_emerg (const char *s, const char *m, const char *e) {
+	dbgLogger_type("emerg", s, m, e);
 }
 
 static void
-    debug_warn (const char *s, const char *m, const char *e) {
-	debug_type("warn", s, m, e);
+    dbgLogger_warn (const char *s, const char *m, const char *e) {
+	dbgLogger_type("warn", s, m, e);
 }
 
 static void
-    debug_err (const char *s, const char *m, const char *e) {
-	debug_type("err", s, m, e);
+    dbgLogger_err (const char *s, const char *m, const char *e) {
+	dbgLogger_type("err", s, m, e);
 }
 
 static void
-    debug_notice (const char *s, const char *m, const char *e) {
-	debug_type("notice", s, m, e);
+    dbgLogger_notice (const char *s, const char *m, const char *e) {
+	dbgLogger_type("notice", s, m, e);
 }
 
 static void
-    debug_info (const char *s, const char *m, const char *e) {
-	debug_type("info", s, m, e);
+    dbgLogger_info (const char *s, const char *m, const char *e) {
+	dbgLogger_type("info", s, m, e);
 }
 
 static void
-    debug_success (const char *s, const char *m, const char *e) {
-	debug_type("success", s, m, e);
+    dbgLogger_success (const char *s, const char *m, const char *e) {
+	dbgLogger_type("success", s, m, e);
 }
 
-struct Debug debug = {.crit    = debug_crit,
-                      .alert   = debug_alert,
-                      .emerg   = debug_emerg,
-                      .warn    = debug_warn,
-                      .err     = debug_err,
-                      .notice  = debug_notice,
-                      .info    = debug_info,
-                      .success = debug_success,
-                      .puts    = debug_puts,
-                      .printf  = debug_printf};
+struct Logger logger = {.crit    = dbgLogger_crit,
+                        .alert   = dbgLogger_alert,
+                        .emerg   = dbgLogger_emerg,
+                        .warn    = dbgLogger_warn,
+                        .err     = dbgLogger_err,
+                        .notice  = dbgLogger_notice,
+                        .info    = dbgLogger_info,
+                        .success = dbgLogger_success,
+                        .puts    = dbgLogger_puts,
+                        .printf  = dbgLogger_printf};

@@ -15,7 +15,7 @@
 
 #include "kern/framebuf/framebuf.h"
 
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <lib/kstdio/kstdio.h>
 
 // Multiboot2 header structure.
@@ -55,7 +55,7 @@ typedef enum {
 void
     parse_multiboot_info (void *mb_info) {
 	if (mb_info == KNULL) {
-		debug.puts("mb", "error", "mb_info is NULL!");
+		logger.puts("mb", "error", "mb_info is NULL!");
 		return;
 	}
 
@@ -63,24 +63,24 @@ void
 	kuint8_t *current    = (kuint8_t *) ((kuintptr_t) mb_info + 8);
 	kuint8_t *end        = (kuint8_t *) ((kuintptr_t) mb_info + total_size);
 
-	debug.puts("mb", "info", "Parsing multiboot info...");
+	logger.puts("mb", "info", "Parsing multiboot info...");
 
 	while (current < end) {
 		struct multiboot_tag *tag = (struct multiboot_tag *) current;
 
 		if (tag->size == 0) {
-			debug.err("mb", "error", "Invalid tag size (0)");
+			logger.err("mb", "error", "Invalid tag size (0)");
 			return;
 		}
 
 		switch ((multiboot_tag_type_t) tag->type) {
 			case MULTIBOOT_TAG_TYPE_END:
-				debug.puts(
+				logger.puts(
 				    "mb", "info", "End tag found. Parsing complete.");
 				return;
 
 			case MULTIBOOT_TAG_TYPE_FRAMEBUFFER: {
-				debug.puts("mb", "info", "Framebuffer tag found");
+				logger.puts("mb", "info", "Framebuffer tag found");
 
 				struct multiboot_tag_framebuffer *fb_tag =
 				    (struct multiboot_tag_framebuffer *) tag;
@@ -111,5 +111,5 @@ void
 		current += (tag->size + 7) & (kuint32_t) ~7;  // align to 8 bytes
 	}
 
-	debug.puts("mb", "info", "Reached end of multiboot info (no END tag)");
+	logger.puts("mb", "info", "Reached end of multiboot info (no END tag)");
 }

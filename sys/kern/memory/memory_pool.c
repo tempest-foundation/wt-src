@@ -13,7 +13,7 @@
  */
 #include "memory.h"
 
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstring/kstring.h>
 
@@ -135,7 +135,7 @@ void
 	large_pool  = pool_create(256, 128);  // 32KB total
 
 	if (!small_pool || !medium_pool || !large_pool) {
-		debug.warn("mm", "Failed to create some memory pools", KNULL);
+		logger.warn("mm", "Failed to create some memory pools", KNULL);
 	}
 }
 

@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <kern/syscall/syscall.h>
 #include <lib/kstdio/kstdint.h>
 
@@ -23,7 +23,7 @@ kuint64_t
               kuint64_t arg3 __attribute__((unused)),
               kuint64_t arg4 __attribute__((unused)),
               kuint64_t arg5 __attribute__((unused))) {
-	debug.printf("syscall", "info", "Process exit with status %llu\n", status);
+	logger.printf("syscall", "info", "Process exit with status %llu\n", status);
 	// TODO: Implement actual process termination
 	return SYSCALL_NOT_IMPLEMENTED;
 }

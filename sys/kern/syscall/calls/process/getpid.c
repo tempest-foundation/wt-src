@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <debug/debug.h>
+#include <dbg/logger.h>
 #include <kern/syscall/syscall.h>
 #include <lib/kstdio/kstdint.h>
 
@@ -26,6 +26,6 @@ kuint64_t
 	// TODO: Implement actual process ID retrieval
 	// For now, return a dummy PID
 	kuint64_t pid = 1;
-	debug.printf("syscall", "info", "getpid returning PID %llu\n", pid);
+	logger.printf("syscall", "info", "getpid returning PID %llu\n", pid);
 	return pid;
 }
