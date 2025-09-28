@@ -14,7 +14,7 @@
 #include "shell.h"
 
 #include <dbg/logger.h>
-#include <dev/driver.h>
+#include <drv/driver.h>
 #include <fs/ext2/ext2.h>
 #include <fs/vfs/vfs.h>
 #include <kern/acpi/acpi.h>

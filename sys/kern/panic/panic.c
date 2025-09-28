@@ -14,7 +14,7 @@
 #include "panic.h"
 
 #include "arch/amd64/registers.h"
-#include "dev/driver.h"
+#include "drv/driver.h"
 
 #include <kern/acpi/acpi.h>
 #include <lib/kstdio/kstdio.h>

@@ -12,8 +12,8 @@
  * -- END OF METADATA HEADER --
  */
 #include <dbg/logger.h>
-#include <dev/serial/serial.h>
-#include <dev/video/video.h>
+#include <drv/serial/serial.h>
+#include <drv/video/video.h>
 #include <lib/kstdio/kstdbool.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/kstdlib/kutoa.h>

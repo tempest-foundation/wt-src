@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/dev/driver.h
+ * File       : sys/drv/serial/serial.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,7 +13,14 @@
  */
 #pragma once
 
-#include <dev/ata/ata.h>
-#include <dev/keyboard/keyboard.h>
-#include <dev/serial/serial.h>
-#include <dev/video/video.h>
+#include <lib/kstdio/kstdbool.h>
+
+extern struct Serial serial;
+
+struct Serial {
+	void (*init)(void);
+	void (*write)(char a);
+	void (*writes)(const char *s);
+	void (*write_int)(int i);
+	kbool (*is_available)(void);
+};

@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/dev/serial/serial.h
+ * File       : sys/drv/keyboard/keyboard.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,14 +13,15 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdbool.h>
+#include <arch/amd64/idt.h>
 
-extern struct Serial serial;
+extern struct Keyboard keyboard;
 
-struct Serial {
+int
+    getchar (void);
+
+struct Keyboard {
 	void (*init)(void);
-	void (*write)(char a);
-	void (*writes)(const char *s);
-	void (*write_int)(int i);
-	kbool (*is_available)(void);
+	void (*handle)(registers_t *regs);
+	unsigned char (*adjust_case)(unsigned char c);
 };

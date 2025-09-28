@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/dev/ata/ata.h
+ * File       : sys/drv/driver.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -13,20 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-extern struct Ata ata;
-
-struct Ata {
-	void (*io_wait)(void);
-	int (*poll)(void);
-	int (*pio_read)(kuint64_t lba, kuint32_t count, void *buf);
-};
-
-#ifdef __cplusplus
-}
-#endif
+#include <drv/ata/ata.h>
+#include <drv/keyboard/keyboard.h>
+#include <drv/serial/serial.h>
+#include <drv/video/video.h>

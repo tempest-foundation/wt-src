@@ -16,7 +16,7 @@
 #include <arch/amd64/cpuid.h>
 #include <arch/amd64/idt.h>
 #include <dbg/logger.h>
-#include <dev/driver.h>
+#include <drv/driver.h>
 #include <fs/ext2/ext2.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/mb/mb.h>
