@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/arch/amd64/kasm/koutw.c
+ * File       : sys/arch/amd64/idt/idt.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -11,11 +11,19 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/kasm/koutw.h"
+#pragma once
 
-#include "arch/amd64/kasm/kio.h"
+#include <arch/amd64/isr/registers.h>
 
 void
-    koutw (unsigned short port, unsigned short val) {
-	__asm__ __volatile__("outw %0, %1" : : "a"(val), "Nd"(port));
-}
+    idt_init (void);
+
+typedef void (*irq_handler_t)(registers_t *);
+void
+    register_irq_handler (int irq, irq_handler_t handler);
+
+// Syscall support
+extern void
+    syscall_int_handler (void);
+void
+    idt_setup_syscall (void);

@@ -3,7 +3,7 @@
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
  *
- * File       : sys/arch/amd64/kasm/kcpu_relax.h
+ * File       : sys/arch/amd64/asm/koutb.h
  * Author     : Tempik25 <tempik25@tempestfoundation.org>
  * Maintainer : Tempest Foundation <development@tempestfoundation.org>
  * Repo       : https://wtsrc.tempestfoundation.org
@@ -14,4 +14,4 @@
 #pragma once
 
 void
-    kcpu_relax (void);
+    koutb (unsigned short port, unsigned char val);

@@ -13,7 +13,7 @@
  */
 #include "drv/ata/ata.h"
 
-#include <arch/amd64/kasm/kio.h>
+#include <arch/amd64/asm/kio.h>
 #include <lib/kstdio/kstddef.h>
 
 #define ATA_PRIMARY_IO   0x1F0

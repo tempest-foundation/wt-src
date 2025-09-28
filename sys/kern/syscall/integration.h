@@ -15,7 +15,7 @@
 
 #include "syscall.h"
 
-#include <arch/amd64/idt.h>
+#include <arch/amd64/idt/idt.h>
 #include <lib/kstdio/kstdint.h>
 
 // Syscall subsystem status

@@ -13,8 +13,8 @@
  */
 #include "main.h"
 
-#include <arch/amd64/cpuid.h>
-#include <arch/amd64/idt.h>
+#include <arch/amd64/cpu/cpuid.h>
+#include <arch/amd64/idt/idt.h>
 #include <dbg/logger.h>
 #include <drv/driver.h>
 #include <fs/ext2/ext2.h>

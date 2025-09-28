@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <arch/amd64/idt.h>
+#include <arch/amd64/idt/idt.h>
 
 extern struct Keyboard keyboard;
 

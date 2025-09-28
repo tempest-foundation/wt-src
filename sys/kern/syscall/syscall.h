@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <arch/amd64/registers.h>
+#include <arch/amd64/isr/registers.h>
 #include <lib/kstdio/kstdint.h>
 
 extern struct Syscalls syscalls;

@@ -13,7 +13,7 @@
  */
 #include "acpi.h"
 
-#include <arch/amd64/kasm/kio.h>
+#include <arch/amd64/asm/kio.h>
 #include <dbg/logger.h>
 #include <lib/kstdio/kstddef.h>
 #include <lib/kunistd/ksleep.h>

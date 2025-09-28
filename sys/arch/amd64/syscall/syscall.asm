@@ -3,7 +3,7 @@
 ; -- BEGIN METADATA HEADER --
 ; The Wind/Tempest Project
 ;
-; File       : sys/arch/amd64/syscall.asm
+; File       : sys/arch/amd64/syscall/syscall.asm
 ; Author     : Tempik25 <tempik25@tempestfoundation.org>
 ; Maintainer : Tempest Foundation <development@tempestfoundation.org>
 ; Repo       : https://wtsrc.tempestfoundation.org
