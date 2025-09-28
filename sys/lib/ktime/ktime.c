@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <arch/amd64/kasm/kio.h>
+#include <arch/amd64/asm/kio.h>
 #include <lib/kstdio/kstdio.h>
 #include <lib/ktime/ktime.h>
 

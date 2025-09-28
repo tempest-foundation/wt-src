@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include "drivers/video/video.h"
+#include "drv/video/video.h"
 
 #include <lib/kstdio/kstdint.h>
 
