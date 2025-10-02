@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kctype/kctype.h>
+#include <kctype.h>
 
 int
     kisupper (int c) {

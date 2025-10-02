@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kceil.h>
-#include <lib/kmath/kmath.h>
+#include <kceil.h>
+#include <kmath.h>
 
 double
     kceil (double x) {

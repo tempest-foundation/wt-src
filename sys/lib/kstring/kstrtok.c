@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kstrchr.h>
-#include <lib/kstring/kstrtok.h>
+#include <kstddef.h>
+#include <kstrchr.h>
+#include <kstrtok.h>
 
 static char *strtok_save = KNULL;
 

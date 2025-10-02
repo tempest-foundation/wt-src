@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kcharset/kcharset.h>
-#include <lib/kstdlib/kitoa.h>
-#include <lib/kstdlib/kstdlib.h>
+#include <kcharset.h>
+#include <kitoa.h>
+#include <kstdlib.h>
 
 char *
     kitoa (char *buf, char *end, long value, int base, int is_uppercase) {

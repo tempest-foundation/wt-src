@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/asm/kinw.h"
+#include "kinw.h"
 
 kuint16_t
     kinw (kuint16_t port) {

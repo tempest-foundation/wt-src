@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kstrrchr.h>
+#include <kstddef.h>
+#include <kstrrchr.h>
 
 const char *
     kstrrchr (const char *str, int c) {

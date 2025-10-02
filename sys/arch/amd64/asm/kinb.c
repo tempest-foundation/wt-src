@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/asm/kinb.h"
+#include "kinb.h"
 
-#include "arch/amd64/asm/kio.h"
+#include "kio.h"
 
 unsigned char
     kinb (unsigned short port) {

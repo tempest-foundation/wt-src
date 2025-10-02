@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstrlen/kstrlen.h>
+#include <kstddef.h>
+#include <kstrlen.h>
 
 ksize_t
     kstrlen (const char *str) {

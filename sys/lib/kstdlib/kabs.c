@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdlib/kabs.h>
-#include <lib/kstdlib/kstdlib.h>
+#include <kabs.h>
+#include <kstdlib.h>
 
 int
     kabs (int a) {

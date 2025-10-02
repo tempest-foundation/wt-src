@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kcos.h>
-#include <lib/kmath/kmath.h>
+#include <kcos.h>
+#include <kmath.h>
 
 double
     kcos (double x) {

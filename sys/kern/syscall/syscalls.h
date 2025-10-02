@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 // System call numbers (must match kernel definitions)
 #define SYS_EXIT       0   // Process exit

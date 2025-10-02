@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kstrncmp.h>
+#include <kstddef.h>
+#include <kstrncmp.h>
 
 int
     kstrncmp (const char *s1, const char *s2, ksize_t n) {

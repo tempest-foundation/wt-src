@@ -13,9 +13,9 @@
  */
 #pragma once
 
-#include <lib/kstdarg.h>
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
+#include <kstdarg.h>
+#include <kstddef.h>
+#include <kstdint.h>
 
 void
     kputhex (kuint64_t n);

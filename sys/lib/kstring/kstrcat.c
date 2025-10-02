@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstring/kstrcat.h>
+#include <kstrcat.h>
 
 char *
     kstrcat (char *dest, const char *src) {

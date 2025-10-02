@@ -13,10 +13,11 @@
  */
 #include "cpuid.h"
 
+#include <kmemcpy.h>
+#include <kstddef.h>
+#include <kstdint.h>
+
 #include <kern/init/main.h>
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
-#include <lib/kstring/kmemcpy.h>
 
 #define CPUID_EXT_BASE 0x80000002
 

@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kstrncpy.h>
+#include <kstddef.h>
+#include <kstrncpy.h>
 
 char *
     kstrncpy (char *dest, const char *src, ksize_t n) {

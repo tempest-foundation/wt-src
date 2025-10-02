@@ -13,10 +13,11 @@
  */
 #include "mb.h"
 
+#include <kstdio.h>
+
 #include "kern/framebuf/framebuf.h"
 
 #include <dbg/logger.h>
-#include <lib/kstdio/kstdio.h>
 
 // Multiboot2 header structure.
 struct multiboot_header {

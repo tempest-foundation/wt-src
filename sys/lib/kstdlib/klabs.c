@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdlib/klabs.h>
-#include <lib/kstdlib/kstdlib.h>
+#include <klabs.h>
+#include <kstdlib.h>
 
 long
     labs (long a) {

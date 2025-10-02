@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/asm/kcpu_relax.h"
+#include "kcpu_relax.h"
 
 void
     kcpu_relax (void) {

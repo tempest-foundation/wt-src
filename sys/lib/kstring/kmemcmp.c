@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kmemcmp.h>
+#include <kmemcmp.h>
+#include <kstddef.h>
 
 int
     kmemcmp (const void *s1, const void *s2, ksize_t n) {

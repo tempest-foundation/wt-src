@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/katan2.h>
-#include <lib/kmath/kmath.h>
+#include <katan2.h>
+#include <kmath.h>
 
 double
     katan2 (double y, double x) {

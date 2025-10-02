@@ -11,11 +11,11 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kctype/kctype.h>
-#include <lib/kgeneral/kerrno/kerrno.h>
-#include <lib/klimits.h>
-#include <lib/kstdlib/katoi.h>
-#include <lib/kstdlib/kstdlib.h>
+#include <katoi.h>
+#include <kctype.h>
+#include <kerrno.h>
+#include <klimits.h>
+#include <kstdlib.h>
 
 int
     katoi (const char *s) {

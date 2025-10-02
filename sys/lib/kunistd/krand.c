@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstdint.h>
-#include <lib/kunistd/krand.h>
+#include <krand.h>
+#include <kstdbool.h>
+#include <kstdint.h>
 
 #define PCG32_MULT     6364136223846793005ULL
 #define PCG32_INIT_SEQ 0xDEADBEEFULL

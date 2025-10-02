@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kexpm1.h>
-#include <lib/kmath/kmath.h>
+#include <kexpm1.h>
+#include <kmath.h>
 
 double
     kexpm1 (double x) {
