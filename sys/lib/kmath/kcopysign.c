@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kcopysign.h>
-#include <lib/kmath/kmath.h>
+#include <kcopysign.h>
+#include <kmath.h>
 
 double
     kcopysign (double x, double y) {

@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdbool.h>
+#include <kstdbool.h>
 
 extern struct Serial serial;
 

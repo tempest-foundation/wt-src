@@ -14,9 +14,9 @@
 #ifdef ARCH_AMD64
 #	include <arch/amd64/asm/kio.h>
 #endif
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
-#include <lib/kunistd/ksleep.h>
+#include <ksleep.h>
+#include <kstddef.h>
+#include <kstdint.h>
 
 volatile kuint64_t *hpet = (volatile kuint64_t *) 0xFED00000;
 

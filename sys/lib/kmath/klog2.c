@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/klog2.h>
-#include <lib/kmath/kmath.h>
+#include <klog2.h>
+#include <kmath.h>
 
 double
     klog2 (double x) {

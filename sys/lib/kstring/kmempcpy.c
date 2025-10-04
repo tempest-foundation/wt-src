@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstring/kmempcpy.h>
+#include <kmempcpy.h>
+#include <kstddef.h>
 
 void *
     kmempcpy (void *dest, const void *src, ksize_t n) {

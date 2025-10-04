@@ -13,8 +13,9 @@
  */
 #include "integration.h"
 
+#include <kstdio.h>
+
 #include <dbg/logger.h>
-#include <lib/kstdio/kstdio.h>
 
 // Global syscall infrastructure state
 static syscall_status_t syscall_status       = SYSCALL_STATUS_UNINITIALIZED;

@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstdlib/kexit.h>
-#include <lib/kstdlib/kstdlib.h>
+#include <kexit.h>
+#include <kstdio.h>
+#include <kstdlib.h>
 
 int
     kexit (int code) {

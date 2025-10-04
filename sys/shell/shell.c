@@ -13,6 +13,13 @@
  */
 #include "shell.h"
 
+#include <kerrno.h>
+#include <kstdio.h>
+#include <kstdlib.h>
+#include <kstring.h>
+#include <ktime.h>
+#include <kunistd.h>
+
 #include <dbg/logger.h>
 #include <drv/driver.h>
 #include <fs/ext2/ext2.h>
@@ -23,12 +30,6 @@
 #include <kern/panic/panic.h>
 #include <kern/syscall/integration.h>
 #include <kern/syscall/syscall.h>
-#include <lib/kgeneral/kerrno/kerrno.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstdlib/kstdlib.h>
-#include <lib/kstring/kstring.h>
-#include <lib/ktime/ktime.h>
-#include <lib/kunistd/kunistd.h>
 
 #define CMD_BUFFER_SIZE 512
 #define MAX_HISTORY     128

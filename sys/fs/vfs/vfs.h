@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstddef.h>
+#include <kstddef.h>
 
 extern struct Vfs vfs;
 

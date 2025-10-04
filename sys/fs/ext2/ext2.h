@@ -13,9 +13,9 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
+#include <kstdbool.h>
+#include <kstddef.h>
+#include <kstdint.h>
 
 #ifdef __cplusplus
 extern "C" {

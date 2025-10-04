@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kfmin.h>
-#include <lib/kmath/kmath.h>
+#include <kfmin.h>
+#include <kmath.h>
 
 double
     kfmin (double x, double y) {

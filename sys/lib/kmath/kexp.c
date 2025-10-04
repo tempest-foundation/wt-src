@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kexp.h>
-#include <lib/kmath/kmath.h>
+#include <kexp.h>
+#include <kmath.h>
 
 double
     kexp (double x) {

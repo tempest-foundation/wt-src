@@ -13,8 +13,9 @@
  */
 #include "framebuf.h"
 
+#include <kstdint.h>
+
 #include <dbg/logger.h>
-#include <lib/kstdio/kstdint.h>
 
 struct framebuffer_info fb_info;
 

@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 #ifndef KNULL
 #	define KNULL ((void *) 0)

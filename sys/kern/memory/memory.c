@@ -13,10 +13,10 @@
  */
 #include "memory.h"
 
-#include "kern/panic/panic.h"
+#include <kstdio.h>
+#include <kstring.h>
 
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstring/kstring.h>
+#include "kern/panic/panic.h"
 
 struct multiboot_tag {
 	kuint32_t type;

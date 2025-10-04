@@ -49,14 +49,15 @@ LIMINE_FILES := \
 # Compiler Flags
 # ==============================================================================
 # Base C flags (common to all modes)
+# Base C flags (common to all modes)
 BASE_CFLAGS := \
 	-std=c17 \
 	-ffreestanding \
 	-fno-pie \
 	-fno-stack-protector \
 	-m64 \
-	-I$(SRC_DIR) \
-	-I$(INCLUDE_DIR)
+	$(shell find $(INCLUDE_DIR) -type d -printf '-I%p\n') \
+	-I$(SRC_DIR)
 
 # Warning flags
 WARNING_CFLAGS := \

@@ -11,12 +11,13 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
+#include <kstdbool.h>
+#include <kstdio.h>
+#include <kutoa.h>
+
 #include <dbg/logger.h>
 #include <drv/serial/serial.h>
 #include <drv/video/video.h>
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstdlib/kutoa.h>
 
 kbool d_enabled = kfalse;
 

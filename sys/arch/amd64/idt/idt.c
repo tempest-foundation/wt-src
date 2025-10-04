@@ -13,10 +13,11 @@
  */
 #include "idt.h"
 
+#include <kstdio.h>
+
 #include <arch/amd64/asm/kio.h>
 #include <dbg/logger.h>
 #include <kern/panic/panic.h>
-#include <lib/kstdio/kstdio.h>
 
 // PIC (Programmable Interrupt Controller) ports.
 #define PIC1_CMD  0x20

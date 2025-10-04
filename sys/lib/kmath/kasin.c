@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kasin.h>
-#include <lib/kmath/kmath.h>
+#include <kasin.h>
+#include <kmath.h>
 
 double
     kasin (double x) {

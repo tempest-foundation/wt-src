@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kfloor.h>
-#include <lib/kmath/kmath.h>
+#include <kfloor.h>
+#include <kmath.h>
 
 double
     kfloor (double x) {

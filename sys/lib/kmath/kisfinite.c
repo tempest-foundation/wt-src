@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kisfinite.h>
-#include <lib/kmath/kmath.h>
+#include <kisfinite.h>
+#include <kmath.h>
 
 int
     kisfinite (double x) {

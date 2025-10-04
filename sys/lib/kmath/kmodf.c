@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/kmodf.h>
+#include <kmath.h>
+#include <kmodf.h>
 
 double
     kmodf (double x, double *iptr) {

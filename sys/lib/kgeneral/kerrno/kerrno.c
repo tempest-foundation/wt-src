@@ -11,6 +11,6 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kerrno/kerrno.h>
+#include <kerrno.h>
 
 int kerrno = 0;

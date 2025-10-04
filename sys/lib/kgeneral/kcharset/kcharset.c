@@ -11,7 +11,7 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kcharset/kcharset.h>
+#include <kcharset.h>
 
 const char kdigits_lower[] = "0123456789abcdef";
 const char kdigits_upper[] = "0123456789ABCDEF";

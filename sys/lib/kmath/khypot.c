@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/khypot.h>
-#include <lib/kmath/kmath.h>
+#include <khypot.h>
+#include <kmath.h>
 
 double
     khypot (double x, double y) {

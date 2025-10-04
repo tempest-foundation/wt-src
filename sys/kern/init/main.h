@@ -13,6 +13,6 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdbool.h>
+#include <kstdbool.h>
 
 extern kbool d_enabled;

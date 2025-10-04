@@ -11,9 +11,10 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
+#include <kstdio.h>
+#include <kutoa.h>
+
 #include <drv/driver.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstdlib/kutoa.h>
 
 // ? I think this is... safe?
 void

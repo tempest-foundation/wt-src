@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kcbrt.h>
-#include <lib/kmath/kmath.h>
+#include <kcbrt.h>
+#include <kmath.h>
 
 double
     kcbrt (double x) {

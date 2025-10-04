@@ -11,11 +11,12 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
+#include <kstdio.h>
+#include <kstring.h>
+
 #include "memory.h"
 
 #include <dbg/logger.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstring/kstring.h>
 
 // Memory pool management
 memory_pool_t *

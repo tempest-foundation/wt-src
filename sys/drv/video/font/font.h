@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 // A simple 8x8 font for rendering text to the framebuffer.
 // Each character is 8 pixels wide and 8 pixels tall.

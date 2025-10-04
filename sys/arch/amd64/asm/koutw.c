@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/asm/koutw.h"
+#include "koutw.h"
 
-#include "arch/amd64/asm/kio.h"
+#include "kio.h"
 
 void
     koutw (unsigned short port, unsigned short val) {

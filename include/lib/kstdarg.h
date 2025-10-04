@@ -13,11 +13,6 @@
  */
 #pragma once
 
-#ifdef _STDARG_H
-#	error \
-	    "Do NOT include <stdarg.h> before kstdarg.h! Use only kstdarg.h in this project."
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif

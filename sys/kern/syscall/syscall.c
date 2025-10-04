@@ -13,9 +13,10 @@
  */
 #include "syscall.h"
 
+#include <kstdio.h>
+
 #include <dbg/logger.h>
 #include <kern/syscall/calls/sys.h>
-#include <lib/kstdio/kstdio.h>
 
 // Global syscall table
 static syscall_entry_t syscall_table[SYSCALL_MAX_COUNT];

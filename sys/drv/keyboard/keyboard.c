@@ -17,7 +17,7 @@
 #	include <arch/amd64/asm/kio.h>
 #	include <arch/amd64/idt/idt.h>
 #endif
-#include <lib/kstdio/kstdio.h>
+#include <kstdio.h>
 
 #define KBD_DATA_PORT   0x60
 #define KBD_BUFFER_SIZE 256

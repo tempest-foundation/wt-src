@@ -14,8 +14,8 @@
 #ifdef ARCH_AMD64
 #	include <arch/amd64/asm/kio.h>
 #endif
-#include <lib/kstdio/kstdio.h>
-#include <lib/ktime/ktime.h>
+#include <kstdio.h>
+#include <ktime.h>
 
 // BIOS interrupt for getting RTC (Real Time Clock) data
 #define RTC_COMMAND_PORT 0x70

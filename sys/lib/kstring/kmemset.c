@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
+#include <kstddef.h>
+#include <kstdint.h>
 
 void *
     kmemset (void *restrict s, int c, ksize_t n) {

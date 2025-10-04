@@ -13,9 +13,10 @@
  */
 #include "vfs.h"
 
+#include <kstdio.h>
+#include <kstring.h>
+
 #include <fs/ext2/ext2.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstring/kstring.h>
 
 // TODO: Implement a redirect to ext2 to not use hardcode calls to ext2
 

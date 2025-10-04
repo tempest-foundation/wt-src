@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 #ifdef __cplusplus
 extern "C" {

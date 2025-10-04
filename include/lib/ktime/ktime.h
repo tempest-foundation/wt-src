@@ -13,7 +13,7 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 extern struct Time time;
 

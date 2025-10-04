@@ -14,10 +14,9 @@
 #pragma once
 
 // stdio implementations
-#include "kprint/kprint.h"
-#include "kstrlen/kstrlen.h"
-#include "kstrnlen/kstrnlen.h"
-
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstddef.h>
-#include <lib/kstdio/kstdint.h>
+#include <kprint.h>
+#include <kstdbool.h>
+#include <kstddef.h>
+#include <kstdint.h>
+#include <kstrlen.h>
+#include <kstrnlen.h>

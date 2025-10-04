@@ -11,8 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
+#include <kstdint.h>
+
 #include <kern/syscall/syscall.h>
-#include <lib/kstdio/kstdint.h>
 
 kuint64_t
     sys_write (kuint64_t syscall_no __attribute__((unused)),

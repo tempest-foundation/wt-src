@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kgeneral/kcharset/kcharset.h>
-#include <lib/kstdlib/kstdlib.h>
-#include <lib/kstdlib/kutoa.h>
+#include <kcharset.h>
+#include <kstdlib.h>
+#include <kutoa.h>
 
 char *
     kutoa (char *buf, char *end, unsigned long value, int base, int is_uppercase) {

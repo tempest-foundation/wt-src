@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/knan.h>
+#include <kmath.h>
+#include <knan.h>
 
 double
     knan (const char *tagp) {

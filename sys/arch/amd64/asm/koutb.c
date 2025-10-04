@@ -11,9 +11,9 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "arch/amd64/asm/koutb.h"
+#include "koutb.h"
 
-#include "arch/amd64/asm/kio.h"
+#include "kio.h"
 
 void
     koutb (unsigned short port, unsigned char val) {

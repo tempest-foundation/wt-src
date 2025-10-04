@@ -11,6 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
+#include <kstddef.h>
+
 #pragma once
 
 int

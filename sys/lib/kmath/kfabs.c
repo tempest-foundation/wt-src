@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kfabs.h>
-#include <lib/kmath/kmath.h>
+#include <kfabs.h>
+#include <kmath.h>
 
 double
     kfabs (double x) {

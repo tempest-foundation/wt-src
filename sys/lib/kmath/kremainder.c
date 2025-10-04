@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/kremainder.h>
+#include <kmath.h>
+#include <kremainder.h>
 
 double
     kremainder (double x, double y) {

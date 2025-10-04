@@ -16,9 +16,10 @@
 #ifdef ARCH_AMD64
 #	include <arch/amd64/asm/kio.h>
 #endif
+#include <ksleep.h>
+#include <kstddef.h>
+
 #include <dbg/logger.h>
-#include <lib/kstdio/kstddef.h>
-#include <lib/kunistd/ksleep.h>
 
 /*
  * This is not ACPI yet, this is a placeholder for ACPI.

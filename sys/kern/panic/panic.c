@@ -18,11 +18,12 @@
 #ifdef ARCH_AMD64
 #	include <arch/amd64/isr/registers.h>
 #endif
+#include <kitoa.h>
+#include <kmemset.h>
+#include <ksleep.h>
+#include <kstdio.h>
+
 #include <kern/acpi/acpi.h>
-#include <lib/kstdio/kstdio.h>
-#include <lib/kstdlib/kitoa.h>
-#include <lib/kstring/kmemset.h>
-#include <lib/kunistd/ksleep.h>
 
 // Panic error codes.
 #define PANIC_UNKNOWN_ERROR       0
