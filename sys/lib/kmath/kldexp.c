@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kldexp.h>
-#include <lib/kmath/kmath.h>
+#include <kldexp.h>
+#include <kmath.h>
 
 double
     kldexp (double x, int exp) {

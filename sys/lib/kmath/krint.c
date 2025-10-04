@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/krint.h>
+#include <kmath.h>
+#include <krint.h>
 
 double
     krint (double x) {

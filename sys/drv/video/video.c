@@ -13,12 +13,13 @@
  */
 #include "video.h"
 
+#include <kstdbool.h>
+#include <kstddef.h>
+
 #include <dbg/logger.h>
 #include <drv/video/font/font.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/init/main.h>
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstddef.h>
 
 static volatile kuint32_t *framebuffer = KNULL;
 

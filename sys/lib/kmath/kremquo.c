@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/kremquo.h>
+#include <kmath.h>
+#include <kremquo.h>
 
 double
     kremquo (double x, double y, int *quo) {

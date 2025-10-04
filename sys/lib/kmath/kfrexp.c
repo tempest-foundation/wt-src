@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kfrexp.h>
-#include <lib/kmath/kmath.h>
+#include <kfrexp.h>
+#include <kmath.h>
 
 double
     kfrexp (double x, int *exp) {

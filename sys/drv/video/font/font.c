@@ -13,7 +13,7 @@
  */
 #include "font.h"
 
-#include <lib/kstdio/kstdint.h>
+#include <kstdint.h>
 
 // Font dimensions are 8x8
 const kuint32_t FONT_WIDTH  = 8;

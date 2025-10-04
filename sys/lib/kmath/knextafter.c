@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kmath.h>
-#include <lib/kmath/knextafter.h>
+#include <kmath.h>
+#include <knextafter.h>
 
 double
     knextafter (double x, double y) {

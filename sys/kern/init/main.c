@@ -17,6 +17,8 @@
 #	include <arch/amd64/cpu/cpuid.h>
 #	include <arch/amd64/idt/idt.h>
 #endif
+#include <kprint.h>
+
 #include <dbg/logger.h>
 #include <drv/driver.h>
 #include <fs/ext2/ext2.h>
@@ -24,7 +26,6 @@
 #include <kern/mb/mb.h>
 #include <kern/memory/memory.h>
 #include <kern/syscall/integration.h>
-#include <lib/kstdio/kprint/kprint.h>
 #include <shell/shell.h>
 
 void

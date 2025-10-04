@@ -13,8 +13,8 @@
  */
 #pragma once
 
-#include <lib/kstdio/kstdbool.h>
-#include <lib/kstdio/kstdint.h>
+#include <kstdbool.h>
+#include <kstdint.h>
 
 extern struct video video;
 

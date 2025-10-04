@@ -13,9 +13,9 @@
  */
 #pragma once
 
-#include "drv/video/video.h"
+#include <kstdint.h>
 
-#include <lib/kstdio/kstdint.h>
+#include "drv/video/video.h"
 
 extern struct framebuffer_info fb_info;
 

@@ -70,9 +70,9 @@
 #define K_M_SQRT1_2  0.70710678118654752440  // 1/ksqrt(2)
 
 /*
-    Just a fucking warning!
-    FP_INFINITE: classification macro (integer)
-    INFINITY: floating-point constant (IEEE 754 positive infinity)
+ ! Just a fucking warning!
+ * FP_INFINITE: classification macro (integer)
+ * INFINITY: floating-point constant (IEEE 754 positive infinity)
 */
 
 // Infinity and NaN constants

@@ -11,8 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include <lib/kmath/kfmax.h>
-#include <lib/kmath/kmath.h>
+#include <kfmax.h>
+#include <kmath.h>
 
 double
     kfmax (double x, double y) {
