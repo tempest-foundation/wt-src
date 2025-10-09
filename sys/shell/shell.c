@@ -74,13 +74,20 @@ static void
 static void
     cmd_cd (const char *args);
 
-// Command table with handler functions
-static struct Command {
-	const char    *name;
-	const char    *description;
-	const char    *category;
-	command_func_t handler;
-} commands[] = {
+/**
+ * @brief A struct representing a command in the kernel-shell
+ *
+ * Each command has a name, description, category, and a function handler.
+ */
+struct Command {
+	const char    *name;        /**< Name of the command */
+	const char    *description; /**< Description of what the command does */
+	const char    *category;    /**< Category of the command (System, FS, etc.) */
+	command_func_t handler;     /**< Function pointer to execute the command */
+};
+
+// Array of commands used by the kernel shell
+static struct Command commands[] = {
     // System commands
     {"help", "Show this help message", "System", cmd_help},
     {"clear", "Clear the screen", "System", cmd_clear},
@@ -112,6 +119,15 @@ static struct Command {
 
 #define NUM_COMMANDS (sizeof(commands) / sizeof(commands[0]))
 
+/**
+ * @brief Handles shell commands and calls the corresponding functions
+ *
+ * This function parses the input command string, finds the matching
+ * command in the `commands` array, and executes its handler function.
+ * If the command is unknown, it prints a warning message.
+ *
+ * @param cmd Input command string entered by the user
+ */
 static void
     handle_command (char *cmd) {
 	// Split command and arguments
@@ -134,35 +150,35 @@ static void
 	kprintf("Unknown command: '%s'\n", cmd);
 }
 
+/**
+ * @brief Entry point for the kernel-shell after `start_kernel()` calls it
+ *
+ * This function initializes the command buffer and handles user input
+ * in a loop. It prints a prompt, reads characters, supports backspace,
+ * stores command history, and calls `handle_command()` for execution.
+ */
 void
     kshell (void) {
 	char cmd_buffer[CMD_BUFFER_SIZE];
-	int  cmd_ptr = 0;
-
-	kputs("Copyright (c) 2025, Russian95");
+	kputs("Copyright (c) 2025, Tempest Foundation");
 	kputs("Type 'help' for a list of commands.");
 
-	while (ktrue) {
-		kprintf(
-		    "\n$[kern] ");  // use kernel for determining it's kernel space (AKA: ring 0)
-		cmd_ptr        = 0;
+	for (;;) {
+		kprintf("\n[kernel@tempest]@ ");
+		int cmd_ptr    = 0;
 		input_overflow = 0;
 
-		while (ktrue) {
+		for (;;) {
 			char c = (char) getchar();
-
 			if (c == '\n') {
 				kputchar('\n');
 				if (input_overflow) {
-					kputs(
-					    "Error: "
-					    "command too "
-					    "long.");
+					kputs("Error: command too long.");
 				} else {
 					cmd_buffer[cmd_ptr] = '\0';
 					handle_command(cmd_buffer);
 
-					if (history_count < MAX_HISTORY) {
+					if (cmd_ptr > 0 && history_count < MAX_HISTORY) {
 						ksize_t len =
 						    (ksize_t) kstrlen(cmd_buffer);
 						if (len >= CMD_BUFFER_SIZE)
@@ -176,16 +192,12 @@ void
 					}
 				}
 				break;
-			}
-
-			else if (c == '\b') {
+			} else if (c == '\b') {
 				if (cmd_ptr > 0) {
 					cmd_ptr--;
 					kputchar('\b');
 				}
-			}
-
-			else {
+			} else if (c >= 32 && c < 127) {
 				if (cmd_ptr < CMD_BUFFER_SIZE - 1) {
 					cmd_buffer[cmd_ptr++] = c;
 					kputchar(c);
@@ -220,6 +232,13 @@ static void
 	video.clear(color);
 }
 
+/**
+ * @brief Show the array `commands` in a formatted way like:
+ * Avaliable commands:
+ *
+ * [Subsystem]
+ *   command - Explanation of what the command does
+ */
 static void
     cmd_help (const char *args) {
 	(void) args;
@@ -260,7 +279,7 @@ static void
 	if (args && *args) {
 		kputs(args);
 	} else {
-		kputs("Echo...");
+		kputs("Echo... echo... echo...");
 		kputs("Use: echo <your message>");
 	}
 }
@@ -521,5 +540,5 @@ static void
 		return;
 	}
 
-	panic.main(code, KNULL);
+	panic.init(code, KNULL);
 }

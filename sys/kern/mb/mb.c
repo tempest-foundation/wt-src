@@ -53,6 +53,13 @@ typedef enum {
 	MULTIBOOT_TAG_TYPE_FRAMEBUFFER = 8
 } multiboot_tag_type_t;
 
+/**
+ * @brief Parse the multiboot information given by the bootloader
+ * @param mb_info Pointer to the multiboot information structure
+ * given by the bootloader
+ * @warning The whole system depends on the multiboot information,
+ * If none, you are fucked
+ */
 void
     parse_multiboot_info (void *mb_info) {
 	if (mb_info == KNULL) {

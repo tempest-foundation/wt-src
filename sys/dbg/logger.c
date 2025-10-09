@@ -21,12 +21,19 @@
 
 kbool d_enabled = kfalse;
 
+/**
+ * @brief Debug logger using the kernel puts to log the system
+ * @param subsystem The subsystem that the computer is running
+ * @param type Type of the log, ex: error, warn, emerg, notice and etc...
+ * @param message The message to be show
+ * @note Logging only happens if debug is enabled
+ */
 void
-    dbgLogger_puts (const char *subsystem, const char *type, const char *s) {
+    dbgLogger_puts (const char *subsystem, const char *type, const char *message) {
 	if (!d_enabled) {
 		return;
 	}
-	if (!s || *s == '\0')
+	if (!message || *message == '\0')
 		return;
 
 	kputs("[    debug");
@@ -42,7 +49,7 @@ void
 	}
 
 	kputs("] ");
-	kputs(s);
+	kputs(message);
 	kputchar('\n');
 }
 
@@ -207,6 +214,13 @@ int
 	return count;
 }
 
+/**
+ * @brief Logger type used by the logger.type() functions
+ * @param type Type of the situation. Example: error, warn, notice
+ * @param subsystem The current stage that the computer is in
+ * @param message Message to be show
+ * @param extra Extra parameters from the message
+ */
 static void
     dbgLogger_type (const char *type,
                     const char *subsystem,

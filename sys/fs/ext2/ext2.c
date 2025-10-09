@@ -28,7 +28,19 @@ kbool                     is_mounted   = kfalse;
 static int (*g_read_sector)(kuint64_t lba, kuint32_t count, void *buf)        = KNULL;
 static int (*g_write_sector)(kuint64_t lba, kuint32_t count, const void *buf) = KNULL;
 
-// Convenience wrapper: read N sectors into dst
+/**
+ * @brief Read multiple 512-byte sectors from the block device into memory.
+ *
+ * This is a convenience wrapper around the block device read callback.
+ * Reads @p cnt sectors, starting at LBA @p lba, into the buffer @p dst.
+ *
+ * @param[in]  lba  The starting logical block address (LBA) to read from (sector-sized, 512 bytes).
+ * @param[in]  cnt  Number of sectors to read.
+ * @param[out] dst  Pointer to the memory buffer to store read data (at least cnt*512 bytes).
+ *
+ * @retval 0        Success.
+ * @retval <0       EXT2_ERR_IO on error or if no read callback is installed.
+ */
 static int
     kread_sectors (kuint64_t lba, kuint32_t cnt, void *dst) {
 	if (!g_read_sector) {
@@ -37,7 +49,21 @@ static int
 	return g_read_sector(lba, cnt, dst);
 }
 
-// Read an aligned filesystem block into dst. Assumes dst has at least block_size bytes.
+/**
+ * @brief Read a full filesystem block from disk into memory.
+ *
+ * Reads the specified EXT2 filesystem block (by @p block_id) into the buffer @p dst.
+ * The size of each block is given by g_block_size (1KiB, 2KiB, or 4KiB).
+ * The @p dst buffer must be at least g_block_size bytes.
+ *
+ * @param[in]  block_id  Filesystem block index (not LBA/sector) relative
+ *                        to the volume start.
+ * @param[out] dst       Pointer to memory buffer to store the block contents
+ *                       (at least g_block_size bytes).
+ *
+ * @retval 0        Success.
+ * @retval <0       EXT2_ERR_IO on error.
+ */
 static int
     kread_block (kuint32_t block_id, void *dst) {
 	kuint64_t first_lba = g_base_lba + ((kuint64_t) block_id * g_block_size) / 512;
@@ -49,6 +75,21 @@ static int
 static int
     kread_inode (kuint32_t ino, ext2_inode_t *out);
 
+/**
+ * @brief Sets the low-level block device I/O functions for EXT2 filesystem operations.
+ *
+ * This function installs the block device read and write callbacks used by the EXT2 driver to
+ * perform sector-based I/O operations.  These functions must match the required prototypes:
+ *   - Read:  int read(kuint64_t lba, kuint32_t count, void *buf)
+ *   - Write: int write(kuint64_t lba, kuint32_t count, const void *buf)
+ *
+ * The write function may be NULL (KNULL) if the filesystem is to be accessed as read-only.
+ *
+ * @param[in] read   Pointer to a function that reads sectors from the block device.
+ * @param[in] write  Pointer to a function that writes sectors to the block device (may be NULL).
+ *
+ * @note This function must be called before mounting an EXT2 filesystem.
+ */
 void
     ext2_set_block_device (int (*read)(kuint64_t, kuint32_t, void *),
                            int (*write)(kuint64_t, kuint32_t, const void *)) {
@@ -56,6 +97,25 @@ void
 	g_write_sector = write;  // May be KNULL for read-only volumes
 }
 
+/**
+ * @brief Mounts an EXT2 filesystem at the specified base LBA.
+ *
+ * This function initializes the EXT2 filesystem structures by reading
+ * the superblock and group descriptor table from disk, checking the
+ * EXT2 magic, and validating supported block size.  It must be called
+ * before using any other EXT2 operations.  The base LBA should point to
+ * the beginning of the EXT2 partition or volume.
+ *
+ * This function supports EXT2 filesystems with 1K, 2K, or 4K block sizes.
+ * Non-standard block sizes larger than 4K are rejected.
+ *
+ * @param[in] base_lba The LBA (sector) offset where the filesystem starts.
+ *
+ * @retval EXT2_OK              Success; the filesystem is mounted.
+ * @retval EXT2_ERR_IO          Low-level read error or out-of-memory.
+ * @retval EXT2_ERR_BAD_MAGIC   The filesystem magic field is incorrect (not EXT2).
+ * @retval EXT2_ERR_UNSUPPORTED The filesystem uses an unsupported block size.
+ */
 int
     ext2_mount (kuint64_t base_lba) {
 	if (!g_read_sector) {
@@ -131,6 +191,32 @@ int
 	return EXT2_OK;
 }
 
+/**
+ * @brief Opens a file or directory by absolute path on the EXT2 filesystem.
+ *
+ * This function traverses the EXT2 directory hierarchy from the root, following the
+ * given absolute path, and retrieves the inode for the target file or directory.
+ * The inode structure and an initial file position of 0 are written to @p out_file.
+ *
+ * The path should be an absolute path (e.g., "/System/Auth/passwd" or "/Home/user").
+ * If the path is "/" (the root directory), it opens the root inode.
+ *
+ * Only direct blocks of directory inodes are used for traversal; indirect directory
+ * blocks are not handled.
+ *
+ * Directories and files can be opened as long as they exist; the function does not
+ * check for file types except when traversing intermediate components, which must
+ * be directories.
+ *
+ * @param[in]  path      Absolute path to the file or directory to open (must not be NULL).
+ * @param[out] out_file  Pointer to an ext2_file_t structure to receive the opened file
+ *                       (must not be NULL).
+ *
+ * @retval EXT2_OK                 Success. out_file is filled in.
+ * @retval EXT2_ERR_INVALID        Invalid argument, or intermediate component is not a directory.
+ * @retval EXT2_ERR_PATH_NOT_FOUND Path to target does not exist.
+ * @retval EXT2_ERR_IO             An I/O error occurred during traversal.
+ */
 int
     ext2_open (const char *path, ext2_file_t *out_file) {
 	(void) path;
@@ -217,6 +303,26 @@ int
 	return EXT2_ERR_INVALID;
 }
 
+/**
+ * @brief Read an inode structure from disk into memory.
+ *
+ * Given an EXT2 inode number @p ino, reads the corresponding inode structure from disk
+ * and copies it into the user-supplied buffer @p out.  The function calculates which block
+ * group and index within the group the inode resides in, locates the proper block(s) in
+ * the inode table, and performs the necessary I/O to read the inode data.
+ *
+ * This function handles cases where the inode structure spans two filesystem blocks and
+ * reads both blocks if necessary.  The inode is read as an ext2_inode_t (typically 128 bytes,
+ * but can be larger depending on EXT2_SUPERBLOCK.inode_size).
+ *
+ * @param[in]  ino  The inode number to read (must be nonzero; 1 = first inode).
+ * @param[out] out  Pointer to a buffer where the inode structure will be stored.  Must point to
+ *                  memory at least sizeof(ext2_inode_t) bytes long.
+ *
+ * @retval EXT2_OK          Success; inode structure has been copied to @p out.
+ * @retval EXT2_ERR_INVALID Invalid arguments (ino==0, missing group descriptor, etc).
+ * @retval EXT2_ERR_IO      I/O error (e.g., failed block read, allocation error).
+ */
 static int
     kread_inode (kuint32_t ino, ext2_inode_t *out) {
 	if (ino == 0)
@@ -268,6 +374,23 @@ static int
 	return EXT2_OK;
 }
 
+/**
+ * @brief Processes a directory block and invokes a callback for each valid directory entry.
+ *
+ * Iterates over all directory entries within a given raw EXT2 directory block, calling the
+ * user-supplied callback @p cb for each valid entry found.
+ * Handles proper parsing of directory entry records and safeguards against malformed data.
+ *
+ * @param[in] block_buf   Pointer to the buffer containing the raw directory block data.
+ *                        Must be at least @p block_size bytes.
+ * @param[in] block_size  Size of the directory block in bytes.
+ * @param[in] cb          Callback function to be invoked for each valid directory entry.
+ *                        The callback receives the entry name (NUL-terminated) and file type.
+ *
+ * The function extracts the name and file type from each entry and passes them to the callback.
+ * Invalid or malformed entries (incorrect record length, zero-length names, etc.) will cause
+ * processing of the block to end early.
+ */
 static void
     kprocess_dir_block (kuint8_t *block_buf, kuint32_t block_size, ext2_list_cb_t cb) {
 	kuint32_t off = 0;
@@ -292,6 +415,20 @@ static void
 	}
 }
 
+/**
+ * @brief List the entries in a directory given its inode on the EXT2 filesystem.
+ *
+ * This function enumerates all directory entries in the direct blocks (the first 12 data blocks)
+ * of the specified directory inode, invoking the callback function @p cb for each entry found.
+ * Indirect, double indirect, or triple indirect directory blocks are not processed.
+ *
+ * @param[in] dir_inode Pointer to the EXT2 inode structure representing a directory (must not be NULL).
+ * @param[in] cb        Callback function to invoke for each directory entry (must not be NULL).
+ *
+ * @return EXT2_OK on success, or a negative EXT2_ERR_* code on error:
+ *         - EXT2_ERR_INVALID : Invalid arguments or inode is not a directory.
+ *         - EXT2_ERR_IO      : I/O error or out-of-memory.
+ */
 static int
     klist_dir_entries (const ext2_inode_t *dir_inode, ext2_list_cb_t cb) {
 	if (!dir_inode || !cb)
@@ -318,6 +455,25 @@ static int
 	return EXT2_OK;
 }
 
+/**
+ * @brief List the entries in a directory specified by @p path on the EXT2 filesystem.
+ *
+ * This function traverses the given @p path starting from the root inode, opening each
+ * directory in sequence.  When it reaches the final component, it attempts to enumerate
+ * all entries inside the corresponding directory using the provided callback @p cb.
+ *
+ * Only direct blocks (the first 12 data blocks of the directory inode) are processed.
+ * Indirect, double indirect, and triple indirect directory data blocks are not parsed.
+ *
+ * @param[in]  path  The absolute path to the directory to list (e.g., "/etc", "/").
+ *                   The path must not be NULL, and must refer to a directory.
+ * @param[in]  cb    Callback function invoked for each entry. Must not be NULL.
+ *
+ * @return EXT2_OK on success, or a negative EXT2_ERR_* code on error:
+ *         - EXT2_ERR_INVALID        : Invalid arguments or not a directory.
+ *         - EXT2_ERR_IO             : I/O error or out-of-memory.
+ *         - EXT2_ERR_PATH_NOT_FOUND : Directory component in path not found.
+ */
 int
     ext2_list (const char *path, ext2_list_cb_t cb) {
 	if (!path || !cb)
@@ -397,6 +553,23 @@ int
 	return EXT2_ERR_INVALID;
 }
 
+/**
+ * @brief List the entries in the root directory of the EXT2 filesystem.
+ *
+ * This function opens the root directory and lists all directory entries found
+ * in its direct blocks.  For each directory entry, it invokes the user-supplied
+ * callback function @p cb with the entry's name and file type.
+ *
+ * Only direct blocks (the first 12 data blocks in the root inode) are processed.
+ * Indirect, double indirect, and triple indirect blocks are not parsed.
+ *
+ * @param[in] cb Callback function to invoke for each directory entry.
+ *               Must not be NULL.
+ *
+ * @return EXT2_OK on success, or a negative EXT2_ERR_* code on error:
+ *         - EXT2_ERR_INVALID: Invalid arguments or not a directory.
+ *         - EXT2_ERR_IO     : I/O error or out-of-memory.
+ */
 int
     ext2_list_dir (ext2_list_cb_t cb) {
 	if (!cb)
@@ -429,7 +602,20 @@ int
 	return EXT2_OK;
 }
 
-// Helper function to get the physical block ID for a logical block within a file
+/**
+ * @brief Retrieve the physical block number for a given logical block in a file.
+ *
+ * Given an EXT2 inode and a logical block number (relative to the start of the file), this function
+ * returns the physical block number on disk that stores the data for that logical block.  It handles
+ * direct blocks, single indirect, double indirect, and triple indirect block addressing as per the
+ * EXT2 specification.  If the block pointer is not allocated (sparse file), this function returns 0.
+ *
+ * @param[in] inode         Pointer to the EXT2 inode structure of a file (must not be NULL).
+ * @param[in] logical_block The logical block index within the file (0 = first block).
+ *
+ * @return The physical block number for the given logical block, or 0 if the block is sparse/unallocated,
+ *         or if an I/O error occurs, or if the block index is outside the supported address range.
+ */
 static kuint32_t
     kget_file_block (const ext2_inode_t *inode, kuint64_t logical_block) {
 	kuint32_t blocks_per_indirect = g_block_size / sizeof(kuint32_t);
@@ -589,6 +775,25 @@ static kuint32_t
 	return 0;
 }
 
+/**
+ * @brief Read bytes from an open file on the EXT2 filesystem.
+ *
+ * Reads up to @p len bytes from the file represented by @p file into the buffer @p buf.
+ * The read starts at the current file position (file->pos) and updates file->pos by the number
+ * of bytes read.  Handles sparse file regions by zero-filling missing blocks according to EXT2 semantics.
+ *
+ * This function supports files whose size may exceed 4 GiB, using the 64-bit size fields in the inode.
+ * Only direct, single, double, and triple indirect block addressing is supported (standard EXT2).
+ *
+ * @param[in,out] file Pointer to an open EXT2 file structure (must be valid, not NULL).
+ * @param[out]    buf  Buffer to receive data (must be at least @p len bytes).
+ * @param[in]     len  Number of bytes to read.
+ *
+ * @return Number of bytes successfully read, 0 if at EOF, or a negative EXT2_ERR_* code on error:
+ *         - EXT2_ERR_INVALID    : Invalid arguments or file.
+ *         - EXT2_ERR_IO         : Underlying I/O error or out-of-memory during block access.
+ *         - EXT2_ERR_UNSUPPORTED: File offset outside of supported block addressable region.
+ */
 int
     ext2_read (ext2_file_t *file, void *buf, ksize_t len) {
 	if (!file || !buf)

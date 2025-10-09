@@ -28,6 +28,28 @@
 #include <kern/syscall/integration.h>
 #include <shell/shell.h>
 
+/**
+ * @brief Entry point for the kernel initialization sequence.
+ *
+ * This function is the primary entry of the Tempest kernel and performs the core system
+ * initialization tasks required before handing off to the kernel shell.
+ * It performs the following:
+ * - Initializes the Interrupt Descriptor Table (IDT)
+ * - Initializes the serial interface
+ * - Checks for valid multiboot information and halts if absent
+ * - Parses the provided multiboot information
+ * - Initializes the framebuffer/video output
+ * - Sets up the memory manager and memory pools
+ * - Initializes system call infrastructure
+ * - Mounts the EXT2 filesystem
+ * - Initializes the CPU brand string
+ * - Sets up keyboard input
+ * - Enables interrupts
+ * - Launches the kernel shell (placeholder)
+ *
+ * @param mb_info Pointer to the multiboot information structure provided at boot time.
+ *                If @p mb_info is NULL, the system will halt.
+ */
 void
     start_kernel (void *mb_info) {
 	idt_init();
