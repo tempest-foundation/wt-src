@@ -49,7 +49,7 @@ unsigned int seconds_to_reboot = 5;
 
 // Get kpanic message based on error code.
 static const char *
-    p_get_message (int code) {
+    panic_get_message (int code) {
 	switch (code) {
 		case PANIC_DIVISION_BY_ZERO:
 			return "Division by zero";
@@ -95,122 +95,142 @@ static const char *
  */
 static kbool panic_in_progress = kfalse;
 
-/*
- * Why did I make this function? Well...
- * I don't want the code to repeat so much.
+/**
+ * @brief Output a string in the console and serial
+ * @param string Message to output
  */
 void
-    p_puts (const char *s) {
-	serial.writes(s);
-	video.puts(s);
+    panic_puts (const char *string) {
+	serial.writes(string);
+	video.puts(string);
 }
 
+/**
+ * @brief Dumps the contents of CPU registers to the panic output
+ *
+ * Prints the values of the general-purpose registers from
+ * the provided registers_t structure, which typically holds a snapshot
+ * of the processor state during a fault or exception.  The values are
+ * printed in hexadecimal format for diagnostics during kernel panic.
+ *
+ * @param r Pointer to the registers_t structure containing register values
+ */
 static void
-    p_dump_registers (registers_t *r) {
+    panic_dump_registers (registers_t *r) {
 	char buff[32];
 
-	p_puts(" RAX=");
+	panic_puts(" RAX=");
 	kitoa(buff, buff + 30, (long) r->rax, 16, 0);
-	p_puts(buff);
-	p_puts(" RBX=");
+	panic_puts(buff);
+	panic_puts(" RBX=");
 	kitoa(buff, buff + 30, (long) r->rbx, 16, 0);
-	p_puts(buff);
-	p_puts(" RCX=");
+	panic_puts(buff);
+	panic_puts(" RCX=");
 	kitoa(buff, buff + 30, (long) r->rcx, 16, 0);
-	p_puts(buff);
-	p_puts(" RDX=");
+	panic_puts(buff);
+	panic_puts(" RDX=");
 	kitoa(buff, buff + 30, (long) r->rdx, 16, 0);
-	p_puts(buff);
-	p_puts("\n");
+	panic_puts(buff);
+	panic_puts("\n");
 
-	p_puts(" RSI=");
+	panic_puts(" RSI=");
 	kitoa(buff, buff + 30, (long) r->rsi, 16, 0);
-	p_puts(buff);
-	p_puts(" RDI=");
+	panic_puts(buff);
+	panic_puts(" RDI=");
 	kitoa(buff, buff + 30, (long) r->rdi, 16, 0);
-	p_puts(buff);
-	p_puts(" RBP=");
+	panic_puts(buff);
+	panic_puts(" RBP=");
 	kitoa(buff, buff + 30, (long) r->rbp, 16, 0);
-	p_puts(buff);
+	panic_puts(buff);
 
-	p_puts(" R8 =");
+	panic_puts(" R8 =");
 	kitoa(buff, buff + 30, (long) r->r8, 16, 0);
-	p_puts(buff);
-	p_puts(" R9 =");
+	panic_puts(buff);
+	panic_puts(" R9 =");
 	kitoa(buff, buff + 30, (long) r->r9, 16, 0);
-	p_puts(buff);
-	p_puts(" R10=");
+	panic_puts(buff);
+	panic_puts(" R10=");
 	kitoa(buff, buff + 30, (long) r->r10, 16, 0);
-	p_puts(buff);
-	p_puts(" R11=");
+	panic_puts(buff);
+	panic_puts(" R11=");
 	kitoa(buff, buff + 30, (long) r->r11, 16, 0);
-	p_puts(buff);
-	p_puts("\n");
+	panic_puts(buff);
+	panic_puts("\n");
 
-	p_puts(" R12=");
+	panic_puts(" R12=");
 	kitoa(buff, buff + 30, (long) r->r12, 16, 0);
-	p_puts(buff);
-	p_puts(" R13=");
+	panic_puts(buff);
+	panic_puts(" R13=");
 	kitoa(buff, buff + 30, (long) r->r13, 16, 0);
-	p_puts(buff);
-	p_puts(" R14=");
+	panic_puts(buff);
+	panic_puts(" R14=");
 	kitoa(buff, buff + 30, (long) r->r14, 16, 0);
-	p_puts(buff);
-	p_puts(" R15=");
+	panic_puts(buff);
+	panic_puts(" R15=");
 	kitoa(buff, buff + 30, (long) r->r15, 16, 0);
-	p_puts(buff);
-	p_puts("\n");
+	panic_puts(buff);
+	panic_puts("\n");
 }
 
+/**
+ * @brief Handles a kernel panic situation and initiates a system reboot.
+ *
+ * It disables interrupts, clears the screen, displays an error message (including the error code
+ * and its string representation), optionally dumps the CPU registers if provided, and starts a
+ * countdown to system reboot.  After displaying the countdown, it triggers the system reboot
+ * sequence using ACPI or legacy reboot.
+ *
+ * @param code The panic error code indicating the cause of the panic
+ * @param regs Pointer to a registers_t structure containing register values at the time of the panic,
+ *             or NULL if unavailable
+ */
 void
-    p_main (int code, registers_t *regs) {
+    panic_init (int code, registers_t *regs) {
 	panic_in_progress = ktrue;
 	__asm__ volatile("cli");
 
 	video.clear(0x0000ff);
 
-	const char *error_msg = p_get_message(code);
+	const char *error_msg = panic_get_message(code);
 
-	p_puts("\n\nOops! Your system crashed\n");
-	p_puts("Error code: ");
+	panic_puts("\n\nOops! Your system crashed\n");
+	panic_puts("Error code: ");
 	char buff[16];
 	kitoa(buff, buff + 14, code, 10, 0);
-	p_puts(buff);
-	p_puts("\n\nError: ");
-	p_puts(error_msg);
-	p_puts("\n");
+	panic_puts(buff);
+	panic_puts("\n\nError: ");
+	panic_puts(error_msg);
+	panic_puts("\n");
 
 	if (regs) {
-		p_puts("\nRegister dump:\n");
-		p_dump_registers(regs);
+		panic_puts("\nRegister dump:\n");
+		panic_dump_registers(regs);
 	}
 
-	kmemset(buff, 0, sizeof(buff));
-
-	p_puts("System will reboot in ");
+	panic_puts("System will reboot in ");
 	kitoa(buff, buff + 14, seconds_to_reboot, 10, 0);
-	p_puts(buff);
-	p_puts(" seconds...\n");
+	panic_puts(buff);
+	panic_puts(" seconds...\n");
 
-	kmemset(buff, 0, sizeof(buff));
-
-	//  ̄\_(ツ)_/ ̄
-	for (unsigned int i = seconds_to_reboot; i > 0; i--) {
-		p_puts("Rebooting in ");
+	//  \_(ツ)_/¯
+	for (unsigned int i = seconds_to_reboot; i > 0; --i) {
+		panic_puts("Rebooting in ");
 		kitoa(buff, buff + 14, i, 10, 0);
-		p_puts(buff);
-		p_puts(" seconds...\n");
+		panic_puts(buff);
+		panic_puts(" seconds...\n");
 		ksleep(1000);
 	}
 
-	p_puts("Rebooting now...\n");
-
-	// Reboot the system.
+	panic_puts("Rebooting now...\n");
 	acpi.reboot();
 
-	while (1) {
+	for (;;)
 		__asm__ volatile("hlt");
-	}
 }
+
 struct Panic panic = {
-    .main = p_main, .puts = p_puts, .message = p_get_message, .dump = p_dump_registers};
+    .init    = panic_init,
+    .puts    = panic_puts,
+    .message = panic_get_message,
+    .dump    = panic_dump_registers,
+};

@@ -28,6 +28,9 @@ volatile kuint64_t *hpet = (volatile kuint64_t *) 0xFED00000;
 #define PIT_CHANNEL0 0x40
 #define PIT_COMMAND  0x43
 
+/**
+ * @brief Enables the HPET timer if it is not already enabled
+ */
 void
     khpet_enable (void) {
 	if ((hpet[HPET_GEN_CONF / 8] & HPET_GEN_CONF_ENABLE) == 0) {
@@ -35,7 +38,11 @@ void
 	}
 }
 
-// PIT busy-wait ~1ms per tick
+/**
+ * @brief Busy-wait for an approximate duration in milliseconds using the PIT
+ *
+ * @param ms Number of milliseconds to wait
+ */
 void
     kpit_wait (int ms) {
 	koutb(PIT_COMMAND, 0x34);
@@ -55,6 +62,13 @@ void
 	}
 }
 
+/**
+ * @brief Sleeps for a given number of milliseconds
+ *
+ * Uses HPET for high-resolution sleep if available, otherwise falls back to PIT busy-wait.
+ *
+ * @param ms Number of milliseconds to sleep
+ */
 void
     ksleep (int ms) {
 	if (hpet != KNULL) {

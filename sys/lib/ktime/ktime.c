@@ -34,27 +34,53 @@
 // RTC status register B
 #define RTC_STATUS_B 0x0B
 
-// BCD to decimal conversion
+/**
+ * @brief Convert a BCD (Binary Coded Decimal) value to decimal
+ * @param bcd The BCD value to convert
+ * @return The decimal representation of the BCD value
+ */
 static kuint8_t
     kbcd_to_decimal (kuint8_t bcd) {
 	return (kuint8_t) (((bcd >> 4) * 10) + (bcd & 0x0F));
 }
 
-// Read a byte from RTC register
+/**
+ * @brief Read a byte from the specified RTC register
+ * @param reg RTC register address
+ * @return Value read from the RTC register
+ */
 static kuint8_t
     krtc_read (kuint8_t reg) {
 	koutb(RTC_COMMAND_PORT, reg);
 	return kinb(RTC_DATA_PORT);
 }
 
-// Check if RTC is in BCD mode
+/**
+ * @brief Check if the RTC (Real Time Clock) is in BCD mode
+ *
+ * Reads RTC Status Register B and determines if RTC registers are in
+ * BCD (Binary Coded Decimal) format.  If bit 2 of Status Register B is
+ * clear, the RTC is operating in BCD mode; otherwise, it is in binary mode.
+ *
+ * @return kbool Returns true if RTC is in BCD mode, false otherwise
+ */
 static kbool
     krtc_is_bcd (void) {
 	kuint8_t status_b = krtc_read(RTC_STATUS_B);
 	return !(status_b & 0x04);  // Bit 2 clear means BCD mode
 }
 
-// Get current BIOS time
+/**
+ * @brief Populate a bios_time structure with the current time from the RTC
+ *
+ * Reads the current date and time values from the hardware Real Time Clock (RTC)
+ * using BIOS-compatible registers.  Automatically handles BCD/binary format and
+ * 12-hour/24-hour conversion as indicated by RTC status and register values.
+ *
+ * @param[in,out] bios_time_val Pointer to a struct bios_time that will be filled in.
+ *                              Fields set: year, month, day, hour, minute,
+ *                              second, day_of_week.
+ */
 void
     time_get_bios (struct bios_time *bios_time_val) {
 	if (!bios_time_val)
@@ -102,7 +128,15 @@ void
 	}
 }
 
-// Get date string in DD-MM-YYYY format
+/**
+ * @brief Get date string in DD-MM-YYYY format
+ *
+ * Populates the provided buffer with a date string formatted as DD/MM/YYYY,
+ * using the current BIOS time.
+ *
+ * @param[out] buffer       Buffer to store the formatted date string
+ * @param[in]  buffer_size  Size of the buffer. Must be at least 11 bytes
+ */
 void
     time_get_date_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 11)
@@ -120,7 +154,15 @@ void
 	          bios_time_val.year);
 }
 
-// Get time string in HH:MM:SS format
+/**
+ * @brief Get time string in HH:MM:SS format
+ *
+ * Populates the provided buffer with a time string formatted as HH:MM:SS,
+ * using the current BIOS time.
+ *
+ * @param[out] buffer       Buffer to store the formatted time string
+ * @param[in]  buffer_size  Size of the buffer. Must be at least 9 bytes
+ */
 void
     time_get_time_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 9)
@@ -138,7 +180,15 @@ void
 	          bios_time_val.second);
 }
 
-// Get full date and time string
+/**
+ * @brief Get full date and time string
+ *
+ * Populates the provided buffer with a combined date and time string formatted as DD/MM/YY HH:MM,
+ * using the current BIOS time.
+ *
+ * @param[out] buffer       Buffer to store the formatted date and time string
+ * @param[in]  buffer_size  Size of the buffer. Must be at least 16 bytes
+ */
 void
     time_get_datetime_string (char *buffer, ksize_t buffer_size) {
 	if (!buffer || buffer_size < 16)
@@ -166,7 +216,15 @@ void
 	          bios_time_val.minute);
 }
 
-// Get day of week string
+/**
+ * @brief Get day of week string
+ *
+ * Returns the name of the day corresponding to the given day_of_week number.
+ * 1 = Sunday, 2 = Monday, ..., 7 = Saturday.
+ *
+ * @param[in] day_of_week  Numeric day of the week (1-7)
+ * @return                 Name of the day or "Unknown" if out of range
+ */
 const char *
     time_get_day_of_week_string (kuint8_t day_of_week) {
 	static const char *days[] = {

@@ -32,6 +32,11 @@
 // Define timeout for poweroff in milliseconds
 #define POWEROFF_TIMEOUT_MS 5000
 
+/**
+ * @brief Legacy poweroff function that uses the legacy BIOS ports
+ * @warning If the ports fail, the machine may not power off because of modern hardware
+ * making this method deprecated
+ */
 void
     acpi_poweroff (void) {
 	koutw(0x604, 0x2000);   // Port 0x604
@@ -42,6 +47,11 @@ void
 	logger.err("acpi", "Legacy poweroff failed", KNULL);
 }
 
+/**
+ * @brief Legacy reboot function that uses the keyboard controller
+ * @warning If the ports fail, the machine may not power off because of modern hardware
+ * making this method deprecated
+ */
 void
     acpi_reboot (void) {
 	while (kinb(0x64) & 0x02)

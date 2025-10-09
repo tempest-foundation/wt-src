@@ -18,7 +18,16 @@
 
 #include <dbg/logger.h>
 
-// Memory pool management
+/**
+ * @brief Create a memory pool for fixed-size block allocations
+ *
+ * Allocates a memory pool capable of holding `num_blocks` blocks of size `block_size`.
+ * Initializes the pool and its management structures.
+ *
+ * @param block_size Size of each block in bytes; must be greater than 0
+ * @param num_blocks Number of blocks in the pool; must be greater than 0
+ * @return Pointer to the created memory_pool_t, or KNULL if allocation fails
+ */
 memory_pool_t *
     pool_create (ksize_t block_size, ksize_t num_blocks) {
 	if (block_size == 0 || num_blocks == 0) {
@@ -62,6 +71,14 @@ memory_pool_t *
 	return pool;
 }
 
+/**
+ * @brief Allocate a block from the given memory pool
+ *
+ * Returns a pointer to a free block from the specified memory pool.
+ *
+ * @param pool Pointer to a memory_pool_t structure
+ * @return Pointer to the allocated block, or KNULL if the pool is exhausted or invalid
+ */
 void *
     pool_alloc (memory_pool_t *pool) {
 	if (!pool || pool->free_blocks == 0) {
@@ -75,6 +92,14 @@ void *
 	return block;
 }
 
+/**
+ * @brief Free a block previously allocated from the memory pool
+ *
+ * Validates and returns the memory block to the pool's free list if valid and not already freed.
+ *
+ * @param pool Pointer to the memory_pool_t the block was allocated from
+ * @param ptr Pointer to the memory block to free
+ */
 void
     pool_free (memory_pool_t *pool, void *ptr) {
 	if (!pool || !ptr) {
@@ -108,6 +133,13 @@ void
 	}
 }
 
+/**
+ * @brief Destroy a memory pool and free all associated memory
+ *
+ * Releases the memory allocated for the pool and its management structures.
+ *
+ * @param pool Pointer to the memory_pool_t to destroy
+ */
 void
     pool_destroy (memory_pool_t *pool) {
 	if (!pool) {
@@ -128,6 +160,12 @@ static memory_pool_t *small_pool  = KNULL;  // 16 bytes
 static memory_pool_t *medium_pool = KNULL;  // 64 bytes
 static memory_pool_t *large_pool  = KNULL;  // 256 bytes
 
+/**
+ * @brief Initialize the global memory pools for small, medium, and large allocations
+ *
+ * Creates pools for common allocation sizes (16, 64, and 256 bytes).
+ * Logs a warning if any pool creation fails.
+ */
 void
     init_memory_pools (void) {
 	// Create pools for common allocation sizes
@@ -140,37 +178,75 @@ void
 	}
 }
 
+/**
+ * @brief Allocate a block from the small memory pool (16 bytes)
+ *
+ * @return Pointer to the allocated memory block, or KNULL on failure
+ */
 void *
     pool_alloc_small (void) {
 	return pool_alloc(small_pool);
 }
 
+/**
+ * @brief Allocate a block from the medium memory pool (64 bytes)
+ *
+ * @return Pointer to the allocated memory block, or KNULL on failure
+ */
 void *
     pool_alloc_medium (void) {
 	return pool_alloc(medium_pool);
 }
 
+/**
+ * @brief Allocate a block from the large memory pool (256 bytes)
+ *
+ * @return Pointer to the allocated memory block, or KNULL on failure
+ */
 void *
     pool_alloc_large (void) {
 	return pool_alloc(large_pool);
 }
 
+/**
+ * @brief Free a block previously allocated from the small memory pool
+ *
+ * @param ptr Pointer to the memory block to free
+ */
 void
     pool_free_small (void *ptr) {
 	pool_free(small_pool, ptr);
 }
 
+/**
+ * @brief Free a block previously allocated from the medium memory pool
+ *
+ * @param ptr Pointer to the memory block to free
+ */
 void
     pool_free_medium (void *ptr) {
 	pool_free(medium_pool, ptr);
 }
 
+/**
+ * @brief Free a block previously allocated from the large memory pool
+ *
+ * @param ptr Pointer to the memory block to free
+ */
 void
     pool_free_large (void *ptr) {
 	pool_free(large_pool, ptr);
 }
 
-// Smart allocation that chooses the best pool
+/**
+ * @brief Smart memory allocation function that chooses the best pool based on size
+ *
+ * For allocations <= 256 bytes, chooses one of the predefined memory pools.
+ * For larger allocations, uses kmalloc().
+ *
+ * @param size Size in bytes to allocate
+ * @return Pointer to the allocated memory block, or KNULL on failure
+ */
 void *
     smart_alloc (ksize_t size) {
 	if (size <= 16) {
@@ -184,6 +260,15 @@ void *
 	}
 }
 
+/**
+ * @brief Smart memory deallocation function that chooses the correct pool based on size
+ *
+ * For allocations <= 256 bytes, frees to the appropriate memory pool.
+ * For larger allocations, uses kfree().
+ *
+ * @param ptr  Pointer to the memory block to free
+ * @param size Size in bytes that was originally allocated
+ */
 void
     smart_free (void *ptr, ksize_t size) {
 	if (size <= 16) {

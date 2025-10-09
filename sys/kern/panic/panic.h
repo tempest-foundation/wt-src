@@ -42,5 +42,5 @@ struct Panic {
 	void (*puts)(const char *s);
 	void (*dump)(registers_t *r);
 	const char *(*message)(int code);
-	void (*main)(int code, registers_t *regs);
+	void (*init)(int code, registers_t *regs);
 };

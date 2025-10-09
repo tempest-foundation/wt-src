@@ -15,10 +15,29 @@
 
 #include <kstdint.h>
 
-// This struct defines the registers that our ISR/IRQ stubs push to the stack.
-// We receive a pointer to this in our C-level interrupt handlers.
+/**
+ * @brief CPU register state pushed onto the stack by ISR/IRQ stubs
+ *
+ * This structure represents the register state that is automatically pushed
+ * onto the stack by the CPU or our ISR/IRQ stubs when an interrupt occurs.
+ * A pointer to this struct is passed to the C-level interrupt handlers.
+ */
 typedef struct {
-	kuint64_t r15, r14, r13, r12, r11, r10, r9, r8;
-	kuint64_t rdi, rsi, rbp, rbx, rdx, rcx, rax;
-	kuint64_t int_no, err_code;  // These are pushed first by the ISR.
+	kuint64_t r15;       // General-purpose register R15
+	kuint64_t r14;       // General-purpose register R14
+	kuint64_t r13;       // General-purpose register R13
+	kuint64_t r12;       // General-purpose register R12
+	kuint64_t r11;       // General-purpose register R11
+	kuint64_t r10;       // General-purpose register R10
+	kuint64_t r9;        // General-purpose register R9
+	kuint64_t r8;        // General-purpose register R8
+	kuint64_t rdi;       // General-purpose register RDI
+	kuint64_t rsi;       // General-purpose register RSI
+	kuint64_t rbp;       // Base pointer register RBP
+	kuint64_t rbx;       // General-purpose register RBX
+	kuint64_t rdx;       // General-purpose register RDX
+	kuint64_t rcx;       // General-purpose register RCX
+	kuint64_t rax;       // General-purpose register RAX
+	kuint64_t int_no;    // Interrupt number pushed by ISR
+	kuint64_t err_code;  // Error code pushed by ISR (if applicable)
 } registers_t;
