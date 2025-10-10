@@ -1,4 +1,4 @@
-; SPDX-License-Identifier: LSL-2.0
+; SPDX-License-Identifier: GPL-3.0-only
 ;
 ; -- BEGIN METADATA HEADER --
 ; The Wind/Tempest Project

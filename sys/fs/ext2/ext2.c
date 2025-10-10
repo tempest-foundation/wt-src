@@ -1,16 +1,3 @@
-// SPDX-License-Identifier: LSL-2.0
-/*
- * -- BEGIN METADATA HEADER --
- * The Wind/Tempest Project
- *
- * File       : sys/fs/ext2/ext2.c
- * Author     : Tempik25 <tempik25@tempestfoundation.org>
- * Maintainer : Tempest Foundation <development@tempestfoundation.org>
- * Repo       : https://wtsrc.tempestfoundation.org
- *
- * Copyright (C) 2025 Tempest Foundation
- * -- END OF METADATA HEADER --
- */
 #include "ext2.h"
 
 #include <kstdio.h>
@@ -859,9 +846,11 @@ int
 	return (int) len;
 }
 
-struct Ext2 ext2 = {.set_block_device = ext2_set_block_device,
-                    .mount            = ext2_mount,
-                    .open             = ext2_open,
-                    .read             = ext2_read,
-                    .list             = ext2_list,
-                    .list_dir         = ext2_list_dir};
+struct Ext2 ext2 = {
+    .set_block_device = ext2_set_block_device,
+    .mount            = ext2_mount,
+    .open             = ext2_open,
+    .read             = ext2_read,
+    .list             = ext2_list,
+    .list_dir         = ext2_list_dir,
+};

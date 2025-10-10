@@ -3,7 +3,7 @@
 # Wind/Tempest Project - README
 
 [![Most used language](https://img.shields.io/github/languages/top/tempest-foundation/wt-src?logo=c&label=)](https://github.com/tempest-foundation/wt-src/tree/main)
-[![License: LSL 2.0](https://img.shields.io/badge/license-LSL-blue.svg)](LICENSE)
+[![License: GPL 3.0](https://img.shields.io/badge/license-GPLv3.0-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-available-brightgreen.svg)](docs/Main.md)
 [![Platform: amd64](https://img.shields.io/badge/platform-amd64-lightgrey.svg)](https://en.wikipedia.org/wiki/X86-64)
 [![Build Status](https://github.com/tempest-foundation/wt-src/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/tempest-foundation/wt-src/actions/workflows/build.yml?branch=main)
@@ -55,4 +55,4 @@ You can see the documentation of the project [here](docs/Main.md)
 
 ## License
 
-This project is licensed under the `Liberty Software License 2.0`. Click [here](LICENSE) for more details.
+This project is licensed under the `GNU General Public License 3.0 (GPLv3)`. Click [here](LICENSE) for more details.
