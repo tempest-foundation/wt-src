@@ -52,6 +52,8 @@ char *
 	if (negative && rev < end - 1)
 		*rev++ = '-';
 
+	*rev = '\0';
+
 	// Reverse string
 	for (char *p1 = buf, *p2 = rev - 1; p1 < p2; p1++, p2--) {
 		char tmp = *p1;
