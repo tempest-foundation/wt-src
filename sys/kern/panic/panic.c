@@ -45,7 +45,12 @@
 #define PANIC_INVALID_OPCODE \
 	16  // For some reason, this is every time used instead of the proper ones.
 
-unsigned int seconds_to_reboot = 5;
+/*
+ * 0 is poweroff
+ * 1 is reboot
+ */
+int          typeAcpi           = 1;
+unsigned int seconds_until_acpi = 5;
 
 // Get kpanic message based on error code.
 static const char *
@@ -207,22 +212,39 @@ void
 		panic_dump_registers(regs);
 	}
 
-	panic_puts("System will reboot in ");
-	kitoa(buff, buff + 14, seconds_to_reboot, 10, 0);
+	if (typeAcpi == 0) {
+		panic_puts("System will poweroff in ");
+	} else {
+		panic_puts("System will reboot in ");
+	}
+	kitoa(buff, buff + 14, seconds_until_acpi, 10, 0);
 	panic_puts(buff);
 	panic_puts(" seconds...\n");
 
 	//  \_(ツ)_/¯
-	for (unsigned int i = seconds_to_reboot; i > 0; --i) {
-		panic_puts("Rebooting in ");
+	for (unsigned int i = seconds_until_acpi; i > 0; --i) {
+		if (typeAcpi == 0) {
+			panic_puts("Powering off in ");
+		} else {
+			panic_puts("Rebooting in ");
+		}
 		kitoa(buff, buff + 14, i, 10, 0);
 		panic_puts(buff);
-		panic_puts(" seconds...\n");
-		ksleep(1000);
+		if (i == 1) {
+			panic_puts(" second...\n");
+		} else {
+			panic_puts(" seconds...\n");
+			ksleep(1000);
+		}
 	}
 
-	panic_puts("Rebooting now...\n");
-	acpi.reboot();
+	if (typeAcpi == 0) {
+		panic_puts("Powering off now...\n");
+		acpi.poweroff();
+	} else {
+		panic_puts("Rebooting now...\n");
+		acpi.reboot();
+	}
 
 	for (;;)
 		__asm__ volatile("hlt");
