@@ -11,7 +11,7 @@ project root is:
 | net       | Network subsystem (future)                                                       |
 | crypto    | Cryptographic subsystem (future)                                                 |
 | auth      | Authentication subsystem (future)                                                |
-| dev       | Basic drivers for kernel                                                         |
+| drv       | Basic drivers for kernel                                                         |
 | fs        | File system support                                                              |
 | kern      | Core of the kernel, like `mm` and `init`                                         |
 | lib       | Basic kernel-only LibC (may be removed in case the project expands)              |
