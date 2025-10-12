@@ -24,9 +24,17 @@ OUT_DIR := $(BUILD_DIR)/out
 ISO_DIR := $(BUILD_DIR)/isodir
 BOOT_DIR := $(ISO_DIR)/boot
 
-# Limine bootloader
+# ==============================================================================
+# Limine Bootloader
+# ==============================================================================
 LIMINE_DIR := stand/limine
 LIMINE_CFG := $(LIMINE_DIR)/limine.conf
+
+LIMINE_FILES := \
+	$(LIMINE_DIR)/limine-bios.sys \
+	$(LIMINE_DIR)/limine-bios-cd.bin \
+	$(LIMINE_DIR)/limine-uefi-cd.bin \
+	$(LIMINE_DIR)/BOOTX64.EFI
 
 # ==============================================================================
 # Output Files
@@ -37,18 +45,8 @@ ISO_FILE := $(OUT_DIR)/wt.iso
 DISK_FILE := $(BUILD_DIR)/hard-drive.img
 
 # ==============================================================================
-# Limine Files
-# ==============================================================================
-LIMINE_FILES := \
-	$(LIMINE_DIR)/limine-bios.sys \
-	$(LIMINE_DIR)/limine-bios-cd.bin \
-	$(LIMINE_DIR)/limine-uefi-cd.bin \
-	$(LIMINE_DIR)/BOOTX64.EFI
-
-# ==============================================================================
 # Compiler Flags
 # ==============================================================================
-# Base C flags (common to all modes)
 # Base C flags (common to all modes)
 BASE_CFLAGS := \
 	-std=c17 \
@@ -80,14 +78,25 @@ ifeq ($(MODE),Debug)
     MODE_CFLAGS := -Og -g1
     STRIP_DEBUG := false
 else ifeq ($(MODE),Release)
-    MODE_CFLAGS := -O3 -march=x86-64 -mtune=generic -fno-omit-frame-pointer
+    # ! Warning! LTO is not supported here!!!
+    # * See, most of the kernel is coded on the C programming language. Which
+    # * It self, you can use a normal LTO and it will optimize the code with no
+    # * problems.
+    # ? That should be a great idea to implement also in the x86 assmembly files?
+    # ! NO! NO FUCKING WAY, IT WILL BLOW THE WHOLE KERNEL!
+    # * This is a normal serial output using LTO in the Linker+CFlags:
+    # 		Oops! Your system crashed
+    # 
+    #
+    # 		Oops! Your system crashed
+    #
+    #
+    # 		Oops! Your system crashed
+    MODE_CFLAGS := -O3 -march=native -mtune=generic -fno-omit-frame-pointer
     STRIP_DEBUG := true
 else
     $(error Invalid MODE '$(MODE)'. Use 'Debug' or 'Release')
 endif
-
-# Combined C flags
-CFLAGS := $(BASE_CFLAGS) $(WARNING_CFLAGS) $(OPTIMIZE_CFLAGS) $(MODE_CFLAGS)
 
 # Linker flags
 LDFLAGS := \
@@ -123,18 +132,22 @@ CFLAGS := $(BASE_CFLAGS) $(WARNING_CFLAGS) $(OPTIMIZE_CFLAGS) $(MODE_CFLAGS) $(A
 # ==============================================================================
 # Source Files and Objects
 # ==============================================================================
-C_SOURCES := $(shell (find $(SRC_DIR) -type f -name '*.c' | grep -v '^$(SRC_DIR)/arch/' ; find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.c' 2>/dev/null) )
-ASM_SOURCES := $(shell (find $(SRC_DIR) -type f -name '*.asm' | grep -v '^$(SRC_DIR)/arch/' ; find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.asm' 2>/dev/null) )
 
-C_OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(C_SOURCES))
-ASM_OBJECTS := $(patsubst $(SRC_DIR)/%.asm,$(OBJ_DIR)/%.o,$(ASM_SOURCES))
+C_SOURCES := \
+	$(shell \
+		find $(SRC_DIR) -type f -name '*.c' ! -path "$(SRC_DIR)/arch/*" ; \
+		find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.c' 2>/dev/null \
+	)
+
+ASM_SOURCES := \
+	$(shell \
+		find $(SRC_DIR) -type f -name '*.asm' ! -path "$(SRC_DIR)/arch/*" ; \
+		find $(SRC_DIR)/arch/$(PLATFORM) -type f -name '*.asm' 2>/dev/null \
+	)
+
+C_OBJECTS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(C_SOURCES))
+ASM_OBJECTS := $(patsubst $(SRC_DIR)/%.asm, $(OBJ_DIR)/%.o, $(ASM_SOURCES))
 ALL_OBJECTS := $(C_OBJECTS) $(ASM_OBJECTS)
-
-# Dependency files
-DEPS := $(C_OBJECTS:.o=.d)
-
-# Linker script
-LINKER_SCRIPT := $(SRC_DIR)/arch/$(PLATFORM)/linker.ld
 
 # Dependency files
 DEPS := $(C_OBJECTS:.o=.d)
@@ -151,7 +164,8 @@ QEMU_FLAGS := \
 	-machine hpet=on \
 	-m 128M \
 	-serial mon:stdio \
-	-drive file=$(DISK_FILE),format=raw,if=ide
+	-drive file=$(DISK_FILE),format=raw,if=ide \
+	-display sdl
 
 QEMU_CMD := qemu-system-x86_64 $(QEMU_FLAGS)
 
