@@ -85,14 +85,18 @@ else ifeq ($(MODE),Release)
     # ? That should be a great idea to implement also in the x86 assmembly files?
     # ! NO! NO FUCKING WAY, IT WILL BLOW THE WHOLE KERNEL!
     # * This is a normal serial output using LTO in the Linker+CFlags:
-    # 		Oops! Your system crashed
-    # 
-    #
-    # 		Oops! Your system crashed
-    #
-    #
-    # 		Oops! Your system crashed
-    MODE_CFLAGS := -O3 -march=native -mtune=generic -fno-omit-frame-pointer
+    # *		Oops! Your system crashed
+    # *
+    # *
+    # *	 	Oops! Your system crashed
+    # * 
+    # *
+    # *		Oops! Your system crashed
+    # ! Don't put native yet, in boot, it will boot-loop with the kernel panic
+    # ! like in this example output, if you really want to activate native
+    # ! to insert modern instructions, you first need to make it detect and
+    # ! activate in boot.
+    MODE_CFLAGS := -O3 -march=x86-64 -mtune=generic -fno-omit-frame-pointer
     STRIP_DEBUG := true
 else
     $(error Invalid MODE '$(MODE)'. Use 'Debug' or 'Release')
@@ -128,6 +132,14 @@ else
 endif
 
 CFLAGS := $(BASE_CFLAGS) $(WARNING_CFLAGS) $(OPTIMIZE_CFLAGS) $(MODE_CFLAGS) $(ARCH_DEFS) -I$(ARCH_INCLUDE)
+
+ifneq ($(filter -march=native,$(CFLAGS)),)
+    $(error -march=native is NOT supported on Tempest, use -march=x86_64 or other arch)
+endif
+
+ifneq ($(filter -flto,$(CFLAGS)),)
+    $(error -flto is NOT supported on Tempest)
+endif
 
 # ==============================================================================
 # Source Files and Objects

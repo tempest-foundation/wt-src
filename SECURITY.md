@@ -1,7 +1,3 @@
 # Wind/Tempest Project - Security
 
-Wind/Tempest is a hobby operating system and is **not safe for use in production or critical environments**.  
-
-If you discover any security issues or vulnerabilities, please report them via GitHub Issues.  
-
-Use at your own **risk**.
+Wind/Tempest is currently in alpha/pre-beta. Do **not** use on production or critical systems. We are **not responsible** for any hardware damage, data loss, or other issues.

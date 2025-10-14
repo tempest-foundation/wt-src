@@ -1,6 +1,6 @@
 # Wind/Tempest Project - Contributing
 
-Contributing is very easy in Wind/Tempest.  It is just a few steps:
+Contributing is very easy in Wind/Tempest. It is just a few steps:
 
 1. Fork the project on GitHub
 2. Make the changes in a new branch

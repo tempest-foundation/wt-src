@@ -1,6 +1,6 @@
 ![Project logo](share/logo/both/wind-tempest-low.png)
 
-# Wind/Tempest Project - README
+# Wind/Tempest Project
 
 [![Most used language](https://img.shields.io/github/languages/top/tempest-foundation/wt-src?logo=c&label=)](https://github.com/tempest-foundation/wt-src/tree/main)
 [![License: GPL 3.0](https://img.shields.io/badge/license-GPLv3.0-blue.svg)](LICENSE)
@@ -9,23 +9,14 @@
 [![Build Status](https://github.com/tempest-foundation/wt-src/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/tempest-foundation/wt-src/actions/workflows/build.yml?branch=main)
 [![Code Quality](https://app.codacy.com/project/badge/Grade/7e4e0ee89b95461baf590c1ab5f96b20)](https://app.codacy.com/gh/tempest-foundation/wt-src/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-## Table of Contents
+> A minimal, lightweight, and extensible operating system + kernel
 
-- [About](#about)
-- [Documentation](#documentation)
-- [Screenshots](#screenshots)
-- [Philosophy](#philosophy)
-- [Star History](#star-history)
-- [Contributors](#contributors)
-- [License](#license)
-
-## About
-
-Wind/Tempest Project is a operating system and kernel focused to be minimal, lightweight and extensible.
+> [!WARNING]
+> Wind/Tempest is currently in alpha/pre-beta. Do **not** use on production or critical systems. We are **not responsible** for any hardware damage, data loss, or other issues.
 
 ## Documentation
 
-You can see the documentation of the project [here](docs/Main.md)
+You can see the documentation of the project [here](docs/Master.md)
 
 ## Screenshots
 
