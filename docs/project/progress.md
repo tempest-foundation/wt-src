@@ -24,6 +24,7 @@
 
 - [x] Syscall interface
 - [ ] User-space binary loading (.ELF)
+- [x] TTY-like subsystem
 - [x] Privilege separation (rings, even if basic)
 - [ ] Module loading (e.g., drivers)
 - [ ] Package manager (not sure yet)

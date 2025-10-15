@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-3-0-only
+// SPDX-License-Identifier: GPL-3.0-only
 /*
  * -- BEGIN METADATA HEADER --
  * The Wind/Tempest Project
@@ -16,11 +16,38 @@
 #include <kstdio.h>
 #include <kstring.h>
 
+#include "vfs_fs_ops.h"
+
 #include <fs/ext2/ext2.h>
 
-// TODO: Implement a redirect to ext2 to not use hardcode calls to ext2
+static char                 cwd_path[256] = "/";
+static vfs_fs_operations_t *root_fs       = KNULL;
 
-static char cwd_path[256] = "/";
+/**
+ * @brief Registers a filesystem driver with the VFS
+ */
+void
+    vfs_register_fs (vfs_fs_operations_t *fs_ops) {
+	// TODO: Could maintain a list of registered filesystems here
+	// For now, we just use root_fs
+	(void) fs_ops;
+}
+
+/**
+ * @brief Sets the active root filesystem
+ */
+void
+    vfs_set_root_fs (vfs_fs_operations_t *fs_ops) {
+	root_fs = fs_ops;
+}
+
+/**
+ * @brief Gets the current root filesystem operations
+ */
+vfs_fs_operations_t *
+    vfs_get_root_fs (void) {
+	return root_fs;
+}
 
 /**
  * @brief Retrieves the current working directory path.
@@ -154,28 +181,39 @@ void
  * @brief Changes the current working directory.
  *
  * Resolves the provided @p path to an absolute, normalized path, attempts to open it
- * as a directory using the underlying filesystem (currently ext2), and if successful,
+ * as a directory using the underlying filesystem, and if successful,
  * sets the process's current working directory to the resolved path.
  *
  * @param path Path to the directory to change to.  Can be relative or absolute.
  * @return 0 on success, or a negative error code on failure.
  *
  *         Returns an error if:
+ *           - No root filesystem is registered.
  *           - The directory does not exist.
  *           - The path does not refer to a directory.
  *           - A filesystem-specific error occurs.
  */
 int
     vfs_chdir (const char *path) {
+	if (!root_fs || !root_fs->open || !root_fs->is_directory)
+		return -1;  // No filesystem registered
+
 	char resolved[256] = {0};
 	vfs_resolve(path, resolved, sizeof(resolved));
 
-	ext2_file_t dir;
-	int         rc = ext2.open(resolved, &dir);
+	vfs_file_t file = {0};
+	int        rc   = root_fs->open(resolved, &file);
 	if (rc != 0)
-		return rc;  // Propagate ext2 error
-	if (!(dir.inode.mode & 0x4000))
+		return rc;  // Propagate filesystem error
+
+	if (!root_fs->is_directory(&file)) {
+		if (root_fs->close)
+			root_fs->close(&file);
 		return -1;  // Not a directory
+	}
+
+	if (root_fs->close)
+		root_fs->close(&file);
 
 	kstrcpy(cwd_path, resolved);
 	return 0;
