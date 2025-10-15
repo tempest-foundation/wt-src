@@ -14,9 +14,8 @@
 #include <kstdio.h>
 #include <kutoa.h>
 
-#include <drv/driver.h>
+#include <drv/tty/tty.h>
 
-// ? I think this is... safe?
 void
     kputhex (kuint64_t n) {
 	static const char *hex = "0123456789ABCDEF";
@@ -34,9 +33,8 @@ void
 	}
 
 	int start = 0;
-	while (start < 16 && buf[start] == '0') {
+	while (start < 16 && buf[start] == '0')
 		start++;
-	}
 
 	kputs(&buf[start]);
 }
@@ -63,14 +61,21 @@ void
 
 void
     kputs (const char *s) {
-	video.puts(s);
+	if (!s)
+		return;
+	while (*s) {
+		main_tty.write_char(*s++);
+	}
 	kputchar('\n');
 }
 
 int
     kvsnprintf (char *buffer, ksize_t size, const char *format, va_list args) {
 	char *out = buffer;
-	char *end = buffer + size - 1;
+	char *end = buffer + (size ? size - 1 : 0);
+
+	if (size == 0)
+		return 0;
 
 	for (const char *p = format; *p && out < end; ++p) {
 		if (*p != '%') {
@@ -89,20 +94,19 @@ int
 			width = width * 10 + (*p++ - '0');
 		}
 
-		char temp[32];
-		// Handle length modifier for long long ("ll")
-		int long_long = 0;
+		char  temp[64];
+		char *t         = temp;
+		int   long_long = 0;
 		if (*p == 'l' && *(p + 1) == 'l') {
 			long_long = 1;
-			p += 2;  // Skip the two 'l's
+			p += 2;
 		}
 
-		char *t = temp;
-
-		// Use long_long flag to choose value width
 		switch (*p) {
 			case 's': {
 				const char *s = k_va_arg(args, const char *);
+				if (!s)
+					s = "(null)";
 				while (*s && t < temp + sizeof(temp) - 1) {
 					*t++ = *s++;
 				}
@@ -176,6 +180,7 @@ int
 				break;
 			}
 		}
+
 		++p;
 
 		ksize_t len = (ksize_t) (t - temp);
@@ -184,9 +189,8 @@ int
 			while (pad-- > 0 && out < end)
 				*out++ = ' ';
 		}
-		for (ksize_t i = 0; i < len && out < end; ++i) {
+		for (ksize_t i = 0; i < len && out < end; ++i)
 			*out++ = temp[i];
-		}
 		if (left_align) {
 			while (pad-- > 0 && out < end)
 				*out++ = ' ';
@@ -221,10 +225,8 @@ int
 		}
 		p++;
 
-		// Field width and left alignment
 		int left_align = 0;
 		int width      = 0;
-
 		if (*p == '-') {
 			left_align = 1;
 			p++;
@@ -234,7 +236,6 @@ int
 			p++;
 		}
 
-		// Handle "ll" length modifier (for %llu)
 		int long_long = 0;
 		if (*p == 'l' && *(p + 1) == 'l') {
 			long_long = 1;
@@ -243,32 +244,28 @@ int
 
 		switch (*p) {
 			case 's': {
-				const char *s   = k_va_arg(args, const char *);
+				const char *s = k_va_arg(args, const char *);
+				if (!s)
+					s = "(null)";
 				int         len = 0;
 				const char *t   = s;
 				while (*t++)
 					len++;
-
 				int pad = (width > len) ? (width - len) : 0;
-
-				if (!left_align) {
+				if (!left_align)
 					for (int i = 0; i < pad; ++i) {
 						kputchar(' ');
 						count++;
 					}
-				}
-
 				for (int i = 0; i < len; ++i) {
 					kputchar(s[i]);
 					count++;
 				}
-
-				if (left_align) {
+				if (left_align)
 					for (int i = 0; i < pad; ++i) {
 						kputchar(' ');
 						count++;
 					}
-				}
 				break;
 			}
 
@@ -295,22 +292,20 @@ int
 					}
 					int len = 20 - idx;
 					int pad = (width > len) ? width - len : 0;
-					if (!left_align) {
+					if (!left_align)
 						for (int i = 0; i < pad; ++i) {
 							kputchar(' ');
 							count++;
 						}
-					}
 					for (int i = idx; i < 20; ++i) {
 						kputchar(buf[i]);
 						count++;
 					}
-					if (left_align) {
+					if (left_align)
 						for (int i = 0; i < pad; ++i) {
 							kputchar(' ');
 							count++;
 						}
-					}
 				} else {
 					int n = k_va_arg(args, int);
 					if (n < 0) {
@@ -318,16 +313,18 @@ int
 						count++;
 						n = -n;
 					}
-					kputdec((kuint32_t) n);
+					// measure digits to update count
 					int temp = n, digits = 1;
 					while (temp >= 10) {
 						temp /= 10;
 						digits++;
 					}
+					kputdec((kuint32_t) n);
 					count += digits;
 				}
 				break;
 			}
+
 			case 'x': {
 				if (long_long) {
 					kuint64_t n = k_va_arg(args, kuint64_t);
@@ -352,6 +349,7 @@ int
 				}
 				break;
 			}
+
 			case 'c': {
 				char c = (char) k_va_arg(args, int);
 				kputchar(c);
@@ -364,6 +362,7 @@ int
 				count++;
 				break;
 			}
+
 			case 'u': {
 				if (long_long) {
 					kuint64_t n = k_va_arg(args, kuint64_t);
@@ -381,22 +380,20 @@ int
 					}
 					int len = 20 - idx;
 					int pad = (width > len) ? width - len : 0;
-					if (!left_align) {
+					if (!left_align)
 						for (int i = 0; i < pad; ++i) {
 							kputchar(' ');
 							count++;
 						}
-					}
 					for (int i = idx; i < 20; ++i) {
 						kputchar(buf[i]);
 						count++;
 					}
-					if (left_align) {
+					if (left_align)
 						for (int i = 0; i < pad; ++i) {
 							kputchar(' ');
 							count++;
 						}
-					}
 				} else {
 					unsigned int n = k_va_arg(args, unsigned int);
 					kputdec(n);
@@ -410,11 +407,13 @@ int
 				}
 				break;
 			}
-			default:
+
+			default: {
 				kputchar('%');
 				kputchar(*p);
 				count += 2;
 				break;
+			}
 		}
 	}
 
@@ -424,5 +423,5 @@ int
 
 void
     kputchar (int c) {
-	video.put_char((char) c);
+	main_tty.write_char((char) c);
 }

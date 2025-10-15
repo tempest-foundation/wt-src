@@ -21,12 +21,13 @@
 
 #include <dbg/logger.h>
 #include <drv/driver.h>
+#include <drv/tty/tty.h>
 #include <fs/ext2/ext2.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/mb/mb.h>
 #include <kern/memory/memory.h>
 #include <kern/syscall/integration.h>
-#include <shell/shell.h>
+#include <kshell/kernSh.h>
 
 /**
  * @brief Entry point for the kernel initialization sequence.
@@ -72,9 +73,9 @@ void
 		logger.err("fs", "EXT2 mount failed", KNULL);
 
 	kcpu_init_brand();
-	keyboard.init();
 
 	__asm__ volatile("sti");
 
+	tty.init();
 	kshell();
 }
