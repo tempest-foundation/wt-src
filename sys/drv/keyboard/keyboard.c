@@ -11,7 +11,8 @@
  * Copyright (C) 2025 Tempest Foundation
  * -- END OF METADATA HEADER --
  */
-#include "drv/keyboard/keyboard.h"
+#include <drv/keyboard/keyboard.h>
+#include <drv/tty/tty.h>
 
 #ifdef ARCH_AMD64
 #	include <arch/amd64/asm/kio.h>
@@ -86,10 +87,7 @@ static void
 		c = keyboard.adjust_case(c);
 
 		if (c != 0) {
-			if ((kbd_buffer_head + 1) % KBD_BUFFER_SIZE != kbd_buffer_tail) {
-				kbd_buffer[kbd_buffer_head] = c;
-				kbd_buffer_head = (kbd_buffer_head + 1) % KBD_BUFFER_SIZE;
-			}
+			tty.receive_char((char) c);
 		}
 	}
 }
