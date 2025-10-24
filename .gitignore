@@ -1,0 +1,18 @@
+# Ignore the IDE folders
+.vscode/
+.idea/
+.codacy/
+
+# Ignore build folder
+build/
+isodir/
+./qemu.log
+
+# Ignore tools generated files
+analyzed/
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+
+# Ignore KDE Plasma directory icons
+.directory

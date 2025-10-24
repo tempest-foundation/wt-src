@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: GPL-3.0-only
+/*
+ * -- BEGIN METADATA HEADER --
+ * <*---The Wind/Tempest Project---*>
+ * 
+ * Author(s)  : Tempik25 <tempik25@tempestfoundation.org>
+ * Maintainer : Tempest Foundation <development@tempestfoundation.org>
+ * 
+ * Copyright (c) Tempest Foundation, 2025
+ * -- END OF METADATA HEADER --
+ */
+#include <kstdint.h>
+
+#include <dbg/logger.h>
+#include <kern/syscall/syscall.h>
+
+uint64_t
+    sys_exit(uint64_t syscall_no __attribute__((unused)),
+             uint64_t status,
+             uint64_t arg1 __attribute__((unused)),
+             uint64_t arg2 __attribute__((unused)),
+             uint64_t arg3 __attribute__((unused)),
+             uint64_t arg4 __attribute__((unused)),
+             uint64_t arg5 __attribute__((unused))) {
+	logger::printf("syscall", "info", "Process exit with status %llu\n", status);
+	// TODO: Implement actual process termination
+	return SYSCALL_NOT_IMPLEMENTED;
+}

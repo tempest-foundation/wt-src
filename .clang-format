@@ -1,0 +1,81 @@
+BasedOnStyle: Google
+
+IndentWidth: 8
+UseTab: ForIndentation
+TabWidth: 8
+IndentCaseLabels: true
+NamespaceIndentation: All
+IndentWrappedFunctionNames: true
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AlignOperands: true
+AlignTrailingComments: true
+AlignAfterOpenBracket: Align
+
+ColumnLimit: 90
+MaxEmptyLinesToKeep: 1
+PenaltyReturnTypeOnItsOwnLine: 0
+PenaltyBreakAssignment: 5
+PenaltyBreakBeforeFirstCallParameter: 5
+
+BreakBeforeBraces: Attach
+BreakAfterReturnType: TopLevel
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AlwaysBreakTemplateDeclarations: true
+AlwaysBreakAfterReturnType: TopLevel
+BreakBeforeTernaryOperators: true
+
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Never
+AllowShortEnumsOnASingleLine: false
+
+DerivePointerAlignment: false
+PointerAlignment: Right
+
+SpaceAfterCStyleCast: true
+SpaceBeforeAssignmentOperators: true
+SpaceInEmptyParentheses: false
+
+SpaceBeforeParens: Never
+SpacesInParens: Custom
+SpacesInParensOptions:
+  ExceptDoubleParentheses: false
+  InConditionalStatements: true
+  InEmptyParentheses: false
+
+SpacesInContainerLiterals: false
+SpacesInAngles: false
+
+IndentPPDirectives: AfterHash
+
+SortUsingDeclarations: true
+CommentPragmas: '^.*$'
+ReflowComments: false # Breaks header comments, keep in false
+KeepEmptyLinesAtTheStartOfBlocks: true
+EmptyLineAfterAccessModifier: Always
+FixNamespaceComments: true
+SeparateDefinitionBlocks: Always
+Cpp11BracedListStyle: true
+
+BinPackArguments: false
+BinPackParameters: false
+
+BreakBeforeBinaryOperators: NonAssignment
+
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<[^/]+>'
+    Priority: 1
+  - Regex: '^"(.*)"$'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3
+
+AlignConsecutiveBitFields: false
