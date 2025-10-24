@@ -29,6 +29,7 @@ You can see the documentation of the project [here](docs/master.md)
 - Transparency: Inspect every line.
 - Self-reliance: No hand-holding, patches welcome.
 - Simplicity: Features exist because someone coded them.
+- Refactor: If trash-code, rewrite the entire subsystem.
 
 ## Star History
 
