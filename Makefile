@@ -184,7 +184,9 @@ LINKER_SCRIPT := $(SRC_DIR)/arch/$(PLATFORM)/linker.ld
 QEMU_FLAGS := \
 	-cdrom $(ISO_FILE) \
 	-vga vmware \
+	-cpu host \
 	-machine hpet=on \
+	-enable-kvm \
 	-m 128M \
 	-serial mon:stdio \
 	-drive file=$(DISK_FILE),format=raw,if=ide \

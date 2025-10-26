@@ -14,7 +14,9 @@
 #include <kstdio.h>
 
 #include "kern/framebuf/framebuf.h"
-
+#ifdef ARCH_AMD64
+#	include <arch/amd64/cpu/halt.h>
+#endif
 #include <dbg/logger.h>
 
 // Multiboot2 header structure.
@@ -51,71 +53,78 @@ typedef enum {
 	MULTIBOOT_TAG_TYPE_FRAMEBUFFER = 8
 } multiboot_tag_type_t;
 
-/**
- * @brief Parse the multiboot information given by the bootloader
- * @param mb_info Pointer to the multiboot information structure
- * given by the bootloader
- * @warning The whole system depends on the multiboot information,
- * If none, you are fucked
- */
-void
-    parse_multiboot_info(void *mb_info) {
-	if( mb_info == nullptr ) {
-		logger::puts("mb", "error", "mb_info is NULL!");
-		return;
-	}
-
-	uint32_t total_size = *(uint32_t *) mb_info;
-	uint8_t *current    = (uint8_t *) ((uintptr_t) mb_info + 8);
-	uint8_t *end        = (uint8_t *) ((uintptr_t) mb_info + total_size);
-
-	logger::puts("mb", "info", "Parsing multiboot info...");
-
-	while( current < end ) {
-		struct multiboot_tag *tag = (struct multiboot_tag *) current;
-
-		if( tag->size == 0 ) {
-			logger::error("mb", "error", "Invalid tag size (0)");
-			return;
+namespace multiboot {
+	/**
+	 * @brief Parse the multiboot information given by the bootloader
+	 * @param mb_info Pointer to the multiboot information structure
+	 * given by the bootloader
+	 * @warning The whole system depends on the multiboot information,
+	 * If none, you are fucked
+	 */
+	void parse(void *mb_info) {
+		if( mb_info == nullptr ) {
+			logger::debug::puts(
+			    "mb", "error", "mb_info is EMPTY! Halting...");
+			amd64::halt();
 		}
 
-		switch( (multiboot_tag_type_t) tag->type ) {
-			case MULTIBOOT_TAG_TYPE_END:
-				logger::puts(
-				    "mb", "info", "End tag found. Parsing complete.");
+		uint32_t total_size = *(uint32_t *) mb_info;
+		uint8_t *current    = (uint8_t *) ((uintptr_t) mb_info + 8);
+		uint8_t *end        = (uint8_t *) ((uintptr_t) mb_info + total_size);
+
+		logger::debug::puts("mb", "info", "Parsing multiboot info...");
+
+		while( current < end ) {
+			struct multiboot_tag *tag = (struct multiboot_tag *) current;
+
+			if( tag->size == 0 ) {
+				logger::error("mb", "error", "Invalid tag size (0)");
 				return;
-
-			case MULTIBOOT_TAG_TYPE_FRAMEBUFFER: {
-				logger::puts("mb", "info", "Framebuffer tag found");
-
-				struct multiboot_tag_framebuffer *fb_tag =
-				    (struct multiboot_tag_framebuffer *) tag;
-
-				fb_info.pitch            = fb_tag->pitch;
-				fb_info.width            = fb_tag->width;
-				fb_info.height           = fb_tag->height;
-				fb_info.bpp              = fb_tag->bpp;
-				fb_info.type             = fb_tag->type_fb;
-				fb_info.red_mask_size    = fb_tag->red_mask_size;
-				fb_info.red_mask_shift   = fb_tag->red_mask_shift;
-				fb_info.green_mask_size  = fb_tag->green_mask_size;
-				fb_info.green_mask_shift = fb_tag->green_mask_shift;
-				fb_info.blue_mask_size   = fb_tag->blue_mask_size;
-				fb_info.blue_mask_shift  = fb_tag->blue_mask_shift;
-
-				map_framebuffer_address(fb_tag->addr);
-				break;
 			}
 
-			default:
-				// Unhandled tag
-				// ! DO NOT FUCKING PRINT A ERROR MESSAGE
-				// ! THIS IS NOT A ERROR, JUST A UNHANDLED TAG
-				break;
+			switch( (multiboot_tag_type_t) tag->type ) {
+				case MULTIBOOT_TAG_TYPE_END:
+					logger::debug::puts(
+					    "mb",
+					    "info",
+					    "End tag found. Parsing complete.");
+					return;
+
+				case MULTIBOOT_TAG_TYPE_FRAMEBUFFER: {
+					logger::debug::puts(
+					    "mb", "info", "Framebuffer tag found");
+
+					struct multiboot_tag_framebuffer *fb_tag =
+					    (struct multiboot_tag_framebuffer *) tag;
+
+					fb_info.pitch           = fb_tag->pitch;
+					fb_info.width           = fb_tag->width;
+					fb_info.height          = fb_tag->height;
+					fb_info.bpp             = fb_tag->bpp;
+					fb_info.type            = fb_tag->type_fb;
+					fb_info.red_mask_size   = fb_tag->red_mask_size;
+					fb_info.red_mask_shift  = fb_tag->red_mask_shift;
+					fb_info.green_mask_size = fb_tag->green_mask_size;
+					fb_info.green_mask_shift =
+					    fb_tag->green_mask_shift;
+					fb_info.blue_mask_size  = fb_tag->blue_mask_size;
+					fb_info.blue_mask_shift = fb_tag->blue_mask_shift;
+
+					framebuf::map_address(fb_tag->addr);
+					break;
+				}
+
+				default:
+					// Unhandled tag
+					// ! DO NOT FUCKING PRINT A ERROR MESSAGE
+					// ! THIS IS NOT A ERROR, JUST A UNHANDLED TAG
+					break;
+			}
+
+			current += (tag->size + 7) & (uint32_t) ~7;  // align to 8 bytes
 		}
 
-		current += (tag->size + 7) & (uint32_t) ~7;  // align to 8 bytes
+		logger::debug::puts(
+		    "mb", "info", "Reached end of multiboot info (no END tag)");
 	}
-
-	logger::puts("mb", "info", "Reached end of multiboot info (no END tag)");
-}
+}  // namespace multiboot

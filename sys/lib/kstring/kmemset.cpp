@@ -12,7 +12,7 @@
 #include <kstddef.h>
 #include <kstdint.h>
 
-namespace string {
+namespace kstring {
 	void *memset(void *s, int c, size_t n) {
 		if( !s )
 			return nullptr;
@@ -25,4 +25,4 @@ namespace string {
 
 		return s;
 	}
-}  // namespace string
+}  // namespace kstring

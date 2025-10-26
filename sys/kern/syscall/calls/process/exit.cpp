@@ -22,7 +22,8 @@ uint64_t
              uint64_t arg3 __attribute__((unused)),
              uint64_t arg4 __attribute__((unused)),
              uint64_t arg5 __attribute__((unused))) {
-	logger::printf("syscall", "info", "Process exit with status %llu\n", status);
+	logger::debug::printf(
+	    "syscall", "info", "Process exit with status %llu\n", status);
 	// TODO: Implement actual process termination
 	return SYSCALL_NOT_IMPLEMENTED;
 }

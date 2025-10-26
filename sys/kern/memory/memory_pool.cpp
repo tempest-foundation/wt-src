@@ -29,16 +29,14 @@ namespace memory {
  * @return Pointer to the created memory_pool_t, or nullptr if allocation fails
  */
 		memory_pool_t *create(size_t block_size, size_t num_blocks) {
-			if( block_size == 0 || num_blocks == 0 ) {
+			if( block_size == 0 || num_blocks == 0 )
 				return nullptr;
-			}
 
 			// Allocate pool structure
 			memory_pool_t *pool =
 			    (memory_pool_t *) memory::malloc(sizeof(memory_pool_t));
-			if( !pool ) {
+			if( !pool )
 				return nullptr;
-			}
 
 			// Calculate total size needed
 			size_t total_size = num_blocks * block_size;
@@ -65,10 +63,9 @@ namespace memory {
 			pool->free_blocks  = num_blocks;
 
 			// Initialize free list
-			for( size_t i = 0; i < num_blocks; i++ ) {
+			for( size_t i = 0; i < num_blocks; i++ )
 				pool->free_list[i] =
 				    (uint8_t *) pool->pool_start + i * block_size;
-			}
 
 			return pool;
 		}
@@ -82,9 +79,8 @@ namespace memory {
  * @return Pointer to the allocated block, or nullptr if the pool is exhausted or invalid
  */
 		void *alloc(memory_pool_t *pool) {
-			if( !pool || pool->free_blocks == 0 ) {
+			if( !pool || pool->free_blocks == 0 )
 				return nullptr;
-			}
 
 			// Get next free block
 			void *block = pool->free_list[pool->free_blocks - 1];
@@ -102,9 +98,8 @@ namespace memory {
  * @param ptr Pointer to the memory block to free
  */
 		void free(memory_pool_t *pool, void *ptr) {
-			if( !pool || !ptr ) {
+			if( !pool || !ptr )
 				return;
-			}
 
 			// Check if pointer is within pool bounds
 			if( ptr < pool->pool_start
@@ -142,16 +137,13 @@ namespace memory {
  * @param pool Pointer to the memory_pool_t to destroy
  */
 		void destroy(memory_pool_t *pool) {
-			if( !pool ) {
+			if( !pool )
 				return;
-			}
 
-			if( pool->pool_start ) {
+			if( pool->pool_start )
 				memory::free(pool->pool_start);
-			}
-			if( pool->free_list ) {
+			if( pool->free_list )
 				memory::free(pool->free_list);
-			}
 			memory::free(pool);
 		}
 

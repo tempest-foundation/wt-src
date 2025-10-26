@@ -39,13 +39,13 @@ void
 	    "This is free software with ABSOLUTELY NO WARRANTY.\n"
 	    "You may redistribute and/or modify it under the terms of\n"
 	    "the GNU General Public License Version 3.\n"
-	    "Full license in the LICENSE file. Do not use if you disagree.");
+	    "Full license in the LICENSE file. Do not use if you disagree.\n");
 
 	for( ;; ) {
 		// ! Don't use `kstd::puts()` for that shit
 		// ! It will break the line from the command.
 		// * This `tty::write()` is like `fputs()`.
-		tty::write("\n[shell@tempest]@ ");
+		kstd::puts("\n[shell@tempest]@ ");
 		cmd_ptr        = 0;
 		input_overflow = 0;
 
@@ -63,7 +63,7 @@ void
 						    (size_t) kstd::strlen(cmd_buffer);
 						if( len >= CMD_BUFFER_SIZE )
 							len = CMD_BUFFER_SIZE - 1;
-						string::memcpy(
+						kstring::memcpy(
 						    command_history[history_count
 						                    % MAX_HISTORY],
 						    cmd_buffer,

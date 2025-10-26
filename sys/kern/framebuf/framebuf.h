@@ -17,5 +17,6 @@
 
 extern struct framebuffer_info fb_info;
 
-void
-    map_framebuffer_address(uint64_t phys_addr);
+namespace framebuf {
+	void map_address(uint64_t phys_addr);
+}

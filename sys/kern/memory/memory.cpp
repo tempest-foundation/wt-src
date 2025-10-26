@@ -219,7 +219,7 @@ namespace memory {
 
 				uint64_t phys = memory::get_physical_addr(frame);
 				pml3          = (pml3_t *) (phys + KERNEL_BASE);
-				string::memset(pml3, 0, PAGE_SIZE);
+				kstring::memset(pml3, 0, PAGE_SIZE);
 
 				current_pml4->entries[pml4_index] =
 				    phys | PAGE_PRESENT | PAGE_WRITABLE;
@@ -237,7 +237,7 @@ namespace memory {
 
 				uint64_t phys = memory::get_physical_addr(frame);
 				pml2          = (pml2_t *) (phys + KERNEL_BASE);
-				string::memset(pml2, 0, PAGE_SIZE);
+				kstring::memset(pml2, 0, PAGE_SIZE);
 
 				pml3->entries[pml3_index] =
 				    phys | PAGE_PRESENT | PAGE_WRITABLE;
@@ -255,7 +255,7 @@ namespace memory {
 
 				uint64_t phys = memory::get_physical_addr(frame);
 				pml1          = (pml1_t *) (phys + KERNEL_BASE);
-				string::memset(pml1, 0, PAGE_SIZE);
+				kstring::memset(pml1, 0, PAGE_SIZE);
 
 				pml2->entries[pml2_index] =
 				    phys | PAGE_PRESENT | PAGE_WRITABLE;
@@ -507,7 +507,7 @@ namespace memory {
 		size_t total_size = count * size;
 		void  *ptr        = malloc(total_size);
 		if( ptr ) {
-			string::memset(ptr, 0, total_size);
+			kstring::memset(ptr, 0, total_size);
 		}
 		return ptr;
 	}
@@ -528,7 +528,7 @@ namespace memory {
 
 		void *new_ptr = malloc(size);
 		if( new_ptr ) {
-			string::memcpy(new_ptr, ptr, block->size);
+			kstring::memcpy(new_ptr, ptr, block->size);
 			free(ptr);
 		}
 		return new_ptr;

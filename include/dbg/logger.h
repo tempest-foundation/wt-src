@@ -11,9 +11,17 @@
  */
 #pragma once
 
+extern bool d_enabled;
+
 namespace logger {
-	void puts(const char *subsystem, const char *type, const char *message);
-	int  printf(const char *subsystem, const char *type, const char *format, ...);
+	namespace debug {
+		void puts(const char *subsystem, const char *type, const char *message);
+		int  printf(const char *subsystem,
+		            const char *type,
+		            const char *format,
+		            ...);
+	}  // namespace debug
+
 	void crit(const char *s, const char *m, const char *e);
 	void alert(const char *s, const char *m, const char *e);
 	void emerg(const char *s, const char *m, const char *e);

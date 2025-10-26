@@ -13,7 +13,7 @@
 #include <kstrchr.h>
 #include <kstrtok.h>
 
-namespace string {
+namespace kstring {
 	static char *strtok_save = nullptr;
 
 	char *strtok(char *str, const char *delim) {
@@ -49,4 +49,4 @@ namespace string {
 
 		return token_start;
 	}
-}  // namespace string
+}  // namespace kstring

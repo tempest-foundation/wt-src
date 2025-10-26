@@ -28,28 +28,29 @@ namespace syscall {
 	          const char       *name,
 	          uint8_t           arg_count) {
 		if( syscall_no >= SYSCALL_MAX_COUNT ) {
-			logger::printf("syscall",
-			               "error",
-			               "Syscall number %llu is out of range\n",
-			               syscall_no);
+			logger::debug::printf("syscall",
+			                      "error",
+			                      "Syscall number %llu is out of range\n",
+			                      syscall_no);
 			return;
 		}
 
 		if( handler == nullptr ) {
-			logger::printf("syscall",
-			               "error",
-			               "Cannot register NULL handler for syscall %llu\n",
-			               syscall_no);
+			logger::debug::printf(
+			    "syscall",
+			    "error",
+			    "Cannot register NULL handler for syscall %llu\n",
+			    syscall_no);
 			return;
 		}
 
 		// Check if syscall is already registered
 		if( syscall_table[syscall_no].handler != nullptr ) {
-			logger::printf("syscall",
-			               "warn",
-			               "Overwriting existing syscall %llu (%s)\n",
-			               syscall_no,
-			               syscall_table[syscall_no].name);
+			logger::debug::printf("syscall",
+			                      "warn",
+			                      "Overwriting existing syscall %llu (%s)\n",
+			                      syscall_no,
+			                      syscall_table[syscall_no].name);
 		} else {
 			syscall_count++;
 		}
@@ -58,37 +59,37 @@ namespace syscall {
 		syscall_table[syscall_no].name      = name;
 		syscall_table[syscall_no].arg_count = arg_count;
 
-		logger::printf("syscall",
-		               "success",
-		               "Registered syscall %llu: %s (args: %u)\n",
-		               syscall_no,
-		               name,
-		               arg_count);
+		logger::debug::printf("syscall",
+		                      "success",
+		                      "Registered syscall %llu: %s (args: %u)\n",
+		                      syscall_no,
+		                      name,
+		                      arg_count);
 	}
 
 	// Unregister a syscall handler
 	void unbind(uint64_t syscall_no) {
 		if( syscall_no >= SYSCALL_MAX_COUNT ) {
-			logger::printf("syscall",
-			               "error",
-			               "Syscall number %llu is out of range\n",
-			               syscall_no);
+			logger::debug::printf("syscall",
+			                      "error",
+			                      "Syscall number %llu is out of range\n",
+			                      syscall_no);
 			return;
 		}
 
 		if( syscall_table[syscall_no].handler == nullptr ) {
-			logger::printf("syscall",
-			               "warn",
-			               "Syscall %llu is not registered\n",
-			               syscall_no);
+			logger::debug::printf("syscall",
+			                      "warn",
+			                      "Syscall %llu is not registered\n",
+			                      syscall_no);
 			return;
 		}
 
-		logger::printf("syscall",
-		               "success",
-		               "Unregistered syscall %llu: %s\n",
-		               syscall_no,
-		               syscall_table[syscall_no].name);
+		logger::debug::printf("syscall",
+		                      "success",
+		                      "Unregistered syscall %llu: %s\n",
+		                      syscall_no,
+		                      syscall_table[syscall_no].name);
 
 		syscall_table[syscall_no].handler   = nullptr;
 		syscall_table[syscall_no].name      = nullptr;
@@ -110,10 +111,10 @@ namespace syscall {
 		bind(SYS_READ, sys_read, "read", 3);
 		bind(SYS_WRITE, sys_write, "write", 3);
 
-		logger::printf("syscall",
-		               "success",
-		               "Initialized with %llu syscalls\n",
-		               syscall_count);
+		logger::debug::printf("syscall",
+		                      "success",
+		                      "Initialized with %llu syscalls\n",
+		                      syscall_count);
 	}
 
 	// Get syscall informationregisters_t *regs
@@ -153,10 +154,10 @@ namespace syscall {
 
 		// Check if syscall is valid
 		if( !is_valid(syscall_no) ) {
-			logger::printf("syscall",
-			               "error",
-			               "Invalid syscall number %llu\n",
-			               syscall_no);
+			logger::debug::printf("syscall",
+			                      "error",
+			                      "Invalid syscall number %llu\n",
+			                      syscall_no);
 			regs->rax = SYSCALL_INVALID;
 			return;
 		}
@@ -164,20 +165,20 @@ namespace syscall {
 		// Get syscall entry
 		const syscall_entry_t *entry = get_info(syscall_no);
 		if( entry == nullptr ) {
-			logger::printf("syscall",
-			               "error",
-			               "Failed to get syscall info for %llu\n",
-			               syscall_no);
+			logger::debug::printf("syscall",
+			                      "error",
+			                      "Failed to get syscall info for %llu\n",
+			                      syscall_no);
 			regs->rax = SYSCALL_ERROR;
 			return;
 		}
 
 		// Log syscall for debugging (can be disabled in production)
-		logger::printf("syscall",
-		               "notice",
-		               "Calling syscall %llu: %s\n",
-		               syscall_no,
-		               entry->name);
+		logger::debug::printf("syscall",
+		                      "notice",
+		                      "Calling syscall %llu: %s\n",
+		                      syscall_no,
+		                      entry->name);
 
 		// Call the syscall handler
 		uint64_t result =
@@ -186,11 +187,11 @@ namespace syscall {
 		// Return result in RAX
 		regs->rax = result;
 
-		logger::printf("syscall",
-		               "success",
-		               "Syscall %llu returned %llu\n",
-		               syscall_no,
-		               result);
+		logger::debug::printf("syscall",
+		                      "success",
+		                      "Syscall %llu returned %llu\n",
+		                      syscall_no,
+		                      result);
 	}
 }  // namespace syscall
 

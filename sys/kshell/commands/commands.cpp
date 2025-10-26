@@ -80,7 +80,7 @@ int
 	}
 
 	for( size_t i = 0; i < NUM_COMMANDS; ++i ) {
-		if( string::strcmp(cmd, commands[i].name) == 0 ) {
+		if( kstring::strcmp(cmd, commands[i].name) == 0 ) {
 			commands[i].handler(args);
 			return 0;
 		}

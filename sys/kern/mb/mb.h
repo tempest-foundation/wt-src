@@ -11,5 +11,6 @@
  */
 #pragma once
 
-void
-    parse_multiboot_info(void *mb_info);
+namespace multiboot {
+	void parse(void *mb_info);
+}

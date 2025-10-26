@@ -25,6 +25,6 @@ uint64_t
 	// TODO: Implement actual process ID retrieval
 	// For now, return a dummy PID
 	uint64_t pid = 1;
-	logger::printf("syscall", "info", "getpid returning PID %llu\n", pid);
+	logger::debug::printf("syscall", "info", "getpid returning PID %llu\n", pid);
 	return pid;
 }

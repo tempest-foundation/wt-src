@@ -31,10 +31,10 @@ namespace syscall {
 		// Enable/disable syscall logging
 		void set_logging(uint8_t enabled) {
 			syscall_logging = enabled;
-			logger::printf("syscall",
-			               "info",
-			               "Logging %s\n",
-			               enabled ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Logging %s\n",
+			                      enabled ? "ENABLED" : "DISABLED");
 		}
 
 		// Get syscall statistics
@@ -59,22 +59,22 @@ namespace syscall {
 
 		// Validate syscall infrastructure integrity
 		uint8_t validate(void) {
-			logger::printf("syscall",
-			               "info",
-			               "Validating infrastructure integrity...\n");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Validating infrastructure integrity...\n");
 
 			// Check that essential syscalls are registered
 			uint8_t validation_passed = 1;
 
 			// Test core syscalls
 			if( !syscall::is_valid(SYS_EXIT) ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall", "error", "SYS_EXIT not registered\n");
 				validation_passed = 0;
 			}
 
 			if( !syscall::is_valid(SYS_GETPID) ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall", "error", "SYS_GETPID not registered\n");
 				validation_passed = 0;
 			}
@@ -82,7 +82,7 @@ namespace syscall {
 			// Test that we can get syscall info
 			const syscall_entry_t *info = syscall::get_info(SYS_GETPID);
 			if( !info || !info->handler ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall",
 				    "error",
 				    "Cannot get info for SYS_GETPID syscall\n");
@@ -91,20 +91,23 @@ namespace syscall {
 
 			// Test invalid syscall handling
 			if( syscall::is_valid(999) ) {
-				logger::printf("syscall",
-				               "error",
-				               "Invalid syscall validation failed\n");
+				logger::debug::printf(
+				    "syscall",
+				    "error",
+				    "Invalid syscall validation failed\n");
 				validation_passed = 0;
 			}
 
 			if( validation_passed ) {
-				logger::printf("syscall",
-				               "success",
-				               "Infrastructure validation PASSED\n");
+				logger::debug::printf(
+				    "syscall",
+				    "success",
+				    "Infrastructure validation PASSED\n");
 			} else {
-				logger::printf("syscall",
-				               "error",
-				               "Infrastructure validation FAILED\n");
+				logger::debug::printf(
+				    "syscall",
+				    "error",
+				    "Infrastructure validation FAILED\n");
 			}
 
 			return validation_passed;
@@ -112,18 +115,20 @@ namespace syscall {
 
 		// Quick test interface
 		void quick_test(void) {
-			logger::printf("syscall", "info", "Running quick test...\n");
+			logger::debug::printf(
+			    "syscall", "info", "Running quick test...\n");
 
 			if( syscall_status != SYSCALL_STATUS_READY ) {
-				logger::printf("syscall",
-				               "error",
-				               "Syscall infrastructure not ready\n");
+				logger::debug::printf(
+				    "syscall",
+				    "error",
+				    "Syscall infrastructure not ready\n");
 				return;
 			}
 
 			// Test basic functionality - verify syscalls are registered
 			if( !syscall::is_valid(SYS_GETPID) ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall", "error", " SYS_GETPID not registered\n");
 				return;
 			}
@@ -132,34 +137,35 @@ namespace syscall {
 			registers_t mock_regs = {};
 			mock_regs.rax         = SYS_GETPID;
 			syscall::handler(&mock_regs);
-			logger::printf("syscall",
-			               "notice",
-			               "getpid test returned: %llu\n",
-			               mock_regs.rax);
+			logger::debug::printf("syscall",
+			                      "notice",
+			                      "getpid test returned: %llu\n",
+			                      mock_regs.rax);
 
-			logger::printf("syscall", "success", "Quick test completed\n");
+			logger::debug::printf(
+			    "syscall", "success", "Quick test completed\n");
 		}
 
 		// Toggle security checks
 		void toggle_security_checks(uint8_t enabled) {
 			security_checks = enabled;
-			logger::printf("syscall",
-			               "info",
-			               "Security checks %s\n",
-			               enabled ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Security checks %s\n",
+			                      enabled ? "ENABLED" : "DISABLED");
 		}
 
 		// Set maximum calls per second (rate limiting)
 		void set_max_calls_per_second(uint64_t max_calls) {
 			max_calls_per_second = max_calls;
 			if( max_calls > 0 ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall",
 				    "info",
 				    "Rate limiting enabled: %llu calls/second\n",
 				    max_calls);
 			} else {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall", "success", "Rate limiting disabled\n");
 			}
 		}
@@ -167,53 +173,55 @@ namespace syscall {
 		// Debugging utilities
 		void dump_registers(const registers_t *regs) {
 			if( !regs ) {
-				logger::printf(
+				logger::debug::printf(
 				    "syscall", "error", "NULL registers pointer\n");
 				return;
 			}
 
-			logger::printf("syscall", nullptr, "info", "Register dump:\n");
-			logger::printf("syscall",
-			               "info",
-			               "RAX: 0x%016llx  RBX: 0x%016llx\n",
-			               regs->rax,
-			               regs->rbx);
-			logger::printf("syscall",
-			               "info",
-			               "RCX: 0x%016llx  RDX: 0x%016llx\n",
-			               regs->rcx,
-			               regs->rdx);
-			logger::printf("syscall",
-			               "info",
-			               "RSI: 0x%016llx  RDI: 0x%016llx\n",
-			               regs->rsi,
-			               regs->rdi);
-			logger::printf("syscall",
-			               "info",
-			               "RBP: 0x%016llx  R8:  0x%016llx\n",
-			               regs->rbp,
-			               regs->r8);
-			logger::printf("syscall",
-			               "info",
-			               "R9:  0x%016llx  R10: 0x%016llx\n",
-			               regs->r9,
-			               regs->r10);
-			logger::printf("syscall",
-			               "info",
-			               "R11: 0x%016llx  R12: 0x%016llx\n",
-			               regs->r11,
-			               regs->r12);
-			logger::printf("syscall",
-			               "info",
-			               "R13: 0x%016llx  R14: 0x%016llx\n",
-			               regs->r13,
-			               regs->r14);
-			logger::printf("syscall", "info", "R15: 0x%016llx\n", regs->r15);
-			logger::printf("syscall",
-			               "info",
-			               "INT: 0x%016llx  ERR: 0x%016llx\n",
-			               regs->int_no,
-			               regs->err_code);
+			logger::debug::printf(
+			    "syscall", nullptr, "info", "Register dump:\n");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "RAX: 0x%016llx  RBX: 0x%016llx\n",
+			                      regs->rax,
+			                      regs->rbx);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "RCX: 0x%016llx  RDX: 0x%016llx\n",
+			                      regs->rcx,
+			                      regs->rdx);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "RSI: 0x%016llx  RDI: 0x%016llx\n",
+			                      regs->rsi,
+			                      regs->rdi);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "RBP: 0x%016llx  R8:  0x%016llx\n",
+			                      regs->rbp,
+			                      regs->r8);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "R9:  0x%016llx  R10: 0x%016llx\n",
+			                      regs->r9,
+			                      regs->r10);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "R11: 0x%016llx  R12: 0x%016llx\n",
+			                      regs->r11,
+			                      regs->r12);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "R13: 0x%016llx  R14: 0x%016llx\n",
+			                      regs->r13,
+			                      regs->r14);
+			logger::debug::printf(
+			    "syscall", "info", "R15: 0x%016llx\n", regs->r15);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "INT: 0x%016llx  ERR: 0x%016llx\n",
+			                      regs->int_no,
+			                      regs->err_code);
 		}
 
 		void trace_call(uint64_t syscall_no,
@@ -230,19 +238,20 @@ namespace syscall {
 			const syscall_entry_t *info = syscall::get_info(syscall_no);
 			const char            *name = info ? info->name : "UNKNOWN";
 
-			logger::printf("syscall",
-			               "info",
-			               "TRACE: %s(%llu) args=[0x%llx, 0x%llx, 0x%llx, "
-			               "0x%llx, 0x%llx, "
-			               "0x%llx]\n",
-			               name,
-			               syscall_no,
-			               arg0,
-			               arg1,
-			               arg2,
-			               arg3,
-			               arg4,
-			               arg5);
+			logger::debug::printf(
+			    "syscall",
+			    "info",
+			    "TRACE: %s(%llu) args=[0x%llx, 0x%llx, 0x%llx, "
+			    "0x%llx, 0x%llx, "
+			    "0x%llx]\n",
+			    name,
+			    syscall_no,
+			    arg0,
+			    arg1,
+			    arg2,
+			    arg3,
+			    arg4,
+			    arg5);
 		}
 
 		// Reset syscall statistics
@@ -259,12 +268,12 @@ namespace syscall {
 				syscall_call_count[i] = 0;
 			}
 
-			logger::printf("syscall", "success", "Statistics reset\n");
+			logger::debug::printf("syscall", "success", "Statistics reset\n");
 		}
 
 		// Print syscall subsystem information
 		void print_info(void) {
-			logger::printf(
+			logger::debug::printf(
 			    "syscall", nullptr, "\nInfrastructure Information\n");
 
 			const char *status_str;
@@ -286,63 +295,68 @@ namespace syscall {
 					break;
 			}
 
-			logger::printf("syscall", "info", "Status: %s\n", status_str);
-			logger::printf("syscall",
-			               "info",
-			               "Logging: %s\n",
-			               syscall_logging ? "ENABLED" : "DISABLED");
-			logger::printf("syscall",
-			               "info",
-			               "Security Checks: %s\n",
-			               security_checks ? "ENABLED" : "DISABLED");
-			logger::printf("syscall",
-			               "info",
-			               "Rate Limiting: %s\n",
-			               max_calls_per_second > 0 ? "ENABLED" : "DISABLED");
+			logger::debug::printf(
+			    "syscall", "info", "Status: %s\n", status_str);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Logging: %s\n",
+			                      syscall_logging ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Security Checks: %s\n",
+			                      security_checks ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Rate Limiting: %s\n",
+			                      max_calls_per_second > 0 ? "ENABLED"
+			                                               : "DISABLED");
 			if( max_calls_per_second > 0 ) {
-				logger::printf("syscall",
-				               "info",
-				               "Max Calls/Second: %llu\n",
-				               max_calls_per_second);
+				logger::debug::printf("syscall",
+				                      "info",
+				                      "Max Calls/Second: %llu\n",
+				                      max_calls_per_second);
 			}
 
-			logger::printf("syscall", nullptr, "\nStatistics:\n");
-			logger::printf("syscall",
-			               "info",
-			               "Total Calls: %llu\n",
-			               syscall_stats.total_calls);
-			logger::printf("syscall",
-			               "info",
-			               "Successful: %llu\n",
-			               syscall_stats.successful_calls);
-			logger::printf("syscall",
-			               "info",
-			               "Failed: %llu\n",
-			               syscall_stats.failed_calls);
-			logger::printf("syscall",
-			               "info",
-			               "Invalid: %llu\n",
-			               syscall_stats.invalid_calls);
+			logger::debug::printf("syscall", nullptr, "\nStatistics:\n");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Total Calls: %llu\n",
+			                      syscall_stats.total_calls);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Successful: %llu\n",
+			                      syscall_stats.successful_calls);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Failed: %llu\n",
+			                      syscall_stats.failed_calls);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Invalid: %llu\n",
+			                      syscall_stats.invalid_calls);
 			if( syscall_stats.most_used_count > 0 ) {
-				logger::printf("syscall",
-				               "info",
-				               "Most Used: Syscall %llu (%llu calls)\n",
-				               syscall_stats.most_used_syscall,
-				               syscall_stats.most_used_count);
+				logger::debug::printf(
+				    "syscall",
+				    "info",
+				    "Most Used: Syscall %llu (%llu calls)\n",
+				    syscall_stats.most_used_syscall,
+				    syscall_stats.most_used_count);
 			}
 		}
 
 		// Print all registered syscalls
 		void print_table(void) {
-			logger::printf("syscall", nullptr, "\nRegistered Syscalls\n");
-			logger::printf(
+			logger::debug::printf(
+			    "syscall", nullptr, "\nRegistered Syscalls\n");
+			logger::debug::printf(
 			    "syscall",
 			    nullptr,
 			    "=====================================================\n");
-			logger::printf("syscall",
-			               nullptr,
-			               "No.  | Name                    | Args | Calls\n");
-			logger::printf(
+			logger::debug::printf(
+			    "syscall",
+			    nullptr,
+			    "No.  | Name                    | Args | Calls\n");
+			logger::debug::printf(
 			    "syscall",
 			    nullptr,
 			    "-----|-------------------------|------|----------\n");
@@ -353,7 +367,7 @@ namespace syscall {
 					const syscall_entry_t *info =
 					    syscall::get_info(i);
 					if( info && info->name ) {
-						logger::printf(
+						logger::debug::printf(
 						    "syscall",
 						    "info",
 						    "%-4llu | %-23s | %-4u | %-8llu\n",
@@ -366,15 +380,15 @@ namespace syscall {
 				}
 			}
 
-			logger::printf("syscall",
-			               "info",
-			               "Total registered syscalls: %u\n",
-			               registered_count);
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Total registered syscalls: %u\n",
+			                      registered_count);
 		}
 
 		// Shutdown the syscall infrastructure
 		void shutdown(void) {
-			logger::printf(
+			logger::debug::printf(
 			    "syscall", "info", "Shutting down syscall infrastructure\n");
 
 			// Print final statistics
@@ -388,7 +402,7 @@ namespace syscall {
 			}
 
 			syscall_status = SYSCALL_STATUS_UNINITIALIZED;
-			logger::printf(
+			logger::debug::printf(
 			    "syscall", "success", "Infrastructure shutdown complete\n");
 		}
 
@@ -398,7 +412,7 @@ namespace syscall {
 		}
 
 		void init(void) {
-			logger::printf(
+			logger::debug::printf(
 			    "syscall", "info", "Initializing infrastructure\n");
 
 			syscall_status = SYSCALL_STATUS_INITIALIZING;
@@ -406,35 +420,38 @@ namespace syscall {
 			// Initialize the core syscall subsystem
 			syscall::init();
 
-			// Setup IDT for syscalls
-			idt_setup_syscall();
+// Setup IDT for syscalls
+#ifdef ARCH_AMD64
+			amd64::idt::setup_syscall();
+#endif
 
 			// Reset statistics
 			reset_stats();
 
 			// Validate infrastructure
 			if( !validate() ) {
-				logger::printf("syscall",
-				               "error",
-				               "Infrastructure validation failed!\n");
+				logger::debug::printf(
+				    "syscall",
+				    "error",
+				    "Infrastructure validation failed!\n");
 				syscall_status = SYSCALL_STATUS_ERROR;
 				return;
 			}
 
 			syscall_status = SYSCALL_STATUS_READY;
 
-			logger::printf("syscall",
-			               "info",
-			               "Infrastructure initialization complete\n");
-			logger::printf("syscall", "info", "Status: READY\n");
-			logger::printf("syscall",
-			               "info",
-			               "Logging: %s\n",
-			               syscall_logging ? "ENABLED" : "DISABLED");
-			logger::printf("syscall",
-			               "info",
-			               "Security checks: %s\n",
-			               security_checks ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Infrastructure initialization complete\n");
+			logger::debug::printf("syscall", "info", "Status: READY\n");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Logging: %s\n",
+			                      syscall_logging ? "ENABLED" : "DISABLED");
+			logger::debug::printf("syscall",
+			                      "info",
+			                      "Security checks: %s\n",
+			                      security_checks ? "ENABLED" : "DISABLED");
 		}
 	}  // namespace infrastructure
 }  // namespace syscall

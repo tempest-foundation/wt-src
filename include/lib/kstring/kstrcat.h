@@ -11,6 +11,6 @@
  */
 #pragma once
 
-namespace string {
+namespace kstring {
 	char *strcat(char *dest, const char *src);
 }

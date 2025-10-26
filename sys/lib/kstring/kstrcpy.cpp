@@ -14,10 +14,10 @@
 
 #include <kstrlen/kstrlen.h>
 
-namespace string {
+namespace kstring {
 	char *strcpy(char *dest, const char *src) {
 		size_t len = kstd::strlen(src);
 		memcpy(dest, src, len + 1);  // +1 for null terminator
 		return dest;
 	}
-}  // namespace string
+}  // namespace kstring

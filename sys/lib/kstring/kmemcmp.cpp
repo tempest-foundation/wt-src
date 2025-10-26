@@ -12,7 +12,7 @@
 #include <kmemcmp.h>
 #include <kstddef.h>
 
-namespace string {
+namespace kstring {
 	int memcmp(const void *s1, const void *s2, size_t n) {
 		const unsigned char *a = static_cast<const unsigned char *>(s1);
 		const unsigned char *b = static_cast<const unsigned char *>(s2);
@@ -22,4 +22,4 @@ namespace string {
 		}
 		return 0;
 	}
-}  // namespace string
+}  // namespace kstring

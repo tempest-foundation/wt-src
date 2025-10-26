@@ -10,16 +10,18 @@
  * -- END OF METADATA HEADER --
  */
 #include <kstdio.h>
+#include <ktime.h>
 #include <kutoa.h>
 
 #include <dbg/logger.h>
 #include <drv/serial/serial.h>
 #include <drv/video/video.h>
 
-bool d_enabled = false;
+bool d_enabled = true;
 
 namespace logger {
-	/**
+	namespace debug {
+		/**
 	 * @brief Debug logger using the kernel puts to log the system
 	 * @param subsystem The subsystem that the computer is running
 	 * @param type Type of the log, ex: error, warn, emerg, notice and etc...
@@ -27,194 +29,326 @@ namespace logger {
 	 * @note Logging only happens if debug is enabled
 	 */
 
-	void puts(const char *subsystem, const char *type, const char *message) {
-		if( !d_enabled ) {
-			return;
-		}
-		if( !message || *message == '\0' )
-			return;
+		void puts(const char *subsystem, const char *type, const char *message) {
+			if( !d_enabled )
+				return;
+			if( !message || *message == '\0' )
+				return;
 
-		kstd::puts("[    debug");
-
-		if( subsystem && *subsystem != '\0' ) {
-			kstd::puts("::");
-			kstd::puts(subsystem);
-		}
-
-		if( type && *type != '\0' ) {
-			kstd::puts("/");
-			kstd::puts(type);
-		}
-
-		kstd::puts("] ");
-		kstd::puts(message);
-		kstd::putchar('\n');
-	}
-
-	int printf(const char *subsystem, const char *type, const char *format, ...) {
-		if( !d_enabled )
-			return 0;
-
-		if( !format || *format == '\0' )
-			return 1;
-
-		va_list args;
-		k_va_start(args, format);
-		int count = 0;
-
-		// Write debug header with optional subsystem and type
-		video::puts("[    debug");
-		count += 10;  // Length of "[    debug"
-
-		if( subsystem && *subsystem != '\0' ) {
-			video::puts("::");
-			video::puts(subsystem);
-			count += 2 + (int) kstd::strlen(subsystem);
-		}
-
-		if( type && *type != '\0' ) {
-			video::puts("/");
-			video::puts(type);
-			count += 2 + (int) kstd::strlen(type);
-		}
-
-		video::puts("] ");
-		count += 2;  // Length of "] "
-
-		for( const char *p = format; *p; ++p ) {
-			if( *p != '%' ) {
-				kstd::putchar(*p);
-				count++;
-				continue;
+			serial::write('[');
+			char timebuf[32];
+			kstd::format_double(
+			    timebuf, sizeof(timebuf), time::get_uptime_precise(), 8);
+			serial::writes(timebuf);
+			serial::writes(", ");
+			if( subsystem && *subsystem != '\0' ) {
+				serial::write('@');
+				serial::writes(subsystem);
+				serial::writes(", ");
 			}
 
-			p++;
+			serial::writes("DEBUG");
 
-			int left_align = 0;
-			int width      = 0;
+			if( type && *type != '\0' ) {
+				serial::writes("/");
+				for( const char *t = type; *t; ++t )
+					serial::write((*t >= 'a' && *t <= 'z') ? *t - 32
+					                                       : *t);
+			}
 
-			if( *p == '-' ) {
-				left_align = 1;
+			serial::writes("] ");
+			serial::writes(message);
+			serial::write('\n');
+		}
+
+		/*
+	 * This code is so bad...
+	 */
+		int printf(const char *subsystem,
+		           const char *type,
+		           const char *format,
+		           ...) {
+			if( !d_enabled )
+				return 0;
+			va_list args;
+			k_va_start(args, format);
+			int count = 0;
+
+			serial::write('[');
+			// uptime
+			char timebuf[32];
+			kstd::format_double(
+			    timebuf, sizeof(timebuf), time::get_uptime_precise(), 8);
+			serial::writes(timebuf);
+			serial::writes(", ");
+			if( subsystem && *subsystem != '\0' ) {
+				serial::write('@');
+				serial::writes(subsystem);
+				serial::writes(", ");
+			}
+
+			serial::writes("DEBUG");
+
+			if( type && *type != '\0' ) {
+				serial::write('/');
+				for( const char *t = type; *t; ++t )
+					serial::write((*t >= 'a' && *t <= 'z') ? *t - 32
+					                                       : *t);
+			}
+			serial::writes("] ");
+
+			for( const char *p = format; *p; ++p ) {
+				if( *p != '%' ) {
+					serial::write(*p);
+					count++;
+					continue;
+				}
 				p++;
-			}
 
-			while( *p >= '0' && *p <= '9' ) {
-				width = width * 10 + (*p - '0');
-				p++;
-			}
+				int left_align = 0;
+				int width      = 0;
+				if( *p == '-' ) {
+					left_align = 1;
+					p++;
+				}
+				while( *p >= '0' && *p <= '9' ) {
+					width = width * 10 + (*p - '0');
+					p++;
+				}
 
-			switch( *p ) {
-				case 's': {
-					const char *s   = k_va_arg(args, const char *);
-					int         len = 0;
-					const char *t   = s;
-					while( *t++ )
-						len++;
+				// Check for precision (for floats)
+				int precision = 6;
+				if( *p == '.' ) {
+					p++;
+					precision = 0;
+					while( *p >= '0' && *p <= '9' ) {
+						precision = precision * 10 + (*p - '0');
+						p++;
+					}
+				}
 
-					int pad = (width > len) ? (width - len) : 0;
+				int long_long = 0;
+				if( *p == 'l' && *(p + 1) == 'l' ) {
+					long_long = 1;
+					p += 2;
+				}
 
-					if( !left_align ) {
-						for( int i = 0; i < pad; ++i ) {
-							kstd::putchar(' ');
+				switch( *p ) {
+					case 's': {
+						const char *s =
+						    k_va_arg(args, const char *);
+						if( !s )
+							s = "(null)";
+						int         len = 0;
+						const char *t   = s;
+						while( *t++ )
+							len++;
+						int pad = (width > len) ? (width - len)
+						                        : 0;
+						if( !left_align )
+							for( int i = 0; i < pad; ++i ) {
+								serial::write(' ');
+								count++;
+							}
+						for( int i = 0; i < len; ++i ) {
+							serial::write(s[i]);
 							count++;
 						}
+						if( left_align )
+							for( int i = 0; i < pad; ++i ) {
+								serial::write(' ');
+								count++;
+							}
+						break;
 					}
 
-					video::puts(s);
-					count += len;
-
-					if( left_align ) {
-						for( int i = 0; i < pad; ++i ) {
-							kstd::putchar(' ');
+					case 'f': {
+						double val = k_va_arg(args, double);
+						char   buf[64];
+						kstd::format_double(
+						    buf, sizeof(buf), val, precision);
+						const char *s = buf;
+						while( *s ) {
+							serial::write(*s++);
 							count++;
 						}
-					}
-					break;
-				}
-
-				case 'd': {
-					int   n = k_va_arg(args, int);
-					char  buf[12];
-					char *ptr = buf;
-
-					if( n < 0 ) {
-						*ptr++ = '-';
-						n      = -n;
+						break;
 					}
 
-					char *end_ptr = kstd::utoa(ptr,
-					                           buf + sizeof(buf) - 1,
-					                           (unsigned int) n,
-					                           10,
-					                           0);
-					*end_ptr      = '\0';
-					video::puts(buf);
-					count += (int) (end_ptr - buf);
-					break;
-				}
+					case 'd': {
+						if( long_long ) {
+							int64_t n =
+							    k_va_arg(args, int64_t);
+							if( n < 0 ) {
+								serial::write('-');
+								count++;
+								n = -n;
+							}
+							char buf[21];
+							int  idx = 20;
+							buf[idx] = '\0';
+							if( n == 0 )
+								buf[--idx] = '0';
+							else {
+								uint64_t un =
+								    (uint64_t) n;
+								while( un ) {
+									buf[--idx] =
+									    (char) ('0'
+									            + (un
+									               % 10));
+									un /= 10;
+								}
+							}
+							int len = 20 - idx;
+							int pad = (width > len)
+							              ? width - len
+							              : 0;
+							if( !left_align )
+								for( int i = 0; i < pad;
+								     ++i ) {
+									serial::write(
+									    ' ');
+									count++;
+								}
+							for( int i = idx; i < 20; ++i ) {
+								serial::write(buf[i]);
+								count++;
+							}
+							if( left_align )
+								for( int i = 0; i < pad;
+								     ++i ) {
+									serial::write(
+									    ' ');
+									count++;
+								}
+						} else {
+							int n = k_va_arg(args, int);
+							if( n < 0 ) {
+								serial::write('-');
+								count++;
+								n = -n;
+							}
+							// measure digits to update count
+							int temp = n, digits = 1;
+							while( temp >= 10 ) {
+								temp /= 10;
+								digits++;
+								serial::write((char) n);
+							}
+							count += digits;
+						}
+						break;
+					}
 
-				case 'x': {
-					unsigned int n = k_va_arg(args, unsigned int);
-					char         buf[12];
-					char        *end_ptr = kstd::utoa(
-                                            buf, buf + sizeof(buf) - 1, n, 16, 0);
-					*end_ptr = '\0';
-					video::puts(buf);
-					count += (int) (end_ptr - buf);
-					break;
-				}
-				case 'l': {
-					// Handle long/long long modifiers
-					if( *(p + 1) == 'l' ) {
-						p++;  // Skip second 'l'
-						if( *(p + 1) == 'x' ) {
-							p++;  // Skip 'x'
+					case 'x': {
+						if( long_long ) {
 							uint64_t n =
 							    k_va_arg(args, uint64_t);
-							char  buf[20];
-							char *end_ptr = kstd::utoa(
-							    buf,
-							    buf + sizeof(buf) - 1,
-							    (unsigned int) (n
-							                    & 0xFFFFFFFF),
-							    16,
-							    0);
-							*end_ptr = '\0';
-							video::puts(buf);
-							count += (int) (end_ptr - buf);
-							break;
+							serial::write((char) n);
+							uint64_t temp   = n;
+							int      digits = 1;
+							while( temp >= 16 ) {
+								temp /= 16;
+								digits++;
+							}
+							count += digits;
+						} else {
+							unsigned int n =
+							    k_va_arg(args, unsigned int);
+							serial::write((char) n);
+							unsigned int temp   = n;
+							int          digits = 1;
+							while( temp >= 16 ) {
+								temp /= 16;
+								digits++;
+							}
+							count += digits;
 						}
+						break;
 					}
-					// Fall through to default for single 'l'
-					goto default_case;
-				}
 
-				case 'c': {
-					char c = (char) k_va_arg(args, int);
-					kstd::putchar(c);
-					count++;
-					break;
-				}
+					case 'c': {
+						char c = (char) k_va_arg(args, int);
+						serial::write(c);
+						count++;
+						break;
+					}
 
-				case '%': {
-					kstd::putchar('%');
-					count++;
-					break;
-				}
+					case '%': {
+						serial::write('%');
+						count++;
+						break;
+					}
 
-				default:
-				default_case: {
-					kstd::putchar('%');
-					kstd::putchar(*p);
-					count += 2;
-					break;
+					case 'u': {
+						if( long_long ) {
+							uint64_t n =
+							    k_va_arg(args, uint64_t);
+							char buf[21];
+							int  idx = 20;
+							buf[idx] = '\0';
+							if( n == 0 )
+								buf[--idx] = '0';
+							else {
+								while( n ) {
+									buf[--idx] =
+									    (char) ('0'
+									            + (n
+									               % 10));
+									n /= 10;
+								}
+							}
+							int len = 20 - idx;
+							int pad = (width > len)
+							              ? width - len
+							              : 0;
+							if( !left_align )
+								for( int i = 0; i < pad;
+								     ++i ) {
+									serial::write(
+									    ' ');
+									count++;
+								}
+							for( int i = idx; i < 20; ++i ) {
+								serial::write(buf[i]);
+								count++;
+							}
+							if( left_align )
+								for( int i = 0; i < pad;
+								     ++i ) {
+									serial::write(
+									    ' ');
+									count++;
+								}
+						} else {
+							unsigned int n =
+							    k_va_arg(args, unsigned int);
+							serial::write((char) n);
+							unsigned int temp   = n;
+							int          digits = 1;
+							while( temp >= 10 ) {
+								temp /= 10;
+								digits++;
+							}
+							count += digits;
+						}
+						break;
+					}
+
+					default: {
+						serial::write('%');
+						serial::write(*p);
+						count += 2;
+						break;
+					}
 				}
 			}
-		}
 
-		k_va_end(args);
-		return count;
-	}
+			k_va_end(args);
+			return count;
+		}
+	}  // namespace debug
 
 	/**
 	 * @brief Logger type used by the logger.type() functions
@@ -223,19 +357,22 @@ namespace logger {
 	 * @param message Message to be show
 	 * @param extra Extra parameters from the message
 	 */
-	static void logger_type(const char *type,
-	                        const char *subsystem,
+	static void logger_type(const char *subsystem,
+	                        const char *type,
 	                        const char *message,
 	                        const char *extra) {
 		if( !message || *message == '\0' )
 			return;
 
-		kstd::printf("[    %s", type);
-
+		kstd::printf("[ ");
+		kstd::printf("%.8f, ", time::get_uptime_precise());
 		if( subsystem && *subsystem != '\0' )
-			kstd::printf("::%s", subsystem);
+			kstd::printf("@%s, ", subsystem);
 
-		kstd::printf("] %s", message);
+		for( const char *t = type; *t; ++t )
+			kstd::putchar((*t >= 'a' && *t <= 'z') ? (*t - 32) : *t);
+
+		kstd::printf(" ] %s", message);
 
 		if( extra && *extra != '\0' )
 			kstd::printf(": %s", extra);
@@ -244,34 +381,34 @@ namespace logger {
 	}
 
 	void crit(const char *s, const char *m, const char *e) {
-		logger_type("crit", s, m, e);
+		logger_type(s, "crit", m, e);
 	}
 
 	void alert(const char *s, const char *m, const char *e) {
-		logger_type("alert", s, m, e);
+		logger_type(s, "alert", m, e);
 	}
 
 	void emerg(const char *s, const char *m, const char *e) {
-		logger_type("emerg", s, m, e);
+		logger_type(s, "emerg", m, e);
 	}
 
 	void warn(const char *s, const char *m, const char *e) {
-		logger_type("warn", s, m, e);
+		logger_type(s, "warn", m, e);
 	}
 
 	void error(const char *s, const char *m, const char *e) {
-		logger_type("error", s, m, e);
+		logger_type(s, "error", m, e);
 	}
 
 	void notice(const char *s, const char *m, const char *e) {
-		logger_type("notice", s, m, e);
+		logger_type(s, "notice", m, e);
 	}
 
 	void info(const char *s, const char *m, const char *e) {
-		logger_type("info", s, m, e);
+		logger_type(s, "info", m, e);
 	}
 
 	void success(const char *s, const char *m, const char *e) {
-		logger_type("success", s, m, e);
+		logger_type(s, "success", m, e);
 	}
 }  // namespace logger

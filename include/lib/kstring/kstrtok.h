@@ -11,6 +11,6 @@
  */
 #pragma once
 
-namespace string {
+namespace kstring {
 	char *strtok(char *str, const char *delim);
 }

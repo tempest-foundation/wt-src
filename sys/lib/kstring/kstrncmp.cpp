@@ -12,7 +12,7 @@
 #include <kstddef.h>
 #include <kstrncmp.h>
 
-namespace string {
+namespace kstring {
 	int strncmp(const char *s1, const char *s2, size_t n) {
 		for( size_t i = 0; i < n; i++ ) {
 			if( s1[i] != s2[i] ) {
@@ -24,4 +24,4 @@ namespace string {
 		}
 		return 0;
 	}
-}  // namespace string
+}  // namespace kstring

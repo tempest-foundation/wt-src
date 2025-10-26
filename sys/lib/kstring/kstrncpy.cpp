@@ -12,7 +12,7 @@
 #include <kstddef.h>
 #include <kstrncpy.h>
 
-namespace string {
+namespace kstring {
 	char *strncpy(char *dest, const char *src, size_t n) {
 		char       *d = dest;
 		const char *s = src;
@@ -28,4 +28,4 @@ namespace string {
 
 		return dest;
 	}
-}  // namespace string
+}  // namespace kstring

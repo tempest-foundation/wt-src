@@ -12,7 +12,7 @@
 #include <kstddef.h>
 #include <kstrchr.h>
 
-namespace string {
+namespace kstring {
 	char *strchr(const char *str, int c) {
 		while( *str != '\0' ) {
 			if( *str == (char) c ) {
@@ -27,4 +27,4 @@ namespace string {
 
 		return nullptr;
 	}
-}  // namespace string
+}  // namespace kstring

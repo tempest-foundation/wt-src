@@ -13,6 +13,6 @@
 
 #include <kstddef.h>
 
-namespace string {
+namespace kstring {
 	void *memcpy(void *dest, const void *src, size_t n);
 }

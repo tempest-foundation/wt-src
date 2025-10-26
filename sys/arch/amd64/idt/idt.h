@@ -13,15 +13,19 @@
 
 #include <arch/amd64/isr/registers.h>
 
-void
-    idt_init(void);
-
 typedef void (*irq_handler_t)(registers_t *);
-void
-    register_irq_handler(int irq, irq_handler_t handler);
 
 // Syscall support
 extern "C" void
     syscall_int_handler(void);
-void
-    idt_setup_syscall(void);
+
+namespace amd64 {
+	namespace irq {
+		void bind(int irq, irq_handler_t handler);
+	}
+
+	namespace idt {
+		void setup_syscall(void);
+		void init(void);
+	}  // namespace idt
+}  // namespace amd64

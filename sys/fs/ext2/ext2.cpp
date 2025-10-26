@@ -123,17 +123,17 @@ static int
 
 	if( bytes_first >= need ) {
 		// Inode fits entirely in this block
-		string::memcpy(out, tmp + off_in_block, need);
+		kstring::memcpy(out, tmp + off_in_block, need);
 	} else {
 		// Copy first portion
-		string::memcpy(out, tmp + off_in_block, bytes_first);
+		kstring::memcpy(out, tmp + off_in_block, bytes_first);
 
 		// Read next block for the remaining bytes
 		if( kread_block(inode_tbl_blk + blk_offset + 1, tmp) != 0 ) {
 			memory::free(tmp);
 			return EXT2_ERR_IO;
 		}
-		string::memcpy((uint8_t *) out + bytes_first, tmp, need - bytes_first);
+		kstring::memcpy((uint8_t *) out + bytes_first, tmp, need - bytes_first);
 	}
 
 	memory::free(tmp);
@@ -173,7 +173,7 @@ static void
 			break;
 		if( ent->inode != 0 && nlen > 0 ) {
 			char name[256] = {0};
-			string::memcpy(name, ent->name, nlen);
+			kstring::memcpy(name, ent->name, nlen);
 			name[nlen] = '\0';
 			cb(name, ent->file_type);
 		}
@@ -456,7 +456,7 @@ namespace ext2 {
 		    != 0 ) {
 			return EXT2_ERR_IO;
 		}
-		string::memcpy(&g_superblock, sb_raw, sizeof(ext2_superblock_t));
+		kstring::memcpy(&g_superblock, sb_raw, sizeof(ext2_superblock_t));
 
 		if( g_superblock.magic != EXT2_SUPER_MAGIC )
 			return EXT2_ERR_BAD_MAGIC;
@@ -535,7 +535,7 @@ namespace ext2 {
 			return EXT2_ERR_INVALID;
 
 		// If path is just "/" open root directory
-		if( string::strcmp(path, "/") == 0 ) {
+		if( kstring::strcmp(path, "/") == 0 ) {
 			if( kread_inode(EXT2_ROOT_INODE, &out_file->inode) != EXT2_OK )
 				return EXT2_ERR_IO;
 			out_file->pos = 0;
@@ -547,17 +547,17 @@ namespace ext2 {
 		size_t plen = (size_t) kstd::strlen(path);
 		if( plen >= sizeof(tmp) )
 			return EXT2_ERR_INVALID;
-		string::strcpy(tmp, path[0] == '/' ? path + 1 : path);
+		kstring::strcpy(tmp, path[0] == '/' ? path + 1 : path);
 
 		// Current inode when traversing
 		ext2_inode_t cur_inode;
 		if( kread_inode(EXT2_ROOT_INODE, &cur_inode) != EXT2_OK )
 			return EXT2_ERR_IO;
 
-		char *tok = string::strtok(tmp, "/");
+		char *tok = kstring::strtok(tmp, "/");
 		char *next_tok;
 		while( tok ) {
-			next_tok = string::strtok(nullptr, "/");
+			next_tok = kstring::strtok(nullptr, "/");
 
 			// Search for tok in cur_inode directory entries (direct blocks only)
 			uint32_t found_ino = 0;
@@ -583,7 +583,7 @@ namespace ext2 {
 					if( ent->inode != 0
 					    && ent->name_len
 					           == (uint8_t) kstd::strlen(tok)
-					    && string::memcmp(
+					    && kstring::memcmp(
 					           ent->name, tok, ent->name_len)
 					           == 0 ) {
 						found_ino = ent->inode;
@@ -640,7 +640,7 @@ namespace ext2 {
 			return EXT2_ERR_INVALID;
 
 		// Special case: root directory
-		if( string::strcmp(path, "/") == 0 || path[0] == '\0' ) {
+		if( kstring::strcmp(path, "/") == 0 || path[0] == '\0' ) {
 			ext2_inode_t root;
 			if( kread_inode(EXT2_ROOT_INODE, &root) != EXT2_OK )
 				return EXT2_ERR_IO;
@@ -653,16 +653,16 @@ namespace ext2 {
 		size_t plen = (size_t) kstd::strlen(path);
 		if( plen >= sizeof(tmp) )
 			return EXT2_ERR_INVALID;
-		string::strcpy(tmp, path[0] == '/' ? path + 1 : path);
+		kstring::strcpy(tmp, path[0] == '/' ? path + 1 : path);
 
 		ext2_inode_t cur_inode;
 		if( kread_inode(EXT2_ROOT_INODE, &cur_inode) != EXT2_OK )
 			return EXT2_ERR_IO;
 
-		char *tok = string::strtok(tmp, "/");
+		char *tok = kstring::strtok(tmp, "/");
 		char *next_tok;
 		while( tok ) {
-			next_tok = string::strtok(nullptr, "/");
+			next_tok = kstring::strtok(nullptr, "/");
 
 			uint32_t found_ino = 0;
 			uint8_t *blk_buf   = (uint8_t *) memory::malloc(g_block_size);
@@ -686,7 +686,7 @@ namespace ext2 {
 					if( ent->inode != 0
 					    && ent->name_len
 					           == (uint8_t) kstd::strlen(tok)
-					    && string::memcmp(
+					    && kstring::memcmp(
 					           ent->name, tok, ent->name_len)
 					           == 0 ) {
 						found_ino = ent->inode;
@@ -825,7 +825,7 @@ namespace ext2 {
 				size_t chunk = g_block_size - off_in_block;
 				if( chunk > remaining )
 					chunk = remaining;
-				string::memset(dst, 0, chunk);
+				kstring::memset(dst, 0, chunk);
 				dst += chunk;
 				file->pos += chunk;
 				remaining -= chunk;
@@ -838,7 +838,7 @@ namespace ext2 {
 			size_t chunk = g_block_size - off_in_block;
 			if( chunk > remaining )
 				chunk = remaining;
-			string::memcpy(dst, block_buf + off_in_block, chunk);
+			kstring::memcpy(dst, block_buf + off_in_block, chunk);
 			dst += chunk;
 			file->pos += chunk;
 			remaining -= chunk;

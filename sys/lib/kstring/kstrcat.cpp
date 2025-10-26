@@ -11,7 +11,7 @@
  */
 #include <kstrcat.h>
 
-namespace string {
+namespace kstring {
 	char *strcat(char *dest, const char *src) {
 		if( !dest || !src )
 			return dest;
@@ -32,4 +32,4 @@ namespace string {
 		*end = '\0';
 		return dest;
 	}
-}  // namespace string
+}  // namespace kstring

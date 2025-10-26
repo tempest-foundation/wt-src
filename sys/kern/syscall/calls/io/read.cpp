@@ -22,12 +22,12 @@ uint64_t
              uint64_t arg3 __attribute__((unused)),
              uint64_t arg4 __attribute__((unused)),
              uint64_t arg5 __attribute__((unused))) {
-	logger::printf("syscall",
-	               "info",
-	               " read: fd=%llu, buffer=0x%llx, count=%llu\n",
-	               fd,
-	               buffer,
-	               count);
+	logger::debug::printf("syscall",
+	                      "info",
+	                      " read: fd=%llu, buffer=0x%llx, count=%llu\n",
+	                      fd,
+	                      buffer,
+	                      count);
 	// TODO: Implement actual file reading
 	// Basic validation
 	if( buffer == 0 || count == 0 ) {

@@ -62,7 +62,59 @@ namespace kstd {
 		while( *s ) {
 			main_tty.write_char(*s++);
 		}
-		kstd::putchar('\n');
+	}
+
+	// Helper function to format a double to string
+	char *
+	    format_double(char *buf, size_t bufsize, double value, int precision) {
+		if( bufsize < 32 )
+			return buf;
+
+		char *p = buf;
+
+		// Handle negative
+		if( value < 0.0 ) {
+			*p++  = '-';
+			value = -value;
+		}
+
+		// Get integer part
+		uint64_t int_part  = (uint64_t) value;
+		double   frac_part = value - (double) int_part;
+
+		// Convert integer part
+		char int_buf[21];
+		int  idx     = 20;
+		int_buf[idx] = '\0';
+
+		if( int_part == 0 ) {
+			int_buf[--idx] = '0';
+		} else {
+			uint64_t temp = int_part;
+			while( temp > 0 ) {
+				int_buf[--idx] = '0' + (temp % 10);
+				temp /= 10;
+			}
+		}
+
+		// Copy integer part
+		while( idx < 20 ) {
+			*p++ = int_buf[idx++];
+		}
+
+		// Add decimal point
+		*p++ = '.';
+
+		// Convert fractional part
+		for( int i = 0; i < precision; i++ ) {
+			frac_part *= 10.0;
+			int digit = (int) frac_part;
+			*p++      = (char) ('0' + digit);
+			frac_part -= (double) digit;
+		}
+
+		*p = '\0';
+		return buf;
 	}
 
 	int vsnprintf(char *buffer, size_t size, const char *format, va_list args) {
@@ -89,6 +141,16 @@ namespace kstd {
 				width = width * 10 + (*p++ - '0');
 			}
 
+			// Check for precision (for floats)
+			int precision = 6;  // default precision
+			if( *p == '.' ) {
+				++p;
+				precision = 0;
+				while( *p >= '0' && *p <= '9' ) {
+					precision = precision * 10 + (*p++ - '0');
+				}
+			}
+
 			char  temp[64];
 			char *t         = temp;
 			int   long_long = 0;
@@ -109,6 +171,14 @@ namespace kstd {
 				}
 				case 'c': {
 					*t++ = (char) k_va_arg(args, int);
+					break;
+				}
+				case 'f': {
+					double val = k_va_arg(args, double);
+					format_double(temp, sizeof(temp), val, precision);
+					t = temp;
+					while( *t )
+						t++;
 					break;
 				}
 				case 'd': {
@@ -238,6 +308,17 @@ namespace kstd {
 				p++;
 			}
 
+			// Check for precision (for floats)
+			int precision = 6;
+			if( *p == '.' ) {
+				p++;
+				precision = 0;
+				while( *p >= '0' && *p <= '9' ) {
+					precision = precision * 10 + (*p - '0');
+					p++;
+				}
+			}
+
 			int long_long = 0;
 			if( *p == 'l' && *(p + 1) == 'l' ) {
 				long_long = 1;
@@ -268,6 +349,18 @@ namespace kstd {
 							kstd::putchar(' ');
 							count++;
 						}
+					break;
+				}
+
+				case 'f': {
+					double val = k_va_arg(args, double);
+					char   buf[64];
+					format_double(buf, sizeof(buf), val, precision);
+					const char *s = buf;
+					while( *s ) {
+						kstd::putchar(*s++);
+						count++;
+					}
 					break;
 				}
 

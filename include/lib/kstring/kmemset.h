@@ -13,6 +13,6 @@
 
 #include <kstddef.h>
 
-namespace string {
+namespace kstring {
 	void *memset(void *s, int c, size_t n);
 }

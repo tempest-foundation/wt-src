@@ -16,11 +16,12 @@
 #include <kstdint.h>
 
 namespace kstd {
-	void puthex(uint64_t n);
-	void putdec(uint32_t n);
-	void puts(const char *s);
-	int  vsnprintf(char *buffer, size_t size, const char *format, va_list args);
-	int  snprintf(char *buffer, size_t size, const char *format, ...);
-	int  printf(const char *format, ...);
-	void putchar(int c);
+	void  puthex(uint64_t n);
+	void  putdec(uint32_t n);
+	char *format_double(char *buf, size_t bufsize, double value, int precision);
+	void  puts(const char *s);
+	int   vsnprintf(char *buffer, size_t size, const char *format, va_list args);
+	int   snprintf(char *buffer, size_t size, const char *format, ...);
+	int   printf(const char *format, ...);
+	void  putchar(int c);
 }  // namespace kstd

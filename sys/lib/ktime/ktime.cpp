@@ -33,6 +33,10 @@
 #define RTC_STATUS_B 0x0B
 
 namespace time {
+	// Uptime tracking variables
+	static volatile uint64_t uptime_ticks     = 0;
+	static const uint64_t    TICKS_PER_SECOND = 100;  // Assuming 100Hz timer
+
 	/**
  * @brief Convert a BCD (Binary Coded Decimal) value to decimal
  * @param bcd The BCD value to convert
@@ -232,5 +236,79 @@ namespace time {
 			return days[day_of_week - 1];
 		}
 		return "Unknown";
+	}
+
+	/**
+     * @brief Initialize the uptime counter
+     * 
+     * Should be called during kernel initialization before enabling interrupts.
+     */
+	void uptime_init(void) {
+		uptime_ticks = 0;
+	}
+
+	/**
+     * @brief Increment the uptime tick counter
+     * 
+     * This should be called from the timer interrupt handler (IRQ0).
+     */
+	void uptime_tick(void) {
+		uptime_ticks = uptime_ticks + 1;
+	}
+
+	/**
+     * @brief Get the system uptime in seconds
+     * 
+     * @return Number of seconds the system has been running
+     */
+	uint64_t get_uptime_seconds(void) {
+		return uptime_ticks / TICKS_PER_SECOND;
+	}
+
+	double get_uptime_precise(void) {
+		uint64_t ticks = uptime_ticks;
+		return (double) ticks / (double) TICKS_PER_SECOND;
+	}
+
+	/**
+     * @brief Get formatted uptime string
+     * 
+     * Formats uptime as "X days, Y hours, Z minutes, W seconds"
+     * 
+     * @param[out] buffer       Buffer to store the formatted string
+     * @param[in]  buffer_size  Size of the buffer (should be at least 64 bytes)
+     */
+	void get_uptime_string(char *buffer, size_t buffer_size) {
+		if( !buffer || buffer_size < 64 )
+			return;
+
+		uint64_t total_seconds = get_uptime_seconds();
+
+		uint64_t days = total_seconds / 86400;
+		total_seconds %= 86400;
+
+		uint64_t hours = total_seconds / 3600;
+		total_seconds %= 3600;
+
+		uint64_t minutes = total_seconds / 60;
+		uint64_t seconds = total_seconds % 60;
+
+		if( days > 0 ) {
+			kstd::snprintf(buffer,
+			               buffer_size,
+			               "%llu day%s, %llu:%02llu:%02llu",
+			               days,
+			               days == 1 ? "" : "s",
+			               hours,
+			               minutes,
+			               seconds);
+		} else {
+			kstd::snprintf(buffer,
+			               buffer_size,
+			               "%llu:%02llu:%02llu",
+			               hours,
+			               minutes,
+			               seconds);
+		}
 	}
 }  // namespace time

@@ -13,6 +13,6 @@
 
 #include <kstddef.h>
 
-namespace string {
+namespace kstring {
 	char *strncpy(char *dest, const char *src, size_t n);
 }

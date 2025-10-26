@@ -54,7 +54,7 @@ namespace vfs {
  * @param size  Size of the output buffer.
  */
 	void getcwd(char *out, size_t size) {
-		string::strncpy(out, cwd_path, size);
+		kstring::strncpy(out, cwd_path, size);
 	}
 
 	/**
@@ -81,13 +81,13 @@ namespace vfs {
  */
 	void normalize_path(const char *path, char *out, size_t size) {
 		if( !path || *path == '\0' ) {
-			string::strncpy(out, "/", size);
+			kstring::strncpy(out, "/", size);
 			return;
 		}
 
 		// Require absolute path
 		if( path[0] != '/' ) {
-			string::strncpy(out, path, size);
+			kstring::strncpy(out, path, size);
 			return;
 		}
 
@@ -109,7 +109,7 @@ namespace vfs {
 			size_t len = (size_t) (p - start);
 
 			char comp[256];
-			string::memcpy(comp, start, len);
+			kstring::memcpy(comp, start, len);
 			comp[len] = '\0';
 
 			if( len == 1 && comp[0] == '.' )
@@ -131,7 +131,7 @@ namespace vfs {
 				tmp[pos++] = '/';
 			if( pos + len >= sizeof(tmp) )
 				break;  // prevent overflow
-			string::memcpy(&tmp[pos], comp, len);
+			kstring::memcpy(&tmp[pos], comp, len);
 			pos += len;
 		}
 
@@ -139,7 +139,7 @@ namespace vfs {
 			--pos;
 		tmp[pos] = '\0';
 
-		string::strncpy(out, tmp, size);
+		kstring::strncpy(out, tmp, size);
 	}
 
 	/**
@@ -157,12 +157,12 @@ namespace vfs {
 	void resolve(const char *path, char *out, size_t size) {
 		char temp[256] = {0};
 		if( !path || *path == '\0' ) {
-			string::strcpy(temp, cwd_path);
+			kstring::strcpy(temp, cwd_path);
 		} else if( path[0] == '/' ) {
 			// Absolute
-			string::strcpy(temp, path);
+			kstring::strcpy(temp, path);
 		} else {
-			if( string::strcmp(cwd_path, "/") == 0 )
+			if( kstring::strcmp(cwd_path, "/") == 0 )
 				kstd::snprintf(temp, sizeof(temp), "/%s", path);
 			else
 				kstd::snprintf(
@@ -208,7 +208,7 @@ namespace vfs {
 		if( root_fs->close )
 			root_fs->close(&file);
 
-		string::strcpy(cwd_path, resolved);
+		kstring::strcpy(cwd_path, resolved);
 		return 0;
 	}
 }  // namespace vfs

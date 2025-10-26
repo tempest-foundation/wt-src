@@ -11,7 +11,7 @@
  */
 #include <kstddef.h>
 
-namespace string {
+namespace kstring {
 	void *memcpy(void *dest, const void *src, size_t n) {
 		if( !dest || !src || n == 0 )
 			return dest;
@@ -29,4 +29,4 @@ namespace string {
 
 		return dest;
 	}
-}  // namespace string
+}  // namespace kstring

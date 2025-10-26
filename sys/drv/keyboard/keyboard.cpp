@@ -108,6 +108,6 @@ namespace keyboard {
 	}
 
 	void init(void) {
-		register_irq_handler(1, handler);
+		amd64::irq::bind(1, handler);
 	}
 }  // namespace keyboard

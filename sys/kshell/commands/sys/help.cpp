@@ -28,7 +28,7 @@ void
 	for( size_t i = 0; i < NUM_COMMANDS; ++i ) {
 		int found = 0;
 		for( int j = 0; j < num_categories; ++j ) {
-			if( string::strcmp(commands[i].cat, categories[j]) == 0 ) {
+			if( kstring::strcmp(commands[i].cat, categories[j]) == 0 ) {
 				found = 1;
 				break;
 			}
@@ -42,7 +42,7 @@ void
 		kstd::snprintf(buf, sizeof(buf), "\n[%s]\n", categories[c]);
 		kstd::printf(buf);
 		for( size_t i = 0; i < NUM_COMMANDS; ++i ) {
-			if( string::strcmp(commands[i].cat, categories[c]) == 0 ) {
+			if( kstring::strcmp(commands[i].cat, categories[c]) == 0 ) {
 				kstd::snprintf(buf,
 				               sizeof(buf),
 				               " %-12s - %s\n",

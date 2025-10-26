@@ -25,7 +25,7 @@
 #define PIC_EOI   0x20  // End-of-Interrupt command.
 
 // IDT Constants
-namespace IDT {
+namespace idt_constants {
 	constexpr uint8_t GATE_PRESENT        = 0x80;
 	constexpr uint8_t GATE_DPL_KERNEL     = 0x00;
 	constexpr uint8_t GATE_DPL_USER       = 0x60;
@@ -39,7 +39,7 @@ namespace IDT {
 	constexpr uint16_t KERNEL_CODE_SELECTOR = 0x08;
 	constexpr uint8_t  SYSCALL_VECTOR       = 0x80;
 	constexpr uint8_t  IRQ_BASE             = 32;
-}  // namespace IDT
+}  // namespace idt_constants
 
 extern "C" {
 void
@@ -147,11 +147,6 @@ void
 // Array of C-level interrupt handlers.
 static irq_handler_t irq_handlers[16];
 
-void
-    register_irq_handler(int irq, irq_handler_t handler) {
-	irq_handlers[irq] = handler;
-}
-
 // IDT entry structure.
 struct idt_entry {
 	uint16_t base_lo;
@@ -169,20 +164,8 @@ struct idt_ptr {
 	uint64_t base;
 } __attribute__((packed));
 
-static struct idt_entry idt[256];
+static struct idt_entry Idt_entry[256];
 static struct idt_ptr   idtp;
-
-// Set up an IDT entry.
-static void
-    idt_set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags) {
-	idt[num].base_lo  = (uint16_t) (base & 0xFFFF);
-	idt[num].base_mid = (uint16_t) ((base >> 16) & 0xFFFF);
-	idt[num].base_hi  = (uint32_t) ((base >> 32) & 0xFFFFFFFF);
-	idt[num].sel      = sel;
-	idt[num].ist      = 0;
-	idt[num].flags    = flags;
-	idt[num].reserved = 0;
-}
 
 // Static lookup table for interrupt-to-panic mapping
 static const struct {
@@ -228,8 +211,9 @@ extern "C" void
 extern "C" void
     irq_handler(registers_t *regs) {
 	// If a custom handler is registered, call it.
-	if( regs->int_no >= IDT::IRQ_BASE && regs->int_no <= 47 ) {
-		irq_handler_t handler = irq_handlers[regs->int_no - IDT::IRQ_BASE];
+	if( regs->int_no >= idt_constants::IRQ_BASE && regs->int_no <= 47 ) {
+		irq_handler_t handler =
+		    irq_handlers[regs->int_no - idt_constants::IRQ_BASE];
 		if( handler ) {
 			handler(regs);
 		}
@@ -257,74 +241,100 @@ static void
 	outb(PIC2_DATA, 0x0);
 }
 
-void
-    idt_init(void) {
-	// Set up the IDT pointer.
-	idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
-	idtp.base  = (uint64_t) &idt;
+namespace amd64 {
+	namespace irq {
+		void bind(int irq, irq_handler_t handler) {
+			irq_handlers[irq] = handler;
+		}
+	}  // namespace irq
 
-	// Remap the PIC.
-	pic_remap(0x20, 0x28);
+	namespace idt {
+		// Setup syscall interrupt handler
+		static void
+		    set_gate(uint8_t num, uint64_t base, uint16_t sel, uint8_t flags) {
+			Idt_entry[num].base_lo  = (uint16_t) (base & 0xFFFF);
+			Idt_entry[num].base_mid = (uint16_t) ((base >> 16) & 0xFFFF);
+			Idt_entry[num].base_hi  = (uint32_t) ((base >> 32) & 0xFFFFFFFF);
+			Idt_entry[num].sel      = sel;
+			Idt_entry[num].ist      = 0;
+			Idt_entry[num].flags    = flags;
+			Idt_entry[num].reserved = 0;
+		}
 
-	// Set up ISR entries using loop
-	void *isr_table[] = {
-	    (void *) isr0,  (void *) isr1,  (void *) isr2,  (void *) isr3,
-	    (void *) isr4,  (void *) isr5,  (void *) isr6,  (void *) isr7,
-	    (void *) isr8,  (void *) isr9,  (void *) isr10, (void *) isr11,
-	    (void *) isr12, (void *) isr13, (void *) isr14, (void *) isr15,
-	    (void *) isr16, (void *) isr17, (void *) isr18, (void *) isr19,
-	    (void *) isr20, (void *) isr21, (void *) isr22, (void *) isr23,
-	    (void *) isr24, (void *) isr25, (void *) isr26, (void *) isr27,
-	    (void *) isr28, (void *) isr29, (void *) isr30, (void *) isr31};
+		void setup_syscall(void) {
+			// Register syscall interrupt handler (int 0x80)
+			// Use DPL=3 (user-level) to allow user-mode access
+			set_gate(idt_constants::SYSCALL_VECTOR,
+			         (uint64_t) syscall_int_handler,
+			         idt_constants::KERNEL_CODE_SELECTOR,
+			         idt_constants::GATE_USER_INTERRUPT);
 
-	for( int i = 0; i < 32; ++i ) {
-		idt_set_gate(static_cast<uint8_t>(i),
-		             (uint64_t) isr_table[i],
-		             IDT::KERNEL_CODE_SELECTOR,
-		             IDT::GATE_KERNEL_INTERRUPT);
-	}
+			logger::debug::printf(
+			    "idt",
+			    "info",
+			    "Syscall interrupt handler registered at 0x80\n");
+		}
 
-	// Set up IRQ entries using loop
-	void *irq_table[] = {(void *) irq0,
-	                     (void *) irq1,
-	                     (void *) irq2,
-	                     (void *) irq3,
-	                     (void *) irq4,
-	                     (void *) irq5,
-	                     (void *) irq6,
-	                     (void *) irq7,
-	                     (void *) irq8,
-	                     (void *) irq9,
-	                     (void *) irq10,
-	                     (void *) irq11,
-	                     (void *) irq12,
-	                     (void *) irq13,
-	                     (void *) irq14,
-	                     (void *) irq15};
+		void init(void) {
+			// Set up the IDT pointer.
+			idtp.limit = (sizeof(struct idt_entry) * 256) - 1;
+			idtp.base  = (uint64_t) &Idt_entry;
 
-	for( int i = 0; i < 16; ++i ) {
-		idt_set_gate(static_cast<uint8_t>(IDT::IRQ_BASE + i),
-		             (uint64_t) irq_table[i],
-		             IDT::KERNEL_CODE_SELECTOR,
-		             IDT::GATE_KERNEL_INTERRUPT);
-	}
+			// Remap the PIC.
+			pic_remap(0x20, 0x28);
 
-	// Set up syscalls
-	idt_setup_syscall();
+			// Set up ISR entries using loop
+			void *isr_table[] = {
+			    (void *) isr0,  (void *) isr1,  (void *) isr2,
+			    (void *) isr3,  (void *) isr4,  (void *) isr5,
+			    (void *) isr6,  (void *) isr7,  (void *) isr8,
+			    (void *) isr9,  (void *) isr10, (void *) isr11,
+			    (void *) isr12, (void *) isr13, (void *) isr14,
+			    (void *) isr15, (void *) isr16, (void *) isr17,
+			    (void *) isr18, (void *) isr19, (void *) isr20,
+			    (void *) isr21, (void *) isr22, (void *) isr23,
+			    (void *) isr24, (void *) isr25, (void *) isr26,
+			    (void *) isr27, (void *) isr28, (void *) isr29,
+			    (void *) isr30, (void *) isr31};
 
-	// Load the IDT.
-	__asm__ volatile("lidt %0" : : "m"(idtp));
-}
+			for( int i = 0; i < 32; ++i ) {
+				set_gate(static_cast<uint8_t>(i),
+				         (uint64_t) isr_table[i],
+				         idt_constants::KERNEL_CODE_SELECTOR,
+				         idt_constants::GATE_KERNEL_INTERRUPT);
+			}
 
-// Setup syscall interrupt handler
-void
-    idt_setup_syscall(void) {
-	// Register syscall interrupt handler (int 0x80)
-	// Use DPL=3 (user-level) to allow user-mode access
-	idt_set_gate(IDT::SYSCALL_VECTOR,
-	             (uint64_t) syscall_int_handler,
-	             IDT::KERNEL_CODE_SELECTOR,
-	             IDT::GATE_USER_INTERRUPT);
+			// Set up IRQ entries using loop
+			void *irq_table[] = {(void *) irq0,
+			                     (void *) irq1,
+			                     (void *) irq2,
+			                     (void *) irq3,
+			                     (void *) irq4,
+			                     (void *) irq5,
+			                     (void *) irq6,
+			                     (void *) irq7,
+			                     (void *) irq8,
+			                     (void *) irq9,
+			                     (void *) irq10,
+			                     (void *) irq11,
+			                     (void *) irq12,
+			                     (void *) irq13,
+			                     (void *) irq14,
+			                     (void *) irq15};
 
-	logger::printf("idt", "info", "Syscall interrupt handler registered at 0x80\n");
-}
+			for( int i = 0; i < 16; ++i ) {
+				set_gate(
+				    static_cast<uint8_t>(idt_constants::IRQ_BASE + i),
+				    (uint64_t) irq_table[i],
+				    idt_constants::KERNEL_CODE_SELECTOR,
+				    idt_constants::GATE_KERNEL_INTERRUPT);
+			}
+
+			// Set up syscalls
+			setup_syscall();
+
+			// Load the IDT.
+			__asm__ volatile("lidt %0" : : "m"(idtp));
+		}
+	}  // namespace idt
+}  // namespace amd64

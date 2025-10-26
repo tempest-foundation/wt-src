@@ -17,5 +17,20 @@
 extern char     cpu_brand_string[CPU_BRAND_STRING_LEN + 1];
 extern char     cpu_vendor_string[13];
 extern uint32_t cpu_core_id;
-void
-    cpu_init(void);
+
+namespace amd64::cpuid {
+	namespace instr {
+		bool has_sse2(void);
+		bool has_fpu(void);
+	}  // namespace instr
+
+	namespace vendor {
+		void init(void);
+	}
+
+	namespace brand {
+		void init(void);
+	}
+
+	void init(void);
+}  // namespace amd64::cpuid
