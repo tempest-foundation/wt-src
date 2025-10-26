@@ -76,8 +76,7 @@ WARNING_CFLAGS := \
 	-Wconversion \
 	-Werror \
 	-Wundef \
-	-Wshadow \
-	-Wno-unused-command-line-argument
+	-Wshadow
 
 # Optimization flags
 OPTIMIZE_CFLAGS := \

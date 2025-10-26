@@ -28,6 +28,7 @@
 #include "info/time.h"
 #include "sys/clear.h"
 #include "sys/echo.h"
+#include "sys/exec.h"
 #include "sys/help.h"
 #include "sys/history.h"
 #include "test/test_graphics.h"
@@ -38,6 +39,7 @@ struct Command commands[] = {
     {"clear", "Clear the screen", "System", cmd_clear},
     {"echo", "Echo a message", "System", cmd_echo},
     {"history", "Show the history of commands", "System", cmd_history},
+    {"exec", "Execute a ELF program", "System", cmd_exec},
 
     // Hardware
     {"poweroff", "Power off the OS", "Hardware", cmd_poweroff},
@@ -62,30 +64,31 @@ struct Command commands[] = {
 
 const size_t NUM_COMMANDS = sizeof(commands) / sizeof(commands[0]);
 
-int
-    handle_command(char *cmd) {
-	if( !cmd || !*cmd )
-		return -1;
+namespace kshell {
+	int handle_command(char *cmd) {
+		if( !cmd || !*cmd )
+			return -1;
 
-	char *space = cmd;
-	while( *space && *space != ' ' )
-		++space;
+		char *space = cmd;
+		while( *space && *space != ' ' )
+			++space;
 
-	char *args = nullptr;
-	if( *space == ' ' ) {
-		*space = '\0';
-		args   = space + 1;
-		while( *args == ' ' )
-			++args;
-	}
-
-	for( size_t i = 0; i < NUM_COMMANDS; ++i ) {
-		if( kstring::strcmp(cmd, commands[i].name) == 0 ) {
-			commands[i].handler(args);
-			return 0;
+		char *args = nullptr;
+		if( *space == ' ' ) {
+			*space = '\0';
+			args   = space + 1;
+			while( *args == ' ' )
+				++args;
 		}
-	}
 
-	kstd::printf("Unknown command: '%s'\n", cmd);
-	return -1;
-}
+		for( size_t i = 0; i < NUM_COMMANDS; ++i ) {
+			if( kstring::strcmp(cmd, commands[i].name) == 0 ) {
+				commands[i].handler(args);
+				return 0;
+			}
+		}
+
+		kstd::printf("Unknown command: '%s'\n", cmd);
+		return -1;
+	}
+}  // namespace kshell

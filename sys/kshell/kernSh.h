@@ -11,5 +11,6 @@
  */
 #pragma once
 
-void
-    kshell(void);
+namespace kshell {
+	void init(void);
+}

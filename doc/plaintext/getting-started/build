@@ -1,17 +1,24 @@
-# Wind/Tempest Project - Compiling
+The Wind operating system
+The Tempest kernel
+=========================
+Compiling
+---------
 
-## Prerequisites
+Prerequisites
+-------------
 
-- QEMU (for testing in virtual environment)
-- NASM (for compiling .ASM files)
+- QEMU  (for testing in virtual environment)
+- NASM  (for compiling .ASM files)
 - Clang (for compiling .C files)
-- Make (for compiling using the automatic way)
+- Make  (for compiling using the automatic way)
 
-## Building
+Building
+--------
 
 There are several ways to build Wind/Tempest:
 
-### Using Make
+Using Make
+----------
 
 To only compile and link Wind/Tempest, run:
 ```bash
@@ -19,14 +26,15 @@ make
 ```
 
 to compile and link Wind/Tempest and run it in QEMU, run:
-```bash
+bash
 make run
 ```
 
-### Using Toolchain
+Using Toolchain
+---------------
 
-> [!IMPORTANT]
-> If any .sh file is not executable, run `chmod +x <filename>`
+***IMPORTANT***:
+    If any .sh file is not executable, run `chmod +x <filename>`
 
 To compile and link Wind/Tempest using toolchain, run:
 

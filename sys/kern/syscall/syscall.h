@@ -24,39 +24,40 @@ extern struct Syscalls syscalls;
 // Syscall interrupt number (int 0x80)
 #define SYSCALL_INT_NO 0x80
 
-// System call numbers
-#define SYS_EXIT     0   // Process exit
-#define SYS_READ     1   // Read from file descriptor
-#define SYS_WRITE    2   // Write to file descriptor
-#define SYS_OPEN     3   // Open file
-#define SYS_CLOSE    4   // Close file descriptor
-#define SYS_GETPID   5   // Get process ID
-#define SYS_GETPPID  6   // Get parent process ID
-#define SYS_FORK     7   // Fork process
-#define SYS_EXEC     8   // Execute program
-#define SYS_WAIT     9   // Wait for child process
-#define SYS_KILL     10  // Kill process
-#define SYS_BRK      11  // Change data segment size
-#define SYS_MMAP     12  // Map memory
-#define SYS_MUNMAP   13  // Unmap memory
-#define SYS_SLEEP    14  // Sleep for specified time
-#define SYS_YIELD    15  // Yield CPU to other processes
-#define SYS_TIME     16  // Get current time
-#define SYS_GETCWD   17  // Get current working directory
-#define SYS_CHDIR    18  // Change current directory
-#define SYS_MKDIR    19  // Create directory
-#define SYS_RMDIR    20  // Remove directory
-#define SYS_STAT     21  // Get file statistics
-#define SYS_LSTAT    22  // Get link statistics
-#define SYS_FSTAT    23  // Get file descriptor statistics
-#define SYS_LINK     24  // Create hard link
-#define SYS_UNLINK   25  // Remove file
-#define SYS_SYMLINK  26  // Create symbolic link
-#define SYS_READLINK 27  // Read symbolic link
-#define SYS_CHMOD    28  // Change file permissions
-#define SYS_CHOWN    29  // Change file ownership
-#define SYS_TRUNCATE 30  // Truncate file
-#define SYS_LSEEK    31  // Seek in file
+// File operations
+#define SYS_READ  0
+#define SYS_WRITE 1
+#define SYS_OPEN  2
+#define SYS_CLOSE 3
+#define SYS_STAT  4
+#define SYS_FSTAT 5
+#define SYS_LSTAT 6
+#define SYS_POLL  7
+
+// Memory management
+#define SYS_BRK    12
+#define SYS_MMAP   9
+#define SYS_MUNMAP 11
+
+// Process management
+#define SYS_RT_SIGACTION   13
+#define SYS_RT_SIGPROCMASK 14
+#define SYS_IOCTL          16
+#define SYS_GETPID         39
+#define SYS_FORK           57
+#define SYS_VFORK          58
+#define SYS_EXECVE         59
+#define SYS_EXIT           60
+#define SYS_WAIT4          61
+
+// Thread operations (for musl TLS)
+#define SYS_ARCH_PRCTL      158
+#define SYS_SET_TID_ADDRESS 218
+#define SYS_EXIT_GROUP      231
+
+// Time
+#define SYS_TIME          201
+#define SYS_CLOCK_GETTIME 228
 
 // Syscall return values
 #define SYSCALL_SUCCESS           0ULL

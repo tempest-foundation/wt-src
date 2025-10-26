@@ -35,4 +35,4 @@ namespace kmath {
 
 		return result;
 	}
-}  // namespace math
+}  // namespace kmath

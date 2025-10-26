@@ -1,0 +1,52 @@
+# Wind/Tempest Project - Progress
+
+> [!WARNING]
+> This progress list is not final and will probably change as the project evolves.
+
+## Titles
+
+```
+[ ] means it is not done
+[p] means it is partially done
+[x] means it is done (but can still have improvements)
+```
+
+## Basic Stuff
+
+- [x] Bootloader
+- [x] Basic VGA text mode (replaced with framebuffer)
+- [x] Basic shell
+- [x] Debugging tools (serial logging, asserts, etc.)
+
+## Core Features
+
+- [x] Kernel-LibC (minimal or musl-based)
+- [x] Memory management (paging, heap, allocators)
+- [x] Timers (PIT + HPET)
+- [x] Legacy power managment (shutdown, reboot, etc.)
+- [ ] ACPI & Power management (shutdown, reboot, etc.)
+- [x] Filesystem support (ext2)
+- [ ] Multitasking
+- [x] Kernel Panic
+
+## System Services & Architecture
+
+- [x] Syscall interface
+- [p] User-space binary loading (.ELF)
+- [x] TTY-like subsystem
+- [x] Privilege separation
+- [ ] Module loading
+- [ ] Package manager
+
+## Hardware Support
+
+- [x] `amd64` support (mostly stable)
+- [p] Other archs support
+- [x] Drivers: video, serial, keyboard, etc... (more to come)
+- [ ] Networking stack
+- [ ] Sound support
+
+## UI / UX
+
+- [ ] Simple GUI (framebuffer-based)
+- [ ] Input abstraction (mouse, advanced keyboard input)

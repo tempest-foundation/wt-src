@@ -22,4 +22,4 @@ namespace kmath {
 
 		return x > y ? x : y;
 	}
-}  // namespace math
+}  // namespace kmath

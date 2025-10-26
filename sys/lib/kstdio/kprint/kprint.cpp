@@ -65,8 +65,7 @@ namespace kstd {
 	}
 
 	// Helper function to format a double to string
-	char *
-	    format_double(char *buf, size_t bufsize, double value, int precision) {
+	char *format_double(char *buf, size_t bufsize, double value, int precision) {
 		if( bufsize < 32 )
 			return buf;
 

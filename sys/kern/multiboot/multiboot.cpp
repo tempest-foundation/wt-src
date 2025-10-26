@@ -9,7 +9,7 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "mb.h"
+#include "multiboot.h"
 
 #include <kstdio.h>
 

@@ -30,8 +30,8 @@ uint64_t
 	                      count);
 	// TODO: Implement actual file reading
 	// Basic validation
-	if( buffer == 0 || count == 0 ) {
+	if( buffer == 0 || count == 0 )
 		return SYSCALL_INVALID_ARGS;
-	}
+
 	return SYSCALL_NOT_IMPLEMENTED;
 }

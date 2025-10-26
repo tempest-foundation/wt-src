@@ -1,6 +1,6 @@
 # Wind/Tempest Project - Documentation
 
-This is the documentation hub for Wind/Tempest. Here you will find all the text I wrote.
+This is the documentation hub for Wind/Tempest. Here you will find all the documentation of the project.
 
 ## Getting Started
 
@@ -8,7 +8,6 @@ This is the documentation hub for Wind/Tempest. Here you will find all the text 
 
 ## Project Structure
 
-- [Project Root](project/project-root.md)
 - [Tree Layout](project/compiled-tree.md)
 - [Progress](project/progress.md)
 

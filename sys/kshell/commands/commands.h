@@ -28,5 +28,7 @@ struct Command {
 extern struct Command commands[];
 extern const size_t   NUM_COMMANDS;
 
-int
-    handle_command(char *cmd);
+namespace kshell {
+	int
+	    handle_command(char *cmd);
+}

@@ -26,4 +26,4 @@ namespace kmath {
 			return (double) (int_part - 1);
 		}
 	}
-}  // namespace math
+}  // namespace kmath

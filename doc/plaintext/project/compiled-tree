@@ -1,9 +1,12 @@
-# Wind/Tempest Project - Tree
+The Wind operating system
+The Tempest kernel
+=========================
+Compiled Tree
+-------------
 
-> [!WARNING]
-> This tree is not final and will probably change as the project evolves.
+***WARNING***:
+    This tree is not final and will probably change as the project evolves.
 
-```
 /
 ├── Applications
 │   ├── app1 -> ...
@@ -18,10 +21,14 @@
 │   ├── devices
 │   ├── tmp
 │   ├── drivers
-│   ├── kern
+│   ├── kernel
 │   ├── logs
-│   │   ├── kern
+│   │   ├── kernel
 │   │   └── user
+│   ├── volumes
+│   │   ├── volume1
+│   │   ├── volume2
+│   │   └── volume3
 │   ├── services
 │   └── config
 ├── Home
@@ -52,15 +59,11 @@
 │       ├── Music
 │       ├── Pictures
 │       └── Videos
-├── Volumes
-│	├── volume1
-│	├── volume2
-│	└── volume3
-```
 
-## Why is not POSIX?
+Why is not POSIX?
+-----------------
 
-> **yes.**
+--yes.--
 
-Because POSIX tree is too big and complex.  It's a mess.  
+Because POSIX tree is too big and complex.  It's a mess.
 Wind/Tempest is designed for humans, not for 40-year-old standards made for UNIX servers.

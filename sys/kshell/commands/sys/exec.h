@@ -11,6 +11,5 @@
  */
 #pragma once
 
-namespace multiboot {
-	void parse(void *mb_info);
-}
+void
+    cmd_exec(const char *args);

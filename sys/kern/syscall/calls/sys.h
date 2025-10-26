@@ -13,5 +13,9 @@
 #include "io/read.h"
 #include "io/write.h"
 // Process
+#include "process/brk.h"
+#include "process/execve.h"
 #include "process/exit.h"
+#include "process/fork.h"
 #include "process/getpid.h"
+#include "process/waitpid.h"

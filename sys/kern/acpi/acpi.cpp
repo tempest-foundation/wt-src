@@ -32,10 +32,10 @@
 
 namespace acpi {
 	/**
- * @brief Legacy poweroff function that uses the legacy BIOS ports
- * @warning If the ports fail, the machine may not power off because of modern hardware
- * making this method deprecated
- */
+	 * @brief Legacy poweroff function that uses the legacy BIOS ports
+	 * @warning If the ports fail, the machine may not power off because of modern hardware
+	 * making this method deprecated
+	 */
 	void poweroff(void) {
 		outw(0x604, 0x2000);   // Port 0x604
 		outw(0xB004, 0x2000);  // Port 0xB004
@@ -46,10 +46,10 @@ namespace acpi {
 	}
 
 	/**
- * @brief Legacy reboot function that uses the keyboard controller
- * @warning If the ports fail, the machine may not power off because of modern hardware
- * making this method deprecated
- */
+	 * @brief Legacy reboot function that uses the keyboard controller
+	 * @warning If the ports fail, the machine may not power off because of modern hardware
+	 * making this method deprecated
+	 */
 	void reboot(void) {
 		while( inb(0x64) & 0x02 )
 			;          // Wait for keyboard controller ready

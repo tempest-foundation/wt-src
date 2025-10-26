@@ -1,0 +1,31 @@
+The Wind operating system
+The Tempest kernel
+=========================
+
+Wind/Tempest is a free and open-source (FOSS) POSIX-like operating system designed to be minimal, fast and portable.
+
+Most of the code is written in C++.
+
+***WARNING***:
+    Wind/Tempest is currently in alpha/pre-beta. Do not use on production or critical systems.
+    We are not responsible for any hardware damage, data loss, or other issues.
+
+Documentation
+-------------
+
+The project documentation is on the `doc/` folder.
+
+Philosophy
+----------
+
+- Transparency: Inspect every line.
+- Self-reliance: No hand-holding, patches welcome.
+- Simplicity: Features exist because someone coded them.
+- Refactor: If there is trash-code, rewrite the entire subsystem.
+
+License
+-------
+
+Copyright (c) 2025 Tempest Foundation.
+
+This project is licensed under the GNU General Public License 3.0 (aka.: GPLv3). See `LICENSE` for more details.

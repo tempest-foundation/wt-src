@@ -1,7 +1,21 @@
+// SPDX-License-Identifier: GPL-3.0-only
+/*
+ * -- BEGIN METADATA HEADER --
+ * <*---The Wind/Tempest Project---*>
+ * 
+ * Author(s)  : Tempik25 <tempik25@tempestfoundation.org>
+ * Maintainer : Tempest Foundation <development@tempestfoundation.org>
+ * 
+ * Copyright (c) Tempest Foundation, 2025
+ * -- END OF METADATA HEADER --
+ */
 #include <ktime.h>
 
-#include <arch/amd64/asm/io.h>
-#include <arch/amd64/idt/idt.h>
+#ifdef ARCH_AMD64
+#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/idt/idt.h>
+#endif
+#include <kern/scheduler/scheduler.h>
 
 // PIT frequency is 1193182 Hz
 #define PIT_FREQUENCY    1193182
@@ -18,6 +32,7 @@ static void
     timer_irq_handler(registers_t *regs) {
 	(void) regs;  // Unused
 	time::uptime_tick();
+	scheduler::tick();
 }
 
 /**

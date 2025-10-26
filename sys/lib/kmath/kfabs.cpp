@@ -16,4 +16,4 @@ namespace kmath {
 	double fabs(double x) {
 		return x < 0.0 ? -x : x;
 	}
-}  // namespace math
+}  // namespace kmath

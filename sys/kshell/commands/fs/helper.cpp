@@ -17,6 +17,7 @@ void
     ls_print_cb(const char *name, uint8_t file_type) {
 	(void) file_type;
 	kstd::puts(name);
+	kstd::puts("\n");
 }
 
 void

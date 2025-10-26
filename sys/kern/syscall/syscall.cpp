@@ -110,6 +110,9 @@ namespace syscall {
 		bind(SYS_GETPID, sys_getpid, "getpid", 0);
 		bind(SYS_READ, sys_read, "read", 3);
 		bind(SYS_WRITE, sys_write, "write", 3);
+		bind(SYS_FORK, sys_fork, "fork", 0);
+		bind(SYS_EXECVE, sys_execve, "execve", 3);
+		bind(SYS_BRK, sys_brk, "brk", 1);
 
 		logger::debug::printf("syscall",
 		                      "success",

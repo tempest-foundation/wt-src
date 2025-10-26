@@ -11,7 +11,7 @@
  */
 #pragma once
 
-extern bool d_enabled;
+extern bool dbg_enabled;
 
 namespace logger {
 	namespace debug {

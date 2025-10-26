@@ -17,7 +17,7 @@
 #include <drv/serial/serial.h>
 #include <drv/video/video.h>
 
-bool d_enabled = true;
+bool dbg_enabled = true;
 
 namespace logger {
 	namespace debug {
@@ -30,7 +30,7 @@ namespace logger {
 	 */
 
 		void puts(const char *subsystem, const char *type, const char *message) {
-			if( !d_enabled )
+			if( !dbg_enabled )
 				return;
 			if( !message || *message == '\0' )
 				return;
@@ -68,7 +68,7 @@ namespace logger {
 		           const char *type,
 		           const char *format,
 		           ...) {
-			if( !d_enabled )
+			if( !dbg_enabled )
 				return 0;
 			va_list args;
 			k_va_start(args, format);

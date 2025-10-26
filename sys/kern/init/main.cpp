@@ -22,8 +22,11 @@
 #include <drv/tty/tty.h>
 #include <fs/ext2/ext2.h>
 #include <kern/framebuf/framebuf.h>
-#include <kern/mb/mb.h>
+#include <kern/loader/elf_loader.h>
+#include <kern/multiboot/multiboot.h>
 #include <kern/memory/memory.h>
+#include <kern/proc/process.h>
+#include <kern/scheduler/scheduler.h>
 #include <kern/syscall/integration.h>
 #include <kern/timer/timer.h>
 #include <kshell/kernSh.h>
@@ -58,6 +61,12 @@ static void
 #endif
 }
 
+extern "C" void
+    load_gdt(void);
+
+extern "C" void
+    enter_userspace(uint64_t rip, uint64_t rsp);
+
 /**
  * @brief Entry point for the kernel initialization sequence.
  *
@@ -73,6 +82,7 @@ extern "C" void
 
 	isHardware_minReq();
 
+	load_gdt();
 #ifdef ARCH_AMD64
 	amd64::idt::init();
 #endif
@@ -87,7 +97,10 @@ extern "C" void
 
 	// Initialize syscall infrastructure
 	syscall::infrastructure::init();
+	// Initialize processes subsystem
+	proc::init();
 
+	// Initalize EXT2
 	ext2::set_block_device(ata::pio_read, nullptr);
 	if( ext2::mount(0) != 0 )
 		logger::error("fs", "EXT2 mount failed\n", nullptr);
@@ -98,5 +111,5 @@ extern "C" void
 
 	__asm__ volatile("sti");
 
-	kshell();
+	kshell::init();
 }
