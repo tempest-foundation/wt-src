@@ -17,8 +17,7 @@
 #include <drv/tty/tty.h>
 #include <kshell/commands/commands.h>
 
-void
-    cmd_help(const char *args) {
+void cmd_help(const char *args) {
 	(void) args;
 	kstd::printf("Available commands\n");
 

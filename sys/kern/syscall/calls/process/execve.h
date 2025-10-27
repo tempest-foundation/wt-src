@@ -15,11 +15,10 @@
 
 #include <kern/syscall/syscall.h>
 
-uint64_t
-    sys_execve(uint64_t syscall_no,
-               uint64_t path_ptr,
-               uint64_t argv,
-               uint64_t envp,
-               uint64_t arg3,
-               uint64_t arg4,
-               uint64_t arg5);
+uint64_t sys_execve(uint64_t syscall_no,
+                    uint64_t path_ptr,
+                    uint64_t argv,
+                    uint64_t envp,
+                    uint64_t arg3,
+                    uint64_t arg4,
+                    uint64_t arg5);

@@ -199,7 +199,6 @@ namespace syscall {
 }  // namespace syscall
 
 // C-wrapper to the assembly files
-extern "C" void
-    syscall_handler(registers_t *regs) {
+extern "C" void syscall_handler(registers_t *regs) {
 	syscall::handler(regs);
 }

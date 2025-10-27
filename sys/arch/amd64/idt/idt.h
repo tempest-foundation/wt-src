@@ -16,8 +16,7 @@
 typedef void (*irq_handler_t)(registers_t *);
 
 // Syscall support
-extern "C" void
-    syscall_int_handler(void);
+extern "C" void syscall_int_handler(void);
 
 namespace amd64 {
 	namespace irq {

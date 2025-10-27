@@ -15,8 +15,7 @@
 
 #include <drv/tty/tty.h>
 
-void
-    cmd_echo(const char *args) {
+void cmd_echo(const char *args) {
 	if( !args || *args == '\0' ) {
 		kstd::puts("Echo... echo... echo...");
 		return;

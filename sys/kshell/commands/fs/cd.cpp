@@ -13,8 +13,7 @@
 
 #include <fs/vfs/vfs.h>
 
-void
-    cmd_cd(const char *args) {
+void cmd_cd(const char *args) {
 	const char *path = (args && *args) ? args : "/";
 	int         rc   = vfs::chdir(path);
 	if( rc != 0 ) {

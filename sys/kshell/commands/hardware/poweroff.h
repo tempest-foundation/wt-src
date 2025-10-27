@@ -11,5 +11,4 @@
  */
 #pragma once
 
-void
-    cmd_poweroff(const char *args);
+void cmd_poweroff(const char *args);

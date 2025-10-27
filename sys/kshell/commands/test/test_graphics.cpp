@@ -14,8 +14,7 @@
 #include <drv/video/video.h>
 #include <kern/framebuf/framebuf.h>
 
-void
-    cmd_test_graphics(const char *args) {
+void cmd_test_graphics(const char *args) {
 	(void) args;
 
 	// Safety check for division by zero

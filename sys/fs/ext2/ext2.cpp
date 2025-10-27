@@ -39,8 +39,7 @@ static int (*g_write_sector)(uint64_t lba, uint32_t count, const void *buf) = nu
  * @retval 0        Success.
  * @retval <0       EXT2_ERR_IO on error or if no read callback is installed.
  */
-static int
-    kread_sectors(uint64_t lba, uint32_t cnt, void *dst) {
+static int kread_sectors(uint64_t lba, uint32_t cnt, void *dst) {
 	if( !g_read_sector ) {
 		return EXT2_ERR_IO;
 	}
@@ -62,8 +61,7 @@ static int
  * @retval 0        Success.
  * @retval <0       EXT2_ERR_IO on error.
  */
-static int
-    kread_block(uint32_t block_id, void *dst) {
+static int kread_block(uint32_t block_id, void *dst) {
 	uint64_t first_lba = g_base_lba + ((uint64_t) block_id * g_block_size) / 512;
 	uint32_t cnt       = g_block_size / 512;
 	return kread_sectors(first_lba, cnt, dst);
@@ -89,8 +87,7 @@ static int
  * @retval EXT2_ERR_INVALID Invalid arguments (ino==0, missing group descriptor, etc).
  * @retval EXT2_ERR_IO      I/O error (e.g., failed block read, allocation error).
  */
-static int
-    kread_inode(uint32_t ino, ext2_inode_t *out) {
+static int kread_inode(uint32_t ino, ext2_inode_t *out) {
 	if( ino == 0 )
 		return EXT2_ERR_INVALID;
 
@@ -195,8 +192,7 @@ static void
  *         - EXT2_ERR_INVALID : Invalid arguments or inode is not a directory.
  *         - EXT2_ERR_IO      : I/O error or out-of-memory.
  */
-static int
-    klist_dir_entries(const ext2_inode_t *dir_inode, ext2_list_cb_t cb) {
+static int klist_dir_entries(const ext2_inode_t *dir_inode, ext2_list_cb_t cb) {
 	if( !dir_inode || !cb )
 		return EXT2_ERR_INVALID;
 
@@ -235,8 +231,7 @@ static int
  * @return The physical block number for the given logical block, or 0 if the block is sparse/unallocated,
  *         or if an I/O error occurs, or if the block index is outside the supported address range.
  */
-static uint32_t
-    kget_file_block(const ext2_inode_t *inode, uint64_t logical_block) {
+static uint32_t kget_file_block(const ext2_inode_t *inode, uint64_t logical_block) {
 	uint32_t blocks_per_indirect = g_block_size / sizeof(uint32_t);
 
 	// Direct blocks (0-11)
@@ -395,8 +390,7 @@ static uint32_t
 }
 
 // Forward declaration for functions used before definition
-static int
-    kread_inode(uint32_t ino, ext2_inode_t *out);
+static int kread_inode(uint32_t ino, ext2_inode_t *out);
 
 namespace ext2 {
 	/**

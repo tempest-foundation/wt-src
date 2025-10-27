@@ -42,106 +42,57 @@ namespace idt_constants {
 }  // namespace idt_constants
 
 extern "C" {
-void
-    irq0();
-void
-    irq1();
-void
-    irq2();
-void
-    irq3();
-void
-    irq4();
-void
-    irq5();
-void
-    irq6();
-void
-    irq7();
-void
-    irq8();
-void
-    irq9();
-void
-    irq10();
-void
-    irq11();
-void
-    irq12();
-void
-    irq13();
-void
-    irq14();
-void
-    irq15();
+void irq0();
+void irq1();
+void irq2();
+void irq3();
+void irq4();
+void irq5();
+void irq6();
+void irq7();
+void irq8();
+void irq9();
+void irq10();
+void irq11();
+void irq12();
+void irq13();
+void irq14();
+void irq15();
 
-void
-    isr0();
-void
-    isr1();
-void
-    isr2();
-void
-    isr3();
-void
-    isr4();
-void
-    isr5();
-void
-    isr6();
-void
-    isr7();
-void
-    isr8();
-void
-    isr9();
-void
-    isr10();
-void
-    isr11();
-void
-    isr12();
-void
-    isr13();
-void
-    isr14();
-void
-    isr15();
-void
-    isr16();
-void
-    isr17();
-void
-    isr18();
-void
-    isr19();
-void
-    isr20();
-void
-    isr21();
-void
-    isr22();
-void
-    isr23();
-void
-    isr24();
-void
-    isr25();
-void
-    isr26();
-void
-    isr27();
-void
-    isr28();
-void
-    isr29();
-void
-    isr30();
-void
-    isr31();
+void isr0();
+void isr1();
+void isr2();
+void isr3();
+void isr4();
+void isr5();
+void isr6();
+void isr7();
+void isr8();
+void isr9();
+void isr10();
+void isr11();
+void isr12();
+void isr13();
+void isr14();
+void isr15();
+void isr16();
+void isr17();
+void isr18();
+void isr19();
+void isr20();
+void isr21();
+void isr22();
+void isr23();
+void isr24();
+void isr25();
+void isr26();
+void isr27();
+void isr28();
+void isr29();
+void isr30();
+void isr31();
 
-void
-    syscall_int_handler();
+void syscall_int_handler();
 }
 
 // Array of C-level interrupt handlers.
@@ -188,8 +139,7 @@ static const struct {
                      {29, PANIC_VMM_COMMUNICATION},
                      {30, PANIC_SECURITY}};
 
-static int
-    get_panic_code_for_interrupt(uint8_t int_no) {
+static int get_panic_code_for_interrupt(uint8_t int_no) {
 	constexpr size_t map_size = sizeof(isr_panic_map) / sizeof(isr_panic_map[0]);
 
 	for( size_t i = 0; i < map_size; ++i ) {
@@ -202,14 +152,12 @@ static int
 }
 
 // Default C-level handlers.
-extern "C" void
-    isr_handler(registers_t *regs) {
+extern "C" void isr_handler(registers_t *regs) {
 	int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);
 	panic::init(panic_code, regs);
 }
 
-extern "C" void
-    irq_handler(registers_t *regs) {
+extern "C" void irq_handler(registers_t *regs) {
 	// If a custom handler is registered, call it.
 	if( regs->int_no >= idt_constants::IRQ_BASE && regs->int_no <= 47 ) {
 		irq_handler_t handler =
@@ -227,8 +175,7 @@ extern "C" void
 }
 
 // Remap the PIC to avoid conflicts with CPU exceptions
-static void
-    pic_remap(uint8_t master_offset, uint8_t slave_offset) {
+static void pic_remap(uint8_t master_offset, uint8_t slave_offset) {
 	outb(PIC1_CMD, 0x11);
 	outb(PIC2_CMD, 0x11);
 	outb(PIC1_DATA, master_offset);  // Master PIC vector offset.

@@ -11,5 +11,4 @@
  */
 #pragma once
 
-void
-    cmd_panic(const char *args);
+void cmd_panic(const char *args);

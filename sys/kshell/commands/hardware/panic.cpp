@@ -16,8 +16,7 @@
 
 #include <kern/panic/panic.h>
 
-void
-    cmd_panic(const char *args) {
+void cmd_panic(const char *args) {
 	if( args == nullptr || *args == '\0' ) {
 		kstd::puts("Usage: kpanic <error_code>");
 		kstd::puts("Error codes: 0-16 (0=unknown, 1=div_by_zero, etc.)");

@@ -17,8 +17,7 @@
 
 #include <fs/vfs/vfs.h>
 
-void
-    cmd_ls(const char *args) {
+void cmd_ls(const char *args) {
 	// If no path given use current working directory
 	const char *path = (args && *args) ? args : nullptr;
 	char        buf[256];

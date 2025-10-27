@@ -15,14 +15,13 @@
 #include <kern/proc/process.h>
 #include <kern/syscall/syscall.h>
 
-uint64_t
-    sys_waitpid(uint64_t syscall_no,
-                uint64_t pid,
-                uint64_t status_ptr,
-                uint64_t options,
-                uint64_t arg3,
-                uint64_t arg4,
-                uint64_t arg5) {
+uint64_t sys_waitpid(uint64_t syscall_no,
+                     uint64_t pid,
+                     uint64_t status_ptr,
+                     uint64_t options,
+                     uint64_t arg3,
+                     uint64_t arg4,
+                     uint64_t arg5) {
 	(void) syscall_no;
 	(void) pid;
 	(void) status_ptr;

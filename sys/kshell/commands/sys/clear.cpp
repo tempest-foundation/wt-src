@@ -17,8 +17,7 @@
 
 #include <drv/video/video.h>
 
-void
-    cmd_clear(const char *args) {
+void cmd_clear(const char *args) {
 	uint32_t color = 0x000000;
 	if( args && *args ) {
 		int base = 0;

@@ -14,8 +14,7 @@
 #include <fs/ext2/ext2.h>
 #include <fs/vfs/vfs.h>
 
-void
-    cmd_cat(const char *args) {
+void cmd_cat(const char *args) {
 	if( !args || *args == '\0' ) {
 		kstd::puts("Usage: cat <path>");
 		return;

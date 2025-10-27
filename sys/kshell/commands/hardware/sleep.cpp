@@ -13,8 +13,7 @@
 #include <kprint.h>
 #include <ksleep.h>
 
-void
-    cmd_sleep(const char *args) {
+void cmd_sleep(const char *args) {
 	if( args && *args ) {
 		unistd::sleep::sleep(kstd::atoi(args));
 	} else {

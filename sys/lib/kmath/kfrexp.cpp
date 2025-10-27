@@ -12,8 +12,7 @@
 #include <kfrexp.h>
 #include <kmath.h>
 
-double
-    frexp(double x, int *exp) {
+double frexp(double x, int *exp) {
 	// Handle special cases
 	if( kmath::isnan(x) ) {
 		*exp = 0;

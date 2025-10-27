@@ -19,8 +19,7 @@
 char command_history[MAX_HISTORY][CMD_BUFFER_SIZE];
 int  history_count = 0;
 
-void
-    cmd_history(const char *args) {
+void cmd_history(const char *args) {
 	(void) args;
 	if( history_count == 0 ) {
 		kstd::puts("No commands in history\n");

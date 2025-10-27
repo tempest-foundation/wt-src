@@ -19,7 +19,7 @@
 
 // PIT frequency is 1193182 Hz
 #define PIT_FREQUENCY    1193182
-#define TARGET_FREQUENCY 100  // 100Hz = 10ms per tick
+#define TARGET_FREQUENCY 100  // 10Hz = 100ms per tick
 
 /**
  * @brief Timer interrupt handler
@@ -28,8 +28,7 @@
  * 
  * @param regs Pointer to saved register state
  */
-static void
-    timer_irq_handler(registers_t *regs) {
+static void timer_irq_handler(registers_t *regs) {
 	(void) regs;  // Unused
 	time::uptime_tick();
 	scheduler::tick();
@@ -41,8 +40,7 @@ static void
  * Sets up the PIT to generate interrupts at TARGET_FREQUENCY Hz.
  * Also registers the timer IRQ handler.
  */
-void
-    timer_init(void) {
+void timer_init(void) {
 	// Calculate divisor for desired frequency
 	uint16_t divisor = (uint16_t) (PIT_FREQUENCY / TARGET_FREQUENCY);
 

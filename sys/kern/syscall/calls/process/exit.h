@@ -13,11 +13,10 @@
 
 #include <kern/syscall/syscall.h>
 
-uint64_t
-    sys_exit(uint64_t syscall_no __attribute__((unused)),
-             uint64_t status,
-             uint64_t arg1 __attribute__((unused)),
-             uint64_t arg2 __attribute__((unused)),
-             uint64_t arg3 __attribute__((unused)),
-             uint64_t arg4 __attribute__((unused)),
-             uint64_t arg5 __attribute__((unused)));
+uint64_t sys_exit(uint64_t syscall_no __attribute__((unused)),
+                  uint64_t status,
+                  uint64_t arg1 __attribute__((unused)),
+                  uint64_t arg2 __attribute__((unused)),
+                  uint64_t arg3 __attribute__((unused)),
+                  uint64_t arg4 __attribute__((unused)),
+                  uint64_t arg5 __attribute__((unused)));

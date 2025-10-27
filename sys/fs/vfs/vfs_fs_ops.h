@@ -61,19 +61,16 @@ typedef struct vfs_fs_operations {
  * @brief Registers a filesystem driver with the VFS
  * @param fs_ops Pointer to filesystem operations structure
  */
-void
-    vfs_register_fs(vfs_fs_operations_t *fs_ops);
+void vfs_register_fs(vfs_fs_operations_t *fs_ops);
 
 /**
  * @brief Sets the active root filesystem
  * @param fs_ops Pointer to filesystem operations structure
  */
-void
-    vfs_set_root_fs(vfs_fs_operations_t *fs_ops);
+void vfs_set_root_fs(vfs_fs_operations_t *fs_ops);
 
 /**
  * @brief Gets the current root filesystem operations
  * @return Pointer to current root filesystem operations, or NULL if none set
  */
-vfs_fs_operations_t *
-    vfs_get_root_fs(void);
+vfs_fs_operations_t *vfs_get_root_fs(void);

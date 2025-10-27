@@ -23,16 +23,15 @@
 #include <fs/ext2/ext2.h>
 #include <kern/framebuf/framebuf.h>
 #include <kern/loader/elf_loader.h>
-#include <kern/multiboot/multiboot.h>
 #include <kern/memory/memory.h>
+#include <kern/multiboot/multiboot.h>
 #include <kern/proc/process.h>
 #include <kern/scheduler/scheduler.h>
 #include <kern/syscall/integration.h>
 #include <kern/timer/timer.h>
 #include <kshell/kernSh.h>
 
-static void
-    isHardware_minReq(void) {
+static void isHardware_minReq(void) {
 #ifdef ARCH_AMD64
 	/*
 	 * Well, you are asking: "Where is the fallback in the case the system dosen't have SSE or FPU?".
@@ -61,11 +60,9 @@ static void
 #endif
 }
 
-extern "C" void
-    load_gdt(void);
+extern "C" void load_gdt(void);
 
-extern "C" void
-    enter_userspace(uint64_t rip, uint64_t rsp);
+extern "C" void enter_userspace(uint64_t rip, uint64_t rsp);
 
 /**
  * @brief Entry point for the kernel initialization sequence.
@@ -76,8 +73,7 @@ extern "C" void
  * @param mb_info Pointer to the multiboot information structure provided at boot time.
  *                If @p mb_info is NULL, the system will halt.
  */
-extern "C" void
-    start_kernel(void *mb_info) {
+extern "C" void start_kernel(void *mb_info) {
 	serial::init();
 
 	isHardware_minReq();
@@ -109,7 +105,7 @@ extern "C" void
 	amd64::cpuid::init();  // Initialize the vendor and brand of the CPU
 #endif
 
-	__asm__ volatile("sti");
+	__asm__ volatile("sti");  // Enables interrupts after initialization is complete
 
 	kshell::init();
 }

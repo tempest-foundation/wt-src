@@ -15,8 +15,7 @@
 #include <kern/framebuf/framebuf.h>
 #include <kern/memory/memory.h>
 
-void
-    cmd_fetch(const char *args) {
+void cmd_fetch(const char *args) {
 	(void) args;
 	const char *ascii[] = {"@                         @",
 	                       " @@           @       @@@@",

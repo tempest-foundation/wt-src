@@ -21,7 +21,7 @@ PenaltyBreakAssignment: 5
 PenaltyBreakBeforeFirstCallParameter: 5
 
 BreakBeforeBraces: Attach
-BreakAfterReturnType: TopLevel
+BreakAfterReturnType: None
 BreakConstructorInitializers: BeforeComma
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 AlwaysBreakTemplateDeclarations: true

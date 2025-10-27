@@ -12,8 +12,7 @@
 #include <kprint.h>
 #include <ktime.h>
 
-void
-    cmd_time(const char *args) {
+void cmd_time(const char *args) {
 	(void) args;
 
 	// Buffer for date and time strings

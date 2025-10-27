@@ -21,14 +21,12 @@
 #include <kern/proc/process.h>
 #include <kern/scheduler/scheduler.h>
 
-extern "C" void
-    enter_userspace(uint64_t rip, uint64_t rsp);
+extern "C" void enter_userspace(uint64_t rip, uint64_t rsp);
 
 // Maximum ELF file size we'll attempt to load (4MB)
 #define MAX_ELF_SIZE (4 * 1024 * 1024)
 
-void
-    cmd_exec(const char *args) {
+void cmd_exec(const char *args) {
 	if( !args || *args == '\0' ) {
 		kstd::puts("Usage: exec <elf_path>\n");
 		kstd::puts("  Loads and executes an ELF binary in user-space\n");

@@ -82,8 +82,7 @@ extern int errno;
 #ifdef K__THREAD_LOCAL_ERRNO
 #	undef errno
 #	define errno (*K__errno_location())
-extern int *
-    K__errno_location(void);
+extern int *K__errno_location(void);
 #endif
 
 #ifdef __cplusplus

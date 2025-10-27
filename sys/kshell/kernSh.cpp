@@ -33,13 +33,11 @@ namespace kshell {
 	 * indefinitely, handling user input and providing responses through TTY.
 	 * Ensures input does not exceed the buffer size and reports an error on overflow.
 	 */
-	void
-	    init(void) {
-		kstd::puts(
-		    "Copyright (c) Tempest Foundation, 2025\n");
+	void init(void) {
+		kstd::puts("Copyright (c) Tempest Foundation, 2025\n");
 
 		for( ;; ) {
-			kstd::puts("\n[shell@tempest]@ ");
+			kstd::puts("\n[shell@tempest] ");
 			cmd_ptr        = 0;
 			input_overflow = 0;
 
@@ -54,17 +52,19 @@ namespace kshell {
 						if( cmd_ptr > 0 ) {
 							// Save to history
 							size_t len =
-							    (size_t) kstd::strlen(cmd_buffer);
+							    (size_t) kstd::strlen(
+							        cmd_buffer);
 							if( len >= CMD_BUFFER_SIZE )
 								len = CMD_BUFFER_SIZE - 1;
 							kstring::memcpy(
-							    command_history[history_count
-									    % MAX_HISTORY],
+							    command_history
+							        [history_count
+							         % MAX_HISTORY],
 							    cmd_buffer,
 							    len);
 							command_history[history_count
-									% MAX_HISTORY][len] =
-							    '\0';
+							                % MAX_HISTORY]
+							               [len] = '\0';
 							history_count++;
 
 							handle_command(cmd_buffer);
@@ -74,7 +74,8 @@ namespace kshell {
 				} else if( c == '\b' || c == 127 ) {
 					if( cmd_ptr > 0 )
 						cmd_ptr--;
-				} else if( (unsigned char) c >= 32 && (unsigned char) c < 127 ) {
+				} else if( (unsigned char) c >= 32
+				           && (unsigned char) c < 127 ) {
 					if( cmd_ptr < CMD_BUFFER_SIZE - 1 )
 						cmd_buffer[cmd_ptr++] = c;
 					else
@@ -83,4 +84,4 @@ namespace kshell {
 			}
 		}
 	}
-}
+}  // namespace kshell

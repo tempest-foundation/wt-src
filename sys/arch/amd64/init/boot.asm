@@ -151,9 +151,14 @@ map_4gib_identity:
     ret
 
 ; ============================================================================
-; enable_cpu_features - Enable PAE and SSE
+; enable_cpu_features - Enable FPU, PAE, and SSE
 ; ============================================================================
 enable_cpu_features:
+    mov eax, cr0
+    and eax, ~(1 << 2)               ; Clear EM (Emulation, bit 2) to enable FPU
+    or  eax,  (1 << 1)               ; Set MP (Monitor Coprocessor, bit 1)
+    mov cr0, eax
+
     mov eax, cr4
     or eax, (1 << 5)                 ; PAE (Physical Address Extension)
     or eax, (1 << 9)                 ; OSFXSR (OS support for FXSAVE/FXRSTOR)

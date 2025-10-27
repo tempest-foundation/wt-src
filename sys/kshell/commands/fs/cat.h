@@ -11,5 +11,4 @@
  */
 #pragma once
 
-void
-    cmd_cat(const char *args);
+void cmd_cat(const char *args);

@@ -11,5 +11,4 @@
  */
 #pragma once
 
-void
-    cmd_exec(const char *args);
+void cmd_exec(const char *args);
