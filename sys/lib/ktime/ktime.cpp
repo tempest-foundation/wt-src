@@ -10,10 +10,10 @@
  * -- END OF METADATA HEADER --
  */
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/asm/io.hpp>
 #endif
-#include <kstdio.h>
-#include <ktime.h>
+#include <kstdio.hpp>
+#include <ktime.hpp>
 
 // BIOS interrupt for getting RTC (Real Time Clock) data
 #define RTC_COMMAND_PORT 0x70

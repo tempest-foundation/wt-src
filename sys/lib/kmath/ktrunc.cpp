@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <ktrunc.h>
+#include <kmath.hpp>
+#include <ktrunc.hpp>
 
 namespace kmath {
 	double trunc(double x) {

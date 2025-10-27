@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kcos.h>
-#include <kmath.h>
+#include <kcos.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double cos(double x) {

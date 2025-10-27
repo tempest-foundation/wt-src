@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "drv/ata/ata.h"
+#include "drv/ata/ata.hpp"
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/asm/io.hpp>
 #endif
-#include <kstddef.h>
+#include <kstddef.hpp>
 
 #define ATA_PRIMARY_IO   0x1F0
 #define ATA_PRIMARY_CTRL 0x3F6

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <ksin.h>
+#include <kmath.hpp>
+#include <ksin.hpp>
 
 namespace kmath {
 	double sin(double x) {

@@ -9,13 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdio.h>
-#include <ktime.h>
-#include <kutoa.h>
+#include <kstdio.hpp>
+#include <ktime.hpp>
+#include <kutoa.hpp>
 
-#include <dbg/logger.h>
-#include <drv/serial/serial.h>
-#include <drv/video/video.h>
+#include <dbg/logger.hpp>
+#include <drv/serial/serial.hpp>
+#include <drv/video/video.hpp>
 
 bool dbg_enabled = true;
 

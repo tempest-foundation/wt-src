@@ -9,7 +9,7 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdint.h>
+#include <kstdint.hpp>
 
 namespace amd64::sse2 {
 	void enable(void) {

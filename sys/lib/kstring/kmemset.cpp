@@ -9,20 +9,21 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstddef.h>
-#include <kstdint.h>
+#include <kstddef.hpp>
+#include <kstdint.hpp>
+#include <kmemset.hpp>
 
 namespace kstring {
-	void *memset(void *s, int c, size_t n) {
-		if( !s )
-			return nullptr;
+void *memset(void *s, int c, size_t n) {
+	if( !s )
+		return nullptr;
 
-		unsigned char *byte_ptr = static_cast<unsigned char *>(s);
+	unsigned char *byte_ptr = static_cast<unsigned char *>(s);
 
-		for( size_t i = 0; i < n; ++i ) {
-			byte_ptr[i] = static_cast<unsigned char>(c);
-		}
-
-		return s;
+	for( size_t i = 0; i < n; ++i ) {
+		byte_ptr[i] = static_cast<unsigned char>(c);
 	}
+
+	return s;
+}
 }  // namespace kstring

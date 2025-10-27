@@ -21,10 +21,32 @@ enter_userspace:
     mov rax, rdi  ; User RIP
     mov rbx, rsi  ; User RSP
     
+    ; Set up initial stack for C program (argc, argv, envp)
+    ; Stack layout: [argc] [argv[0]] [NULL] [NULL] [auxv...] [strings...]
+    mov rcx, rbx
+    
+    ; Put program name string at top of stack
+    sub rcx, 8
+    mov qword [rcx], 0x74696e692f  ; "/init" (with null terminator, little endian)
+    mov r8, rcx                     ; Save pointer to program name
+    
+    ; Set up the main stack structure
+    sub rcx, 8
+    mov qword [rcx], 0      ; AT_NULL (auxv terminator)
+    sub rcx, 8  
+    mov qword [rcx], 0      ; envp[0] = NULL (no environment)
+    sub rcx, 8
+    mov qword [rcx], 0      ; argv[1] = NULL (end of argv)
+    sub rcx, 8
+    mov qword [rcx], r8     ; argv[0] = pointer to "/init"
+    sub rcx, 8
+    mov qword [rcx], 1      ; argc = 1
+    mov rbx, rcx            ; Update stack pointer
+    
     ; Set up segments for user mode (ring 3)
     ; GDT entries: 0x08 = kernel code, 0x10 = kernel data
     ;              0x18 = user code, 0x20 = user data
-    ; For user mode we need: 0x23 = user data (0x20 | 3), 0x2B = user code (0x28 | 3)
+    ; For user mode we need: 0x23 = user data (0x20 | 3), 0x1B = user code (0x18 | 3)
     
     ; Set up data segments
     mov cx, 0x23        ; User data segment with RPL=3
@@ -47,7 +69,7 @@ enter_userspace:
     pop rcx
     or rcx, 0x200       ; Enable interrupts (IF flag)
     push rcx            ; Push modified RFLAGS
-    push 0x2B           ; CS (user code segment with RPL=3)
+    push 0x1B           ; CS (user code segment with RPL=3)
     push rax            ; RIP (user entry point)
     
     ; Clear all general purpose registers for security

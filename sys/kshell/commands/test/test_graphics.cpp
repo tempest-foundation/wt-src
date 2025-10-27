@@ -9,10 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kunistd.h>
+#include "test_graphics.hpp"
 
-#include <drv/video/video.h>
-#include <kern/framebuf/framebuf.h>
+#include <kunistd.hpp>
+
+#include <drv/video/video.hpp>
+#include <kern/framebuf/framebuf.hpp>
 
 void cmd_test_graphics(const char *args) {
 	(void) args;

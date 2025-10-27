@@ -9,29 +9,29 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "commands.h"
+#include "commands.hpp"
 
-#include <kprint.h>
-#include <kstrcmp.h>
+#include <kprint.hpp>
+#include <kstrcmp.hpp>
 
 // Commands import
-#include "fs/cat.h"
-#include "fs/cd.h"
-#include "fs/fsize.h"
-#include "fs/ls.h"
-#include "fs/pwd.h"
-#include "hardware/panic.h"
-#include "hardware/poweroff.h"
-#include "hardware/reboot.h"
-#include "hardware/sleep.h"
-#include "info/fetch.h"
-#include "info/time.h"
-#include "sys/clear.h"
-#include "sys/echo.h"
-#include "sys/exec.h"
-#include "sys/help.h"
-#include "sys/history.h"
-#include "test/test_graphics.h"
+#include "fs/cat.hpp"
+#include "fs/cd.hpp"
+#include "fs/fsize.hpp"
+#include "fs/ls.hpp"
+#include "fs/pwd.hpp"
+#include "hardware/panic.hpp"
+#include "hardware/poweroff.hpp"
+#include "hardware/reboot.hpp"
+#include "hardware/sleep.hpp"
+#include "info/fetch.hpp"
+#include "info/time.hpp"
+#include "sys/clear.hpp"
+#include "sys/echo.hpp"
+#include "sys/exec.hpp"
+#include "sys/help.hpp"
+#include "sys/history.hpp"
+#include "test/test_graphics.hpp"
 
 struct Command commands[] = {
     // System

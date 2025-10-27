@@ -9,11 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdio.h>
-#include <ktime.h>
+#include "fetch.hpp"
 
-#include <kern/framebuf/framebuf.h>
-#include <kern/memory/memory.h>
+#include <kstdio.hpp>
+#include <ktime.hpp>
+
+#include <kern/framebuf/framebuf.hpp>
+#include <kern/memory/memory.hpp>
 
 void cmd_fetch(const char *args) {
 	(void) args;

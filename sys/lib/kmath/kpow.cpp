@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <kpow.h>
+#include <kmath.hpp>
+#include <kpow.hpp>
 
 namespace kmath {
 	double pow(double x, double y) {

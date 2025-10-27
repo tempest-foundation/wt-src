@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "scheduler.h"
+#include "scheduler.hpp"
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/idt/idt.h>
+#	include <arch/amd64/idt/idt.hpp>
 #endif
-#include <dbg/logger.h>
+#include <dbg/logger.hpp>
 
 static process_t *run_queue_head  = nullptr;
 static process_t *current_running = nullptr;

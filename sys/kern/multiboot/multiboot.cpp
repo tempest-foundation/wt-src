@@ -9,15 +9,15 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "multiboot.h"
+#include "multiboot.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
 
-#include "kern/framebuf/framebuf.h"
+#include "kern/framebuf/framebuf.hpp"
 #ifdef ARCH_AMD64
-#	include <arch/amd64/cpu/halt.h>
+#	include <arch/amd64/cpu/halt.hpp>
 #endif
-#include <dbg/logger.h>
+#include <dbg/logger.hpp>
 
 // Multiboot2 header structure.
 struct multiboot_header {

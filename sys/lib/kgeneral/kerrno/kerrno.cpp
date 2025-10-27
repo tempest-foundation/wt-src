@@ -9,6 +9,6 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kerrno.h>
+#include <kerrno.hpp>
 
 int errno = 0;

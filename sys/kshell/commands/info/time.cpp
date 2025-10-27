@@ -9,8 +9,10 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kprint.h>
-#include <ktime.h>
+#include "time.hpp"
+
+#include <kprint.hpp>
+#include <ktime.hpp>
 
 void cmd_time(const char *args) {
 	(void) args;

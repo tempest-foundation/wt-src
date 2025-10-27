@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <knextafter.h>
+#include <kmath.hpp>
+#include <knextafter.hpp>
 
 namespace kmath {
 	double nextafter(double x, double y) {

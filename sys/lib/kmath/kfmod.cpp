@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfmod.h>
-#include <kmath.h>
+#include <kfmod.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double fmod(double x, double y) {

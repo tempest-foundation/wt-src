@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "integration.h"
+#include "integration.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
 
-#include <dbg/logger.h>
+#include <dbg/logger.hpp>
 
 // Global syscall infrastructure state
 static syscall_status_t syscall_status       = SYSCALL_STATUS_UNINITIALIZED;

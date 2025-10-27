@@ -9,15 +9,15 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "acpi.h"
+#include "acpi.hpp"
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/asm/io.hpp>
 #endif
-#include <ksleep.h>
-#include <kstddef.h>
+#include <ksleep.hpp>
+#include <kstddef.hpp>
 
-#include <dbg/logger.h>
+#include <dbg/logger.hpp>
 
 /*
  * This is not ACPI yet, this is a placeholder for ACPI.

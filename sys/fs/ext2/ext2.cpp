@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "ext2.h"
+#include "ext2.hpp"
 
-#include <kstdio.h>
-#include <kstring.h>
+#include <kstdio.hpp>
+#include <kstring.hpp>
 
-#include <kern/memory/memory.h>
+#include <kern/memory/memory.hpp>
 
 static uint64_t           g_base_lba = 0;  // Partition/LBA base of filesystem
 static ext2_superblock_t  g_superblock;

@@ -9,10 +9,10 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdio.h>
-#include <kutoa.h>
+#include <kstdio.hpp>
+#include <kutoa.hpp>
 
-#include <drv/tty/tty.h>
+#include <drv/tty/tty.hpp>
 
 namespace kstd {
 	void puthex(uint64_t n) {

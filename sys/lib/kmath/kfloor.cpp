@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfloor.h>
-#include <kmath.h>
+#include <kfloor.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double floor(double x) {

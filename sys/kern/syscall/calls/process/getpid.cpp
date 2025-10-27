@@ -9,10 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdint.h>
+#include "getpid.hpp"
 
-#include <dbg/logger.h>
-#include <kern/syscall/syscall.h>
+#include <kstdint.hpp>
+
+#include <dbg/logger.hpp>
+#include <kern/syscall/syscall.hpp>
 
 uint64_t sys_getpid(uint64_t syscall_no __attribute__((unused)),
                     uint64_t arg0 __attribute__((unused)),

@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "memory.h"
+#include "memory.hpp"
 
-#include <kstdio.h>
-#include <kstring.h>
+#include <kstdio.hpp>
+#include <kstring.hpp>
 
-#include <kern/panic/panic.h>
+#include <kern/panic/panic.hpp>
 
 // ============================================================================
 // Multiboot2 Structures
@@ -234,10 +234,13 @@ namespace memory {
 	namespace vm {
 		// Virtual memory management
 		void init(void) {
-			// Get current page table from CR3
+			// Get current page table from CR3 (physical address)
+			// Use identity mapping since first 4GB is identity-mapped by bootloader
 			uint64_t cr3;
 			__asm__ volatile("mov %%cr3, %0" : "=r"(cr3));
-			current_pml4 = (pml4_t *) (cr3 & ~(uint64_t) 0xFFF);
+			uint64_t pml4_phys = cr3 & ~(uint64_t) 0xFFF;
+			// First 4GB is identity-mapped, so physical addr = virtual addr
+			current_pml4 = (pml4_t *) pml4_phys;
 		}
 
 		bool map_page(uint64_t virtual_addr,
@@ -258,15 +261,19 @@ namespace memory {
 					return false;
 
 				uint64_t phys = memory::get_physical_addr(frame);
-				pml3          = (pml3_t *) (phys + KERNEL_BASE);
+				pml3          = (pml3_t *) phys;
 				kstring::memset(pml3, 0, PAGE_SIZE);
 
 				current_pml4->entries[pml4_index] =
-				    phys | PAGE_PRESENT | PAGE_WRITABLE;
+				    phys | PAGE_PRESENT | PAGE_WRITABLE | (flags & PAGE_USER);
 			} else {
 				uint64_t pml3_phys =
 				    current_pml4->entries[pml4_index] & ~(uint64_t) 0xFFF;
-				pml3 = (pml3_t *) (pml3_phys + KERNEL_BASE);
+				pml3 = (pml3_t *) pml3_phys;
+				// Update flags if needed (e.g., add USER flag)
+				if( flags & PAGE_USER ) {
+					current_pml4->entries[pml4_index] |= PAGE_USER;
+				}
 			}
 
 			pml2_t *pml2 = nullptr;
@@ -276,15 +283,19 @@ namespace memory {
 					return false;
 
 				uint64_t phys = memory::get_physical_addr(frame);
-				pml2          = (pml2_t *) (phys + KERNEL_BASE);
+				pml2          = (pml2_t *) phys;
 				kstring::memset(pml2, 0, PAGE_SIZE);
 
 				pml3->entries[pml3_index] =
-				    phys | PAGE_PRESENT | PAGE_WRITABLE;
+				    phys | PAGE_PRESENT | PAGE_WRITABLE | (flags & PAGE_USER);
 			} else {
 				uint64_t pml2_phys =
 				    pml3->entries[pml3_index] & ~(uint64_t) 0xFFF;
-				pml2 = (pml2_t *) (pml2_phys + KERNEL_BASE);
+				pml2 = (pml2_t *) pml2_phys;
+				// Update flags if needed (e.g., add USER flag)
+				if( flags & PAGE_USER ) {
+					pml3->entries[pml3_index] |= PAGE_USER;
+				}
 			}
 
 			pml1_t *pml1 = nullptr;
@@ -294,15 +305,19 @@ namespace memory {
 					return false;
 
 				uint64_t phys = memory::get_physical_addr(frame);
-				pml1          = (pml1_t *) (phys + KERNEL_BASE);
+				pml1          = (pml1_t *) phys;
 				kstring::memset(pml1, 0, PAGE_SIZE);
 
 				pml2->entries[pml2_index] =
-				    phys | PAGE_PRESENT | PAGE_WRITABLE;
+				    phys | PAGE_PRESENT | PAGE_WRITABLE | (flags & PAGE_USER);
 			} else {
 				uint64_t pml1_phys =
 				    pml2->entries[pml2_index] & ~(uint64_t) 0xFFF;
-				pml1 = (pml1_t *) (pml1_phys + KERNEL_BASE);
+				pml1 = (pml1_t *) pml1_phys;
+				// Update flags if needed (e.g., add USER flag)
+				if( flags & PAGE_USER ) {
+					pml2->entries[pml2_index] |= PAGE_USER;
+				}
 			}
 
 			if( pml1->entries[pml1_index] & PAGE_PRESENT ) {
@@ -331,7 +346,7 @@ namespace memory {
 
 			uint64_t pml3_phys =
 			    current_pml4->entries[pml4_index] & ~(uint64_t) 0xFFF;
-			pml3_t *pml3 = (pml3_t *) (pml3_phys + KERNEL_BASE);
+			pml3_t *pml3 = (pml3_t *) pml3_phys;
 
 			if( !(pml3->entries[pml3_index] & PAGE_PRESENT) ) {
 				return false;
@@ -339,7 +354,7 @@ namespace memory {
 
 			uint64_t pml2_phys =
 			    pml3->entries[pml3_index] & ~(uint64_t) 0xFFF;
-			pml2_t *pml2 = (pml2_t *) (pml2_phys + KERNEL_BASE);
+			pml2_t *pml2 = (pml2_t *) pml2_phys;
 
 			if( !(pml2->entries[pml2_index] & PAGE_PRESENT) ) {
 				return false;
@@ -347,7 +362,7 @@ namespace memory {
 
 			uint64_t pml1_phys =
 			    pml2->entries[pml2_index] & ~(uint64_t) 0xFFF;
-			pml1_t *pml1 = (pml1_t *) (pml1_phys + KERNEL_BASE);
+			pml1_t *pml1 = (pml1_t *) pml1_phys;
 
 			if( !(pml1->entries[pml1_index] & PAGE_PRESENT) ) {
 				return false;
@@ -382,7 +397,7 @@ namespace memory {
 
 			uint64_t pml3_phys =
 			    current_pml4->entries[pml4_index] & ~(uint64_t) 0xFFF;
-			pml3_t *pml3 = (pml3_t *) (pml3_phys + KERNEL_BASE);
+			pml3_t *pml3 = (pml3_t *) pml3_phys;
 
 			if( !(pml3->entries[pml3_index] & PAGE_PRESENT) ) {
 				return 0;
@@ -390,7 +405,7 @@ namespace memory {
 
 			uint64_t pml2_phys =
 			    pml3->entries[pml3_index] & ~(uint64_t) 0xFFF;
-			pml2_t *pml2 = (pml2_t *) (pml2_phys + KERNEL_BASE);
+			pml2_t *pml2 = (pml2_t *) pml2_phys;
 
 			if( !(pml2->entries[pml2_index] & PAGE_PRESENT) ) {
 				return 0;
@@ -398,7 +413,7 @@ namespace memory {
 
 			uint64_t pml1_phys =
 			    pml2->entries[pml2_index] & ~(uint64_t) 0xFFF;
-			pml1_t *pml1 = (pml1_t *) (pml1_phys + KERNEL_BASE);
+			pml1_t *pml1 = (pml1_t *) pml1_phys;
 
 			if( !(pml1->entries[pml1_index] & PAGE_PRESENT) ) {
 				return 0;

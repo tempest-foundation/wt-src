@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <krint.h>
+#include <kmath.hpp>
+#include <krint.hpp>
 
 namespace kmath {
 	double rint(double x) {

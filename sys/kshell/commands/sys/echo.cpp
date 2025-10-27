@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "echo.h"
+#include "echo.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
 
-#include <drv/tty/tty.h>
+#include <drv/tty/tty.hpp>
 
 void cmd_echo(const char *args) {
 	if( !args || *args == '\0' ) {

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <kremainder.h>
+#include <kmath.hpp>
+#include <kremainder.hpp>
 
 namespace kmath {
 	double remainder(double x, double y) {

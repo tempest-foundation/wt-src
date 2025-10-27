@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kasin.h>
-#include <kmath.h>
+#include <kasin.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double asin(double x) {

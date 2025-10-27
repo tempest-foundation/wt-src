@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmemcmp.h>
-#include <kstddef.h>
+#include <kmemcmp.hpp>
+#include <kstddef.hpp>
 
 namespace kstring {
 	int memcmp(const void *s1, const void *s2, size_t n) {

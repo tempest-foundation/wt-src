@@ -10,11 +10,11 @@
  * -- END OF METADATA HEADER --
  */
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/asm/io.hpp>
 #endif
-#include <ksleep.h>
-#include <kstddef.h>
-#include <kstdint.h>
+#include <ksleep.hpp>
+#include <kstddef.hpp>
+#include <kstdint.hpp>
 
 volatile uint64_t *hpet = (volatile uint64_t *) 0xFED00000;
 

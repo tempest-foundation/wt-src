@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: GPL-3.0-only
+/*
+ * -- BEGIN METADATA HEADER --
+ * <*---The Wind/Tempest Project---*>
+ * 
+ * Author(s)  : Tempik25 <tempik25@tempestfoundation.org>
+ * Maintainer : Tempest Foundation <development@tempestfoundation.org>
+ * 
+ * Copyright (c) Tempest Foundation, 2025
+ * -- END OF METADATA HEADER --
+ */
+#pragma once
+
+#include <kstdint.hpp>
+
+#include <kern/syscall/syscall.hpp>
+
+uint64_t sys_execve(uint64_t syscall_no,
+                    uint64_t path_ptr,
+                    uint64_t argv,
+                    uint64_t envp,
+                    uint64_t arg3,
+                    uint64_t arg4,
+                    uint64_t arg5);

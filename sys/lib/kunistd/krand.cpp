@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <krand.h>
-#include <kstdint.h>
+#include <krand.hpp>
+#include <kstdint.hpp>
 
 #define PCG32_MULT     6364136223846793005ULL
 #define PCG32_INIT_SEQ 0xDEADBEEFULL
@@ -60,7 +60,7 @@ namespace unistd {
  * @param seed 64-bit seed value
  * @param seq Per-stream sequence selector (stream id)
  */
-		void srand32(uint64_t seed, uint64_t seq) {
+		static void srand32(uint64_t seed, uint64_t seq) {
 			pcg_state = 0;
 			pcg_inc   = (seq << 1) | 1;
 			// Advance the state a few times to mix up bits (PCG recommends at least once)

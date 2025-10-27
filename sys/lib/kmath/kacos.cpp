@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kacos.h>
-#include <kmath.h>
+#include <kacos.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double acos(double x) {

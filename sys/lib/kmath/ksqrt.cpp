@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <ksqrt.h>
+#include <kmath.hpp>
+#include <ksqrt.hpp>
 
 namespace kmath {
 	double sqrt(double x) {

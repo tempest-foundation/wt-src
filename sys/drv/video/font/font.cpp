@@ -9,9 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "font.h"
+#include "font.hpp"
 
-#include <kstdint.h>
+#include <kstdint.hpp>
 
 // Font dimensions are 8x8
 const uint32_t FONT_WIDTH  = 8;

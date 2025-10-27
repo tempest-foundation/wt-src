@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <kround.h>
+#include <kmath.hpp>
+#include <kround.hpp>
 
 namespace kmath {
 	double round(double x) {

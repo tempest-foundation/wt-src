@@ -9,7 +9,7 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstrcat.h>
+#include <kstrcat.hpp>
 
 namespace kstring {
 	char *strcat(char *dest, const char *src) {

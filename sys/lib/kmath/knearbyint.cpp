@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <knearbyint.h>
+#include <kmath.hpp>
+#include <knearbyint.hpp>
 
 namespace kmath {
 	double nearbyint(double x) {

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <klog10.h>
-#include <kmath.h>
+#include <klog10.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double log10(double x) {

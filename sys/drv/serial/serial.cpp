@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "serial.h"
+#include "serial.hpp"
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
+#	include <arch/amd64/asm/io.hpp>
 #endif
-#include <kitoa.h>
+#include <kitoa.hpp>
 
 #define PORT 0x3f8  // COM1
 

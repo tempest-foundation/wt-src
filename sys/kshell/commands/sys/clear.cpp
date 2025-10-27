@@ -9,13 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "clear.h"
+#include "clear.hpp"
 
-#include <kerrno.h>
-#include <kstdio.h>
-#include <kstrtol.h>
+#include <kerrno.hpp>
+#include <kstdio.hpp>
+#include <kstrtol.hpp>
 
-#include <drv/video/video.h>
+#include <drv/video/video.hpp>
 
 void cmd_clear(const char *args) {
 	uint32_t color = 0x000000;

@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kctype.h>
-#include <kerrno.h>
-#include <klimits.h>
-#include <kstdlib.h>
-#include <kstrtol.h>
+#include <kctype.hpp>
+#include <kerrno.hpp>
+#include <klimits.hpp>
+#include <kstdlib.hpp>
+#include <kstrtol.hpp>
 
 namespace kstd {
 	long strtol(const char *nptr, char **endptr, int base) {

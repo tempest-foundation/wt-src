@@ -9,7 +9,7 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kctype.h>
+#include <kctype.hpp>
 
 namespace ctype {
 	/**

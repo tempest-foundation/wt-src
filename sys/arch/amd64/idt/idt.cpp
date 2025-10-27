@@ -9,13 +9,16 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "idt.h"
+#include "idt.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
+#include <kutoa.hpp>
 
-#include <arch/amd64/asm/io.h>
-#include <dbg/logger.h>
-#include <kern/panic/panic.h>
+#include <arch/amd64/asm/io.hpp>
+#include <dbg/logger.hpp>
+#include <drv/serial/serial.hpp>
+#include <kern/panic/panic.hpp>
+#include <ktime.hpp>
 
 // PIC (Programmable Interrupt Controller) ports.
 #define PIC1_CMD  0x20
@@ -151,8 +154,37 @@ static int get_panic_code_for_interrupt(uint8_t int_no) {
 	return PANIC_UNKNOWN_ERROR;
 }
 
-// Default C-level handlers.
 extern "C" void isr_handler(registers_t *regs) {
+	// Special handling for page faults - log details before panicking
+	if( regs->int_no == 14 ) {
+		uint64_t cr2;
+		__asm__ volatile("mov %%cr2, %0" : "=r"(cr2));
+
+		char buf[32];
+
+		serial::writes("[PAGE FAULT] addr=0x");
+		kstd::utoa(buf, buf + 32, cr2, 16, 16);
+		serial::writes(buf);
+		serial::writes(" err=0x");
+		kstd::utoa(buf, buf + 32, regs->err_code, 16, 1);
+		serial::writes(buf);
+		
+		// Decode error code
+		serial::writes(" (");
+		if (regs->err_code & 0x1) serial::writes("PRESENT ");
+		else serial::writes("NOT-PRESENT ");
+		if (regs->err_code & 0x2) serial::writes("WRITE ");
+		else serial::writes("READ ");
+		if (regs->err_code & 0x4) serial::writes("USER");
+		else serial::writes("KERNEL");
+		serial::writes(")\n");
+		
+		// Now panic with details
+		int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);
+		panic::init(panic_code, regs);
+		return;
+	}
+
 	int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);
 	panic::init(panic_code, regs);
 }

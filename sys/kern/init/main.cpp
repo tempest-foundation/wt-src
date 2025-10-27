@@ -10,26 +10,28 @@
  * -- END OF METADATA HEADER --
  */
 #ifdef ARCH_AMD64
-#	include <arch/amd64/cpu/cpuid.h>
-#	include <arch/amd64/cpu/instr/instr.h>
-#	include <arch/amd64/idt/idt.h>
-#	include <arch/amd64/cpu/halt.h>
+#	include <arch/amd64/cpu/cpuid.hpp>
+#	include <arch/amd64/cpu/instr/instr.hpp>
+#	include <arch/amd64/idt/idt.hpp>
+#	include <arch/amd64/cpu/halt.hpp>
 #endif
-#include <kprint.h>
 
-#include <dbg/logger.h>
-#include <drv/driver.h>
-#include <drv/tty/tty.h>
-#include <fs/ext2/ext2.h>
-#include <kern/framebuf/framebuf.h>
-#include <kern/loader/elf_loader.h>
-#include <kern/memory/memory.h>
-#include <kern/multiboot/multiboot.h>
-#include <kern/proc/process.h>
-#include <kern/scheduler/scheduler.h>
-#include <kern/syscall/integration.h>
-#include <kern/timer/timer.h>
-#include <kshell/kernSh.h>
+#include <kprint.hpp>
+#include <kutoa.hpp>
+
+#include <dbg/logger.hpp>
+#include <drv/driver.hpp>
+#include <drv/serial/serial.hpp>
+#include <drv/tty/tty.hpp>
+#include <fs/ext2/ext2.hpp>
+#include <kern/framebuf/framebuf.hpp>
+#include <kern/loader/elf_loader.hpp>
+#include <kern/memory/memory.hpp>
+#include <kern/multiboot/multiboot.hpp>
+#include <kern/proc/process.hpp>
+#include <kern/scheduler/scheduler.hpp>
+#include <kern/syscall/integration.hpp>
+#include <kern/timer/timer.hpp>
 
 static void isHardware_minReq(void) {
 #ifdef ARCH_AMD64
@@ -61,6 +63,7 @@ static void isHardware_minReq(void) {
 }
 
 extern "C" void load_gdt(void);
+extern "C" void set_kernel_stack(uint64_t rsp);
 
 extern "C" void enter_userspace(uint64_t rip, uint64_t rsp);
 
@@ -107,5 +110,99 @@ extern "C" void start_kernel(void *mb_info) {
 
 	__asm__ volatile("sti");  // Enables interrupts after initialization is complete
 
-	kshell::init();
+	// Load and execute init program
+	const char *init_path = "/System/boot/init";
+	ext2_file_t init_file;
+
+	logger::info("init", "Loading init program", init_path);
+
+	if( ext2::open(init_path, &init_file) != 0 ) {
+		logger::error("init", "Failed to open init program\n", nullptr);
+		amd64::halt();
+	}
+
+	// Get file size from inode
+	size_t init_size = init_file.inode.size_lo;
+	logger::debug::printf(
+	    "init", "info", "Init program size: %llu bytes\n", (uint64_t) init_size);
+
+	// Validate file size
+	if( init_size == 0 || init_size > (64 * 1024 * 1024) ) {
+		logger::error("init", "Invalid init program size\n", nullptr);
+		amd64::halt();
+	}
+
+	// Allocate buffer for init binary
+	void *init_buffer = memory::malloc(init_size);
+	if( !init_buffer ) {
+		logger::error("init", "Failed to allocate buffer for init\n", nullptr);
+		amd64::halt();
+	}
+
+	// Read init binary
+	if( ext2::read(&init_file, init_buffer, init_size) != (int) init_size ) {
+		logger::error("init", "Failed to read init binary\n", nullptr);
+		memory::free(init_buffer);
+		amd64::halt();
+	}
+
+	logger::info("init", "Init binary loaded, parsing ELF...", nullptr);
+
+	// Load ELF and get entry point
+	uint64_t entry_point = 0;
+	if( elf_loader::load_elf(init_buffer, init_size, &entry_point) != 0 ) {
+		logger::error("init", "Failed to load init ELF\n", nullptr);
+		memory::free(init_buffer);
+		amd64::halt();
+	}
+
+	memory::free(init_buffer);
+
+	// Note: logger hex formatting is broken, so just log that we're jumping
+	logger::info("init", "Jumping to init program", nullptr);
+
+	// Set up user stack (allocate and map stack pages)
+	// Use address within first 4GB since bootloader only identity-maps 0-4GB
+	uint64_t user_stack_top  = 0x7FFFF000ULL;  // Stack at ~128MB (within 4GB)
+	uint64_t stack_size      = 8 * PAGE_SIZE;  // 32KB stack
+	uint64_t user_stack_base = user_stack_top - stack_size;
+
+	// Allocate and map stack pages (inclusive of stack_top page)
+	for( uint64_t addr = user_stack_base; addr <= user_stack_top;
+	     addr += PAGE_SIZE ) {
+		page_frame_t *frame = memory::allocate_page_frame();
+		if( !frame ) {
+			logger::error("init", "Failed to allocate stack page\n", nullptr);
+			amd64::halt();
+		}
+
+		uint64_t phys_addr = memory::get_physical_addr(frame);
+		uint64_t flags     = PAGE_PRESENT | PAGE_WRITABLE | PAGE_USER;
+		memory::vm::map_page(addr, phys_addr, flags);
+	}
+
+	logger::info("init", "User stack allocated and mapped", nullptr);
+
+	// Set kernel stack in TSS (current RSP will be used for kernel mode)
+	uint64_t kernel_stack;
+	__asm__ volatile("mov %%rsp, %0" : "=r"(kernel_stack));
+	set_kernel_stack(kernel_stack);
+
+	// Debug: Log what we're about to do
+	serial::writes("About to enter userspace: entry=0x");
+	char buf[32];
+	kstd::utoa(buf, buf + 32, entry_point, 16, 16);
+	serial::writes(buf);
+	serial::writes(" stack=0x");
+	kstd::utoa(buf, buf + 32, user_stack_top, 16, 16);
+	serial::writes(buf);
+	serial::writes("\n");
+
+	// Enter userspace and execute init
+	enter_userspace(entry_point, user_stack_top);
+
+	// Should never reach here
+	serial::writes("ERROR: Returned from userspace!\n");
+	for( ;; )
+		__asm__ volatile("hlt");
 }

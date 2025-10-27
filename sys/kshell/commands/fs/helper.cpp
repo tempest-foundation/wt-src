@@ -9,9 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kprint.h>
+#include "helper.hpp"
 
-#include <fs/ext2/ext2.h>
+#include <kprint.hpp>
+#include <kstdint.hpp>
+
+#include <fs/ext2/ext2.hpp>
 
 void ls_print_cb(const char *name, uint8_t file_type) {
 	(void) file_type;

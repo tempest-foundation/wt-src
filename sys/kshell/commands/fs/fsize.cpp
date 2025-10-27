@@ -9,10 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kprint.h>
+#include "fsize.hpp"
 
-#include <fs/ext2/ext2.h>
-#include <fs/vfs/vfs.h>
+#include <kprint.hpp>
+
+#include <fs/ext2/ext2.hpp>
+#include <fs/vfs/vfs.hpp>
 
 void cmd_fsize(const char *args) {
 	if( !args || *args == '\0' ) {

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstddef.h>
-#include <kstrncpy.h>
+#include <kstddef.hpp>
+#include <kstrncpy.hpp>
 
 namespace kstring {
 	char *strncpy(char *dest, const char *src, size_t n) {

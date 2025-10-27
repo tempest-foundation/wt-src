@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kceil.h>
-#include <kmath.h>
+#include <kceil.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double ceil(double x) {

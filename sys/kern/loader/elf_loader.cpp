@@ -9,31 +9,14 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "elf_loader.h"
+#include "elf_loader.hpp"
 
-#include <kstring.h>
+#include <kstring.hpp>
 
-#include <dbg/logger.h>
-#include <kern/memory/memory.h>
+#include <dbg/logger.hpp>
+#include <kern/memory/memory.hpp>
 
 namespace elf_loader {
-// ============================================================================
-// Internal Helper Functions
-// ============================================================================
-
-/*
- * Convert physical address to virtual address
- * Assumes identity mapping for addresses below 4GB
- */
-static inline void *phys_to_virt(uint64_t phys) {
-	// Physical addresses below 4GB are identity-mapped
-	if( phys < 0x100000000ULL ) {
-		return (void *) phys;
-	}
-	// Higher physical addresses use kernel offset
-	return (void *) (phys + KERNEL_BASE);
-}
-
 // ============================================================================
 // Public Interface Implementation
 // ============================================================================
@@ -117,13 +100,12 @@ int load_elf(const void *elf_data, size_t size, uint64_t *entry_point) {
 			uint64_t phys_addr = memory::get_physical_addr(frame);
 			phys_pages[j] = phys_addr;
 
-			// Map page with user-accessible permissions
+			// Map page with user-accessible permissions (but kernel can still access)
 			uint64_t flags = PAGE_PRESENT | PAGE_WRITABLE | PAGE_USER;
 			memory::vm::map_page(virt_addr, phys_addr, flags);
 
-			// Zero-initialize page
-			void *page_ptr = phys_to_virt(phys_addr);
-			kstring::memset(page_ptr, 0, PAGE_SIZE);
+			// Zero-initialize page via user virtual address (kernel can access user pages)
+			kstring::memset((void *)virt_addr, 0, PAGE_SIZE);
 		}
 
 		// Copy segment data from ELF file to mapped pages
@@ -141,7 +123,6 @@ int load_elf(const void *elf_data, size_t size, uint64_t *entry_point) {
 					return -1;
 				}
 
-				uint64_t phys_addr = phys_pages[page_index];
 				uint64_t page_offset = dst_virt & 0xFFF;
 				uint64_t bytes_in_page = PAGE_SIZE - page_offset;
 				
@@ -149,10 +130,10 @@ int load_elf(const void *elf_data, size_t size, uint64_t *entry_point) {
 					bytes_in_page = bytes_remaining;
 				}
 
-				// Copy data through physical address mapping
-				void *dst_phys = (void *) ((uintptr_t) phys_to_virt(phys_addr) + page_offset);
+				// Copy data directly to user virtual address (kernel can access it)
+				void *dst_ptr = (void *) dst_virt;
 				const void *src = base + phdr->p_offset + src_offset;
-				kstring::memcpy(dst_phys, src, bytes_in_page);
+				kstring::memcpy(dst_ptr, src, bytes_in_page);
 
 				src_offset += bytes_in_page;
 				dst_virt += bytes_in_page;

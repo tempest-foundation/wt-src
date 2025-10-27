@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kexp.h>
-#include <kmath.h>
+#include <kexp.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double exp(double x) {

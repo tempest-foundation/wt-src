@@ -20,7 +20,7 @@ while IFS= read -r -d '' file; do
   fi
 done < <(find sys/ include/ -name "*.[cpph]" -print0)
 
-find sys/ include/ \( -name "*.cpp" -o -name "*.h" \) -print0 | while IFS= read -r -d '' file; do
+find sys/ include/ \( -name "*.cpp" -o -name "*.hpp" \) -print0 | while IFS= read -r -d '' file; do
   if ! clang-format -i "$file"; then
     echo -e "\e[33mIgnored: $file (too long path or error)\e[0m"
   fi

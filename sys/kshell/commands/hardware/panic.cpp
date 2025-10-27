@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "panic.h"
+#include "panic.hpp"
 
-#include <katoi.h>
-#include <kprint.h>
+#include <katoi.hpp>
+#include <kprint.hpp>
 
-#include <kern/panic/panic.h>
+#include <kern/panic/panic.hpp>
 
 void cmd_panic(const char *args) {
 	if( args == nullptr || *args == '\0' ) {

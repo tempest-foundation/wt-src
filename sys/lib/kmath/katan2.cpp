@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <katan2.h>
-#include <kmath.h>
+#include <katan2.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double atan2(double y, double x) {

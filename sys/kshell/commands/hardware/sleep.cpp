@@ -9,9 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <katoi.h>
-#include <kprint.h>
-#include <ksleep.h>
+#include "sleep.hpp"
+
+#include <katoi.hpp>
+#include <kprint.hpp>
+#include <ksleep.hpp>
 
 void cmd_sleep(const char *args) {
 	if( args && *args ) {

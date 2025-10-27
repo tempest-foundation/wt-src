@@ -9,14 +9,14 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "vfs.h"
+#include "vfs.hpp"
 
-#include <kstdio.h>
-#include <kstring.h>
+#include <kstdio.hpp>
+#include <kstring.hpp>
 
-#include "vfs_fs_ops.h"
+#include "vfs_fs_ops.hpp"
 
-#include <fs/ext2/ext2.h>
+#include <fs/ext2/ext2.hpp>
 
 static char                 cwd_path[256] = "/";
 static vfs_fs_operations_t *root_fs       = nullptr;

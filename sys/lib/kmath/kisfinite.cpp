@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kisfinite.h>
-#include <kmath.h>
+#include <kisfinite.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	int isfinite(double x) {

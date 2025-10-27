@@ -139,7 +139,7 @@ EOF
 
 export -f process_file remove_header generate_header
 export changes_made mode
-find . -type f \( -name "*.cpp" -o -name "*.h" \) -print0 | while IFS= read -r -d '' file; do
+find . -type f \( -name "*.cpp" -o -name "*.hpp" \) -print0 | while IFS= read -r -d '' file; do
     process_file "$file"
 done
 

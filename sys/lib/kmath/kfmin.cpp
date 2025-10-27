@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfmin.h>
-#include <kmath.h>
+#include <kfmin.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double fmin(double x, double y) {

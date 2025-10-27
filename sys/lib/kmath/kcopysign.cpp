@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kcopysign.h>
-#include <kmath.h>
+#include <kcopysign.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double copysign(double x, double y) {

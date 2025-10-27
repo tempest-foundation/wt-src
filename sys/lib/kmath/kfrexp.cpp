@@ -9,27 +9,29 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfrexp.h>
-#include <kmath.h>
+#include <kfrexp.hpp>
+#include <kmath.hpp>
 
-double frexp(double x, int *exp) {
-	// Handle special cases
-	if( kmath::isnan(x) ) {
-		*exp = 0;
-		return kmath::nan("");
-	}
-	if( kmath::isinf(x) ) {
-		*exp = 0;
-		return x;
-	}
-	if( x == 0.0 ) {
-		*exp = 0;
-		return 0.0;
-	}
+namespace kmath {
+	double frexp(double x, int *exp) {
+		// Handle special cases
+		if( kmath::isnan(x) ) {
+			*exp = 0;
+			return kmath::nan("");
+		}
+		if( kmath::isinf(x) ) {
+			*exp = 0;
+			return x;
+		}
+		if( x == 0.0 ) {
+			*exp = 0;
+			return 0.0;
+		}
 
-	// Extract exponent using log2
-	*exp = (int) kmath::floor(kmath::log2(kmath::fabs(x))) + 1;
+		// Extract exponent using log2
+		*exp = (int) kmath::floor(kmath::log2(kmath::fabs(x))) + 1;
 
-	// Calculate mantissa: x / 2^exp
-	return x / kmath::pow(2.0, *exp);
-}
+		// Calculate mantissa: x / 2^exp
+		return x / kmath::pow(2.0, *exp);
+	}
+}  // namespace kmath

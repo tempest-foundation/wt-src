@@ -9,10 +9,10 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "tty.h"
+#include "tty.hpp"
 
-#include <drv/keyboard/keyboard.h>
-#include <drv/video/video.h>
+#include <drv/keyboard/keyboard.hpp>
+#include <drv/video/video.hpp>
 
 struct Main_tty main_tty;
 

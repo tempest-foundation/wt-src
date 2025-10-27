@@ -9,7 +9,7 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "halt.h"
+#include "halt.hpp"
 
 namespace amd64 {
 	void halt(void) {

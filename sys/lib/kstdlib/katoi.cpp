@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <katoi.h>
-#include <kctype.h>
-#include <kerrno.h>
-#include <klimits.h>
-#include <kstdlib.h>
+#include <katoi.hpp>
+#include <kctype.hpp>
+#include <kerrno.hpp>
+#include <klimits.hpp>
+#include <kstdlib.hpp>
 
 namespace kstd {
 	int atoi(const char *s) {

@@ -9,13 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "ls.h"
+#include "ls.hpp"
 
-#include <kstdint.h>
+#include <kstdint.hpp>
 
-#include "helper.h"
+#include "helper.hpp"
 
-#include <fs/vfs/vfs.h>
+#include <fs/vfs/vfs.hpp>
 
 void cmd_ls(const char *args) {
 	// If no path given use current working directory

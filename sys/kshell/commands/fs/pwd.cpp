@@ -9,9 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kprint.h>
+#include "pwd.hpp"
 
-#include <fs/vfs/vfs.h>
+#include <kprint.hpp>
+
+#include <fs/vfs/vfs.hpp>
 
 void cmd_pwd(const char *args) {
 	(void) args;

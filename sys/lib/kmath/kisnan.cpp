@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kisnan.h>
-#include <kmath.h>
+#include <kisnan.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	int isnan(double x) {

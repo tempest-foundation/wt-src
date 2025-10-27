@@ -9,9 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kprint.h>
+#include "cd.hpp"
 
-#include <fs/vfs/vfs.h>
+#include <kprint.hpp>
+
+#include <fs/vfs/vfs.hpp>
 
 void cmd_cd(const char *args) {
 	const char *path = (args && *args) ? args : "/";

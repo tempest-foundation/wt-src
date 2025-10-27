@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <ktan.h>
+#include <kmath.hpp>
+#include <ktan.hpp>
 
 namespace kmath {
 	double tan(double x) {

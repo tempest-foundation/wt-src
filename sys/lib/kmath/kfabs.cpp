@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfabs.h>
-#include <kmath.h>
+#include <kfabs.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double fabs(double x) {

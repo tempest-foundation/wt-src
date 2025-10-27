@@ -10,9 +10,9 @@
  * -- END OF METADATA HEADER --
  */
 
-#include <fs/ext2/ext2.h>
-#include <fs/vfs/vfs_fs_ops.h>
-#include <kern/memory/memory.h>
+#include <fs/ext2/ext2.hpp>
+#include <fs/vfs/vfs_fs_ops.hpp>
+#include <kern/memory/memory.hpp>
 
 namespace ext2 {
 	static int vfs_open(const char *path, vfs_file_t *file);

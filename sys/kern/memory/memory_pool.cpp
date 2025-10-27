@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "memory.h"
+#include "memory.hpp"
 
-#include <kstdio.h>
-#include <kstring.h>
-#include <dbg/logger.h>
+#include <kstdio.hpp>
+#include <kstring.hpp>
+#include <dbg/logger.hpp>
 
 namespace memory {
 	namespace pool {

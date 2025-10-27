@@ -9,10 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdint.h>
+#include "exit.hpp"
 
-#include <dbg/logger.h>
-#include <kern/syscall/syscall.h>
+#include <kstdint.hpp>
+
+#include <dbg/logger.hpp>
+#include <kern/syscall/syscall.hpp>
 
 uint64_t sys_exit(uint64_t syscall_no __attribute__((unused)),
                   uint64_t status,

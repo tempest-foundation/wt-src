@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "framebuf.h"
+#include "framebuf.hpp"
 
-#include <kstdint.h>
+#include <kstdint.hpp>
 
-#include <dbg/logger.h>
+#include <dbg/logger.hpp>
 
 struct framebuffer_info fb_info;
 

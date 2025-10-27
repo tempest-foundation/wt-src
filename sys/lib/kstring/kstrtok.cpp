@@ -9,9 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstddef.h>
-#include <kstrchr.h>
-#include <kstrtok.h>
+#include <kstddef.hpp>
+#include <kstrchr.hpp>
+#include <kstrtok.hpp>
 
 namespace kstring {
 	static char *strtok_save = nullptr;

@@ -9,9 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kcharset.h>
-#include <kstdlib.h>
-#include <kutoa.h>
+#include <kcharset.hpp>
+#include <kstdlib.hpp>
+#include <kutoa.hpp>
 
 namespace kstd {
 	char *

@@ -9,9 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "poweroff.h"
+#include "poweroff.hpp"
 
-#include <kern/acpi/acpi.h>
+#include <kern/acpi/acpi.hpp>
 
 void cmd_poweroff(const char *args) {
 	(void) args;

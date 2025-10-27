@@ -9,13 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "help.h"
+#include "help.hpp"
 
-#include <kstdio.h>
-#include <kstring.h>
+#include <kstdio.hpp>
+#include <kstring.hpp>
 
-#include <drv/tty/tty.h>
-#include <kshell/commands/commands.h>
+#include <drv/tty/tty.hpp>
+#include <kshell/commands/commands.hpp>
 
 void cmd_help(const char *args) {
 	(void) args;

@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "syscall.h"
+#include "syscall.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
 
-#include <dbg/logger.h>
-#include <kern/syscall/calls/sys.h>
+#include <dbg/logger.hpp>
+#include <kern/syscall/calls/sys.hpp>
 
 // Global syscall table
 static syscall_entry_t syscall_table[SYSCALL_MAX_COUNT];

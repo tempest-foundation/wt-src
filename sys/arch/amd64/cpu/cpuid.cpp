@@ -9,11 +9,11 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "cpuid.h"
+#include "cpuid.hpp"
 
-#include <kmemcpy.h>
-#include <kstddef.h>
-#include <kstdint.h>
+#include <kmemcpy.hpp>
+#include <kstddef.hpp>
+#include <kstdint.hpp>
 
 char     cpu_brand_string[CPU_BRAND_STRING_LEN + 1] = "Unknown CPU";
 char     cpu_vendor_string[13]                      = "Unknown";  // 12 + null termination

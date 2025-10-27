@@ -9,7 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kern/acpi/acpi.h>
+#include "reboot.hpp"
+
+#include <kern/acpi/acpi.hpp>
 
 void cmd_reboot(const char *args) {
 	(void) args;

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kfmax.h>
-#include <kmath.h>
+#include <kfmax.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	double fmax(double x, double y) {

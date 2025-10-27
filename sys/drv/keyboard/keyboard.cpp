@@ -9,14 +9,14 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <drv/keyboard/keyboard.h>
-#include <drv/tty/tty.h>
+#include <drv/keyboard/keyboard.hpp>
+#include <drv/tty/tty.hpp>
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
-#	include <arch/amd64/idt/idt.h>
+#	include <arch/amd64/asm/io.hpp>
+#	include <arch/amd64/idt/idt.hpp>
 #endif
-#include <kstdio.h>
+#include <kstdio.hpp>
 
 #define KBD_DATA_PORT   0x60
 #define KBD_BUFFER_SIZE 256

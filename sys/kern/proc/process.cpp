@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "process.h"
+#include "process.hpp"
 
-#include <kstring.h>
+#include <kstring.hpp>
 
-#include <dbg/logger.h>
-#include <kern/scheduler/scheduler.h>
+#include <dbg/logger.hpp>
+#include <kern/scheduler/scheduler.hpp>
 
 static process_t  process_table[MAX_PROCESSES];
 static process_t *current_process = nullptr;
@@ -26,7 +26,7 @@ namespace proc {
 		logger::info("proc", "Process manager initialized", nullptr);
 	}
 
-	process_t *allocate_process(void) {
+	static process_t *allocate_process(void) {
 		for( int i = 0; i < MAX_PROCESSES; i++ ) {
 			if( process_table[i].state == PROC_STATE_UNUSED ) {
 				process_table[i].pid   = next_pid++;

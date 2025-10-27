@@ -9,11 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstdint.h>
+#include "execve.hpp"
 
-#include <dbg/logger.h>
-#include <kern/proc/process.h>
-#include <kern/syscall/syscall.h>
+#include <kstdint.hpp>
+
+#include <dbg/logger.hpp>
+#include <kern/proc/process.hpp>
+#include <kern/syscall/syscall.hpp>
 
 uint64_t sys_execve(uint64_t syscall_no,
                     uint64_t path_ptr,

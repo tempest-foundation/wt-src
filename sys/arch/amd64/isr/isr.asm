@@ -107,7 +107,7 @@ ISR_NOERRCODE 31    ; Reserved
 extern isr_handler
 isr_common_stub:
     ; Save all general-purpose registers
-    ; Push order matches registers_t structure layout (see registers.h)
+    ; Push order matches registers_t structure layout (see registers.hpp)
     push rax
     push rcx
     push rdx

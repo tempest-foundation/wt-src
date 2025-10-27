@@ -9,13 +9,15 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <ktime.h>
+#include <ktime.hpp>
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/asm/io.h>
-#	include <arch/amd64/idt/idt.h>
+#	include <arch/amd64/asm/io.hpp>
+#	include <arch/amd64/idt/idt.hpp>
 #endif
-#include <kern/scheduler/scheduler.h>
+#include "timer.hpp"
+
+#include <kern/scheduler/scheduler.hpp>
 
 // PIT frequency is 1193182 Hz
 #define PIT_FREQUENCY    1193182

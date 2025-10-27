@@ -9,17 +9,17 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "exec.h"
+#include "exec.hpp"
 
-#include <kprint.h>
-#include <kstring.h>
+#include <kprint.hpp>
+#include <kstring.hpp>
 
-#include <fs/ext2/ext2.h>
-#include <fs/vfs/vfs.h>
-#include <kern/loader/elf_loader.h>
-#include <kern/memory/memory.h>
-#include <kern/proc/process.h>
-#include <kern/scheduler/scheduler.h>
+#include <fs/ext2/ext2.hpp>
+#include <fs/vfs/vfs.hpp>
+#include <kern/loader/elf_loader.hpp>
+#include <kern/memory/memory.hpp>
+#include <kern/proc/process.hpp>
+#include <kern/scheduler/scheduler.hpp>
 
 extern "C" void enter_userspace(uint64_t rip, uint64_t rsp);
 

@@ -9,20 +9,20 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "panic.h"
+#include "panic.hpp"
 
-#include "drv/driver.h"
+#include "drv/driver.hpp"
 
 #ifdef ARCH_AMD64
-#	include <arch/amd64/isr/registers.h>
-#	include <arch/amd64/cpu/cpuid.h>
+#	include <arch/amd64/isr/registers.hpp>
+#	include <arch/amd64/cpu/cpuid.hpp>
 #endif
-#include <kitoa.h>
-#include <kmemset.h>
-#include <ksleep.h>
-#include <kstdio.h>
+#include <kitoa.hpp>
+#include <kmemset.hpp>
+#include <ksleep.hpp>
+#include <kstdio.hpp>
 
-#include <kern/acpi/acpi.h>
+#include <kern/acpi/acpi.hpp>
 
 static int          acpi_action        = 1;  // 0 = poweroff, 1 = reboot
 static unsigned int acpi_delay_seconds = 5;

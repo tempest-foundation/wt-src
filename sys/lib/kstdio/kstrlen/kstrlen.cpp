@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstddef.h>
-#include <kstrlen.h>
+#include <kstddef.hpp>
+#include <kstrlen.hpp>
 
 namespace kstd {
 	size_t strlen(const char *str) {

@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmempcpy.h>
-#include <kstddef.h>
+#include <kmempcpy.hpp>
+#include <kstddef.hpp>
 
 namespace kstring {
 	void *mempcpy(void *dest, const void *src, size_t n) {

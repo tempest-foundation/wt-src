@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <kremquo.h>
+#include <kmath.hpp>
+#include <kremquo.hpp>
 
 namespace kmath {
 	double remquo(double x, double y, int *quo) {

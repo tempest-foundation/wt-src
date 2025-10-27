@@ -9,12 +9,12 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "history.h"
+#include "history.hpp"
 
-#include <kstdio.h>
+#include <kstdio.hpp>
 
-#include <drv/tty/tty.h>
-#include <kshell/commands/commands.h>
+#include <drv/tty/tty.hpp>
+#include <kshell/commands/commands.hpp>
 
 char command_history[MAX_HISTORY][CMD_BUFFER_SIZE];
 int  history_count = 0;

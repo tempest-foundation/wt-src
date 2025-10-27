@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kstddef.h>
-#include <kstrchr.h>
+#include <kstddef.hpp>
+#include <kstrchr.hpp>
 
 namespace kstring {
 	char *strchr(const char *str, int c) {

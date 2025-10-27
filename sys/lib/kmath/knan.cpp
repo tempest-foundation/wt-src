@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <knan.h>
+#include <kmath.hpp>
+#include <knan.hpp>
 
 namespace kmath {
 	double nan(const char *tagp) {

@@ -9,15 +9,15 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "kernSh.h"
+#include "kernSh.hpp"
 
-#include <kmemcpy.h>
-#include <kstdio.h>
+#include <kmemcpy.hpp>
+#include <kstdio.hpp>
 
-#include "commands/commands.h"
-#include "commands/sys/history.h"
+#include "commands/commands.hpp"
+#include "commands/sys/history.hpp"
 
-#include <drv/tty/tty.h>
+#include <drv/tty/tty.hpp>
 
 static char cmd_buffer[CMD_BUFFER_SIZE];
 static int  cmd_ptr        = 0;

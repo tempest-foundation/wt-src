@@ -9,9 +9,9 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kcharset.h>
-#include <kitoa.h>
-#include <kstdlib.h>
+#include <kcharset.hpp>
+#include <kitoa.hpp>
+#include <kstdlib.hpp>
 
 namespace kstd {
 	char *itoa(char *buf, char *end, long value, int base, int is_uppercase) {

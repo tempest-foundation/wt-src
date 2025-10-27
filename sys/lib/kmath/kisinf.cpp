@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kisinf.h>
-#include <kmath.h>
+#include <kisinf.hpp>
+#include <kmath.hpp>
 
 namespace kmath {
 	int isinf(double x) {

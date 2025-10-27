@@ -9,13 +9,13 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include "video.h"
+#include "video.hpp"
 
-#include <kstddef.h>
+#include <kstddef.hpp>
 
-#include <dbg/logger.h>
-#include <drv/video/font/font.h>
-#include <kern/framebuf/framebuf.h>
+#include <dbg/logger.hpp>
+#include <drv/video/font/font.hpp>
+#include <kern/framebuf/framebuf.hpp>
 
 static volatile uint32_t *framebuffer = nullptr;
 
@@ -135,27 +135,30 @@ namespace video {
 		if( !is_ready() || x >= fb_info.width || y >= fb_info.height )
 			return;
 
-		volatile uint8_t *pixel_addr =
-		    (volatile uint8_t *) framebuffer + y * fb_info.pitch;
+		uintptr_t base_addr = (uintptr_t)framebuffer + y * fb_info.pitch;
 
 		switch( fb_info.bpp ) {
 			case 16: {
-				volatile uint16_t *row = (volatile uint16_t *) pixel_addr;
-				row[x]                 = rgb888_to_rgb565(rgb_color);
+				uintptr_t pixel_offset = base_addr + x * 2;
+				volatile uint16_t *pixel = (volatile uint16_t *)pixel_offset;
+				*pixel = rgb888_to_rgb565(rgb_color);
 				break;
 			}
 			case 24: {
-				uint8_t r             = (rgb_color >> 16) & 0xFF;
-				uint8_t g             = (rgb_color >> 8) & 0xFF;
-				uint8_t b             = rgb_color & 0xFF;
-				pixel_addr[x * 3 + 0] = r;
-				pixel_addr[x * 3 + 1] = g;
-				pixel_addr[x * 3 + 2] = b;
+				uintptr_t pixel_offset = base_addr + x * 3;
+				volatile uint8_t *pixel = (volatile uint8_t *)pixel_offset;
+				uint8_t r = (rgb_color >> 16) & 0xFF;
+				uint8_t g = (rgb_color >> 8) & 0xFF;
+				uint8_t b = rgb_color & 0xFF;
+				pixel[0] = r;
+				pixel[1] = g;
+				pixel[2] = b;
 				break;
 			}
 			case 32: {
-				volatile uint32_t *row = (volatile uint32_t *) pixel_addr;
-				row[x]                 = rgb_to_bgr(rgb_color);
+				uintptr_t pixel_offset = base_addr + x * 4;
+				volatile uint32_t *pixel = (volatile uint32_t *)pixel_offset;
+				*pixel = rgb_to_bgr(rgb_color);
 				break;
 			}
 		}

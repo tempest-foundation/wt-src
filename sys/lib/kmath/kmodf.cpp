@@ -9,8 +9,8 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-#include <kmath.h>
-#include <kmodf.h>
+#include <kmath.hpp>
+#include <kmodf.hpp>
 
 namespace kmath {
 	double modf(double x, double *iptr) {

@@ -76,7 +76,15 @@ WARNING_CFLAGS := \
 	-Wconversion \
 	-Werror \
 	-Wundef \
-	-Wshadow
+	-Wshadow \
+	-Wsign-conversion \
+	-Wsign-compare \
+	-Wmissing-declarations \
+	-Wredundant-decls \
+	-Wstrict-overflow=5 \
+	-Wstrict-aliasing=2 \
+	-Wunreachable-code \
+	-Wdouble-promotion
 
 # Optimization flags
 OPTIMIZE_CFLAGS := \
