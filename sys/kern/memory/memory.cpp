@@ -16,32 +16,15 @@
 
 #include <kern/panic/panic.h>
 
+// ============================================================================
+// Multiboot2 Structures
+// ============================================================================
+
 struct multiboot_tag {
 	uint32_t type;
 	uint32_t size;
 };
 
-// Global memory state
-static page_frame_t *free_page_list = nullptr;
-static page_frame_t *page_frames    = nullptr;
-static uint64_t      total_pages    = 0;
-static uint64_t      free_pages     = 0;
-static uint64_t      used_pages     = 0;
-
-// Heap state
-static heap_block_t *heap_start = nullptr;
-static heap_block_t *heap_end   = nullptr;
-static uint64_t      heap_size  = 0;
-static uint64_t      heap_used  = 0;
-
-// Current page table
-static pml4_t *current_pml4 = nullptr;
-
-// Memory map from multiboot
-static memory_map_entry_t *memory_map         = nullptr;
-static uint32_t            memory_map_entries = 0;
-
-// Multiboot2 memory map tag
 struct multiboot_tag_mmap {
 	uint32_t type;
 	uint32_t size;
@@ -51,7 +34,61 @@ struct multiboot_tag_mmap {
 
 #define MULTIBOOT_TAG_TYPE_MMAP 6
 
+// ============================================================================
+// Global Memory State
+// ============================================================================
+
 // Physical memory management
+static page_frame_t *free_page_list = nullptr;
+static page_frame_t *page_frames    = nullptr;
+static uint64_t      total_pages    = 0;
+static uint64_t      free_pages     = 0;
+static uint64_t      used_pages     = 0;
+
+// Kernel heap state
+static heap_block_t *heap_start        = nullptr;
+static heap_block_t *heap_end          = nullptr;
+static uint64_t      heap_size         = 0;
+static uint64_t      heap_used         = 0;
+static uint64_t      heap_block_count  = 0;
+static uint64_t      heap_alloc_count  = 0;
+
+// Virtual memory
+static pml4_t *current_pml4 = nullptr;
+
+// Memory map from bootloader
+static memory_map_entry_t *memory_map         = nullptr;
+static uint32_t            memory_map_entries = 0;
+
+// Constants
+static constexpr size_t HEAP_MIN_SPLIT_SIZE = 128;  // Minimum size to split a block
+static constexpr size_t HEAP_ALIGNMENT      = 16;   // Heap alignment requirement
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * @brief Validate heap block integrity
+ * @param block Block to validate
+ * @return true if valid, false otherwise
+ */
+static inline bool validate_heap_block(const heap_block_t *block) {
+	return block && block->magic == HEAP_BLOCK_MAGIC;
+}
+
+/**
+ * @brief Align size to heap alignment requirement
+ * @param size Size to align
+ * @return Aligned size
+ */
+static inline size_t align_heap_size(size_t size) {
+	return (size + HEAP_ALIGNMENT - 1) & ~(HEAP_ALIGNMENT - 1);
+}
+
+// ============================================================================
+// Memory Subsystem Initialization
+// ============================================================================
 
 namespace memory {
 	void init(void *multiboot_info) {
@@ -60,92 +97,96 @@ namespace memory {
 			return;
 		}
 
-		// Parse multiboot memory map
+		// Parse multiboot2 memory map
 		uint32_t total_size  = *(uint32_t *) multiboot_info;
 		uint8_t *current_tag = (uint8_t *) ((uintptr_t) multiboot_info + 8);
-		uint8_t *end_tags = (uint8_t *) ((uintptr_t) multiboot_info + total_size);
+		uint8_t *end_tags    = (uint8_t *) ((uintptr_t) multiboot_info + total_size);
 
+		// Locate memory map tag
 		while( current_tag < end_tags ) {
 			struct multiboot_tag *tag = (struct multiboot_tag *) current_tag;
+
+			if( tag->type == 0 ) {
+				break;  // End of tags
+			}
 
 			if( tag->type == MULTIBOOT_TAG_TYPE_MMAP ) {
 				struct multiboot_tag_mmap *mmap_tag =
 				    (struct multiboot_tag_mmap *) tag;
-				memory_map =
-				    (memory_map_entry_t
-				         *) ((uint8_t *) mmap_tag
-				             + sizeof(struct multiboot_tag_mmap));
+				memory_map = (memory_map_entry_t *) ((uint8_t *) mmap_tag
+				                                     + sizeof(struct multiboot_tag_mmap));
 				memory_map_entries =
-				    (uint32_t) ((mmap_tag->size
-				                 - sizeof(struct multiboot_tag_mmap))
-				                / mmap_tag->entry_size);
+				    (mmap_tag->size - sizeof(struct multiboot_tag_mmap))
+				    / mmap_tag->entry_size;
 				break;
 			}
 
-			current_tag += (uint32_t) ((tag->size + 7) & ~(uint32_t) 0x7);
+			// Align to 8-byte boundary
+			current_tag += (tag->size + 7) & ~0x7ULL;
 		}
 
-		if( !memory_map ) {
-			panic::init(2, nullptr);
+		if( !memory_map || memory_map_entries == 0 ) {
+			panic::init(2, nullptr);  // No memory map found
 			return;
 		}
 
-		// Calculate total usable memory
+		// Calculate total usable pages
 		total_pages = 0;
 		for( uint32_t i = 0; i < memory_map_entries; i++ ) {
-			if( memory_map[i].type == MEMORY_USABLE ) {
+			if( memory_map[i].type == MEMORY_USABLE
+			    && memory_map[i].length > 0 ) {
 				total_pages += memory_map[i].length / PAGE_SIZE;
 			}
+		}
+
+		if( total_pages == 0 ) {
+			panic::init(3, nullptr);  // No usable memory
+			return;
 		}
 
 		free_pages = total_pages;
 		used_pages = 0;
 
-		// Initialize page frame array
+		// Place page frame array at KERNEL_HEAP_BASE
+		// (identity-mapped by boot loader)
 		page_frames = (page_frame_t *) KERNEL_HEAP_BASE;
 
-		/*
-	 * Map the page frames array:
-	 * The first 4 GiB is identity-mapped by the bootstrap page tables, so
-	 * the 16 MiB heap area we chose (0x01000000-0x05000000) is already
-	 * accessible.  Therefore we don’t need extra page-table work here --
-	 * attempting to allocate page frames before the free list exists would
-	 * fail. We can safely skip explicit mapping at this early stage.
-	 */
-
-		// Initialize page frame structures
+		// Initialize page frame descriptors
 		for( uint64_t i = 0; i < total_pages; i++ ) {
 			page_frames[i].next          = nullptr;
 			page_frames[i].physical_addr = i * PAGE_SIZE;
 			page_frames[i].ref_count     = 0;
-			page_frames[i].is_free       = true;
+			page_frames[i].flags         = 0;
 		}
 
-		// Build free page list
+		// Build free list, excluding kernel memory
 		free_page_list = nullptr;
 		for( uint64_t i = 0; i < total_pages; i++ ) {
-			// Skip pages used by kernel
+			// Skip pages below KERNEL_HEAP_BASE (used by kernel code/data)
 			if( page_frames[i].physical_addr < KERNEL_HEAP_BASE ) {
-				page_frames[i].is_free = false;
+				page_frames[i].ref_count = 1;  // Mark as used
 				used_pages++;
 				free_pages--;
 				continue;
 			}
 
+			// Add to free list
 			page_frames[i].next = free_page_list;
 			free_page_list      = &page_frames[i];
 		}
 
-		// Initialize virtual memory
+		// Initialize subsystems
 		vm::init();
-
-		// Initialize heap
 		heap::init();
 	}
 
+	// ====================================================================
+	// Physical Memory Management
+	// ====================================================================
+
 	page_frame_t *allocate_page_frame(void) {
 		if( !free_page_list ) {
-			return nullptr;  // Out of memory
+			return nullptr;  // Out of physical memory
 		}
 
 		page_frame_t *frame = free_page_list;
@@ -153,7 +194,6 @@ namespace memory {
 
 		frame->next      = nullptr;
 		frame->ref_count = 1;
-		frame->is_free   = false;
 
 		free_pages--;
 		used_pages++;
@@ -162,18 +202,18 @@ namespace memory {
 	}
 
 	void free_page_frame(page_frame_t *frame) {
-		if( !frame || frame->is_free ) {
-			return;
+		if( !frame || frame->ref_count == 0 ) {
+			return;  // Invalid or already free
 		}
 
 		frame->ref_count--;
 		if( frame->ref_count > 0 ) {
-			return;  // Still referenced
+			return;  // Still referenced by others
 		}
 
+		// Return to free list
 		frame->next    = free_page_list;
 		free_page_list = frame;
-		frame->is_free = true;
 
 		free_pages++;
 		used_pages--;
@@ -184,7 +224,7 @@ namespace memory {
 	}
 
 	page_frame_t *get_page_frame(uint64_t physical_addr) {
-		uint64_t page_index = physical_addr / PAGE_SIZE;
+		uint64_t page_index = PAGE_INDEX(physical_addr);
 		if( page_index >= total_pages ) {
 			return nullptr;
 		}
@@ -269,7 +309,8 @@ namespace memory {
 				// return false;
 			}
 
-			pml1->entries[pml1_index] = physical_addr | flags;
+			// Update page table entry (allow remapping)
+			pml1->entries[pml1_index] = physical_addr | flags | PAGE_PRESENT;
 
 			__asm__ volatile("" ::: "memory");
 
@@ -380,14 +421,21 @@ namespace memory {
 		}
 	}  // namespace vm
 
+	// ====================================================================
+	// Kernel Heap Management
+	// ====================================================================
+
 	namespace heap {
 		void init(void) {
-			heap_start = (heap_block_t *) KERNEL_HEAP_BASE;
-			heap_size  = KERNEL_HEAP_SIZE;
-			heap_used  = 0;
+			heap_start        = (heap_block_t *) KERNEL_HEAP_BASE;
+			heap_size         = KERNEL_HEAP_SIZE;
+			heap_used         = 0;
+			heap_block_count  = 1;
+			heap_alloc_count  = 0;
 
-			// Initialize first block
+			// Initialize first free block
 			heap_start->size    = heap_size - sizeof(heap_block_t);
+			heap_start->magic   = HEAP_BLOCK_MAGIC;
 			heap_start->is_free = true;
 			heap_start->next    = nullptr;
 			heap_start->prev    = nullptr;
@@ -395,44 +443,33 @@ namespace memory {
 			heap_end = heap_start;
 		}
 
-		void defrag(void) {
-			// Simple defragmentation: move all free blocks to the end
-			heap_block_t *current   = heap_start;
-			heap_block_t *last_free = nullptr;
+		void coalesce(void) {
+			// Coalesce adjacent free blocks
+			heap_block_t *current = heap_start;
 
-			while( current ) {
-				if( current->is_free ) {
-					if( last_free ) {
-						// Move this free block after last_free
-						heap_block_t *next = current->next;
+			while( current && current->next ) {
+				if( current->is_free && current->next->is_free ) {
+					// Merge current with next
+					current->size += sizeof(heap_block_t) + current->next->size;
+					current->next = current->next->next;
 
-						if( current->prev ) {
-							current->prev->next =
-							    current->next;
-						}
-						if( current->next ) {
-							current->next->prev =
-							    current->prev;
-						}
-
-						current->next   = last_free->next;
-						current->prev   = last_free;
-						last_free->next = current;
-						if( current->next ) {
-							current->next->prev = current;
-						}
-
-						current = next;
+					if( current->next ) {
+						current->next->prev = current;
 					} else {
-						last_free = current;
-						current   = current->next;
+						heap_end = current;
 					}
+
+					heap_block_count--;
 				} else {
 					current = current->next;
 				}
 			}
 		}
 	}  // namespace heap
+
+	// ====================================================================
+	// Memory Statistics
+	// ====================================================================
 
 	namespace stats {
 		memory_stats_t get(void) {
@@ -443,150 +480,310 @@ namespace memory {
 			stats.total_heap_size      = heap_size;
 			stats.free_heap_size       = heap_size - heap_used;
 			stats.used_heap_size       = heap_used;
+			stats.heap_blocks          = heap_block_count;
+			stats.heap_allocations     = heap_alloc_count;
 			return stats;
 		}
 
 		void print(void) {
 			memory_stats_t stats = get();
-			kstd::printf("Memory Statistics:\n");
-			kstd::printf(
-			    "  Physical Memory: %llu pages total, %llu free, %llu used\n",
-			    stats.total_physical_pages,
-			    stats.free_physical_pages,
-			    stats.used_physical_pages);
-			kstd::printf(
-			    "  Heap Memory: %llu bytes total, %llu free, %llu used\n",
-			    stats.total_heap_size,
-			    stats.free_heap_size,
-			    stats.used_heap_size);
+			kstd::printf("=== Memory Statistics ===\n");
+			kstd::printf("Physical Memory:\n");
+			kstd::printf("  Total:  %llu pages (%llu MiB)\n",
+			             stats.total_physical_pages,
+			             (stats.total_physical_pages * PAGE_SIZE) / (1024 * 1024));
+			kstd::printf("  Free:   %llu pages (%llu MiB)\n",
+			             stats.free_physical_pages,
+			             (stats.free_physical_pages * PAGE_SIZE) / (1024 * 1024));
+			kstd::printf("  Used:   %llu pages (%llu MiB)\n",
+			             stats.used_physical_pages,
+			             (stats.used_physical_pages * PAGE_SIZE) / (1024 * 1024));
+			kstd::printf("\nKernel Heap:\n");
+			kstd::printf("  Total:       %llu bytes (%llu MiB)\n",
+			             stats.total_heap_size,
+			             stats.total_heap_size / (1024 * 1024));
+			kstd::printf("  Used:        %llu bytes (%llu MiB)\n",
+			             stats.used_heap_size,
+			             stats.used_heap_size / (1024 * 1024));
+			kstd::printf("  Free:        %llu bytes (%llu MiB)\n",
+			             stats.free_heap_size,
+			             stats.free_heap_size / (1024 * 1024));
+			kstd::printf("  Blocks:      %llu\n", stats.heap_blocks);
+			kstd::printf("  Allocations: %llu\n", stats.heap_allocations);
 		}
 	}  // namespace stats
 
+	// ====================================================================
+	// Heap Allocation Functions
+	// ====================================================================
+
 	void *malloc(size_t size) {
-		if( size == 0 )
+		if( size == 0 ) {
 			return nullptr;
+		}
 
-		// Add header size and align to 8 bytes
-		size_t total_size = (size + sizeof(heap_block_t) + 7) & ~(size_t) 0x7;
+		// Align size to heap alignment
+		size_t aligned_size = align_heap_size(size);
 
+		// First-fit allocation strategy
 		heap_block_t *current = heap_start;
 		while( current ) {
-			if( current->is_free && current->size >= total_size ) {
-				// Split block if it's much larger than needed
-				if( current->size
-				    >= total_size + sizeof(heap_block_t) + 64 ) {
+			if( !validate_heap_block(current) ) {
+				// Heap corruption detected
+				return nullptr;
+			}
+
+			if( current->is_free && current->size >= aligned_size ) {
+				// Split block if worth it
+				if( current->size >= aligned_size + sizeof(heap_block_t)
+				                         + HEAP_MIN_SPLIT_SIZE ) {
+					// Create new free block from remainder
 					heap_block_t *new_block =
 					    (heap_block_t *) ((uint8_t *) current
 					                      + sizeof(heap_block_t)
-					                      + total_size);
-					new_block->size = current->size - total_size
-					                  - sizeof(heap_block_t);
+					                      + aligned_size);
+
+					new_block->size    = current->size - aligned_size
+					                     - sizeof(heap_block_t);
+					new_block->magic   = HEAP_BLOCK_MAGIC;
 					new_block->is_free = true;
 					new_block->next    = current->next;
 					new_block->prev    = current;
 
 					if( current->next ) {
 						current->next->prev = new_block;
+					} else {
+						heap_end = new_block;
 					}
+
 					current->next = new_block;
-					current->size = total_size;
+					current->size = aligned_size;
+
+					heap_block_count++;
 				}
 
+				// Allocate current block
 				current->is_free = false;
 				heap_used += current->size;
+				heap_alloc_count++;
 
 				return (uint8_t *) current + sizeof(heap_block_t);
 			}
+
 			current = current->next;
 		}
 
-		return nullptr;  // Out of memory
+		return nullptr;  // Out of heap memory
 	}
 
 	void *calloc(size_t count, size_t size) {
+		// Check for overflow without relying on SIZE_MAX
+		const size_t max_size = (size_t) -1;
+		if( count && size > max_size / count ) {
+			return nullptr;
+		}
+
 		size_t total_size = count * size;
 		void  *ptr        = malloc(total_size);
+
 		if( ptr ) {
 			kstring::memset(ptr, 0, total_size);
 		}
+
 		return ptr;
 	}
 
 	void *realloc(void *ptr, size_t size) {
-		if( !ptr )
+		// Standard realloc semantics
+		if( !ptr ) {
 			return malloc(size);
+		}
+
 		if( size == 0 ) {
 			free(ptr);
 			return nullptr;
 		}
 
+		// Validate block
 		heap_block_t *block =
 		    (heap_block_t *) ((uint8_t *) ptr - sizeof(heap_block_t));
-		if( block->size >= size ) {
-			return ptr;  // No need to reallocate
+
+		if( !validate_heap_block(block) ) {
+			return nullptr;  // Corrupted block
 		}
 
+		size_t aligned_size = align_heap_size(size);
+
+		// If new size fits in current block, just return it
+		if( block->size >= aligned_size ) {
+			return ptr;
+		}
+
+		// Try to expand in-place if next block is free
+		if( block->next && block->next->is_free ) {
+			size_t combined_size = block->size + sizeof(heap_block_t)
+			                       + block->next->size;
+
+			if( combined_size >= aligned_size ) {
+				// Merge with next block
+				block->size = block->next->size + sizeof(heap_block_t)
+				              + block->size;
+				block->next = block->next->next;
+
+				if( block->next ) {
+					block->next->prev = block;
+				} else {
+					heap_end = block;
+				}
+
+				heap_block_count--;
+
+				// Split if remainder is large enough
+				if( block->size >= aligned_size + sizeof(heap_block_t)
+				                       + HEAP_MIN_SPLIT_SIZE ) {
+					heap_block_t *new_block =
+					    (heap_block_t *) ((uint8_t *) block
+					                      + sizeof(heap_block_t)
+					                      + aligned_size);
+
+					new_block->size    = block->size - aligned_size
+					                     - sizeof(heap_block_t);
+					new_block->magic   = HEAP_BLOCK_MAGIC;
+					new_block->is_free = true;
+					new_block->next    = block->next;
+					new_block->prev    = block;
+
+					if( block->next ) {
+						block->next->prev = new_block;
+					} else {
+						heap_end = new_block;
+					}
+
+					block->next = new_block;
+					block->size = aligned_size;
+
+					heap_block_count++;
+				}
+
+				heap_used += (block->size - block->size);
+				return ptr;
+			}
+		}
+
+		// Allocate new block and copy
 		void *new_ptr = malloc(size);
 		if( new_ptr ) {
-			kstring::memcpy(new_ptr, ptr, block->size);
+			size_t copy_size = (block->size < size) ? block->size : size;
+			kstring::memcpy(new_ptr, ptr, copy_size);
 			free(ptr);
 		}
+
 		return new_ptr;
 	}
 
 	void free(void *ptr) {
-		if( !ptr )
+		if( !ptr ) {
 			return;
+		}
 
+		// Get block header
 		heap_block_t *block =
 		    (heap_block_t *) ((uint8_t *) ptr - sizeof(heap_block_t));
-		if( block->is_free )
-			return;  // Already freed
 
+		// Validate block
+		if( !validate_heap_block(block) ) {
+			return;  // Invalid block, possible corruption
+		}
+
+		if( block->is_free ) {
+			return;  // Double-free detected
+		}
+
+		// Mark as free
 		block->is_free = true;
 		heap_used -= block->size;
 
-		// Merge with next block if it's free
+		// Coalesce with next block if free
 		if( block->next && block->next->is_free ) {
 			block->size += sizeof(heap_block_t) + block->next->size;
 			block->next = block->next->next;
+
 			if( block->next ) {
 				block->next->prev = block;
+			} else {
+				heap_end = block;
 			}
+
+			heap_block_count--;
 		}
 
-		// Merge with previous block if it's free
+		// Coalesce with previous block if free
 		if( block->prev && block->prev->is_free ) {
 			block->prev->size += sizeof(heap_block_t) + block->size;
 			block->prev->next = block->next;
+
 			if( block->next ) {
 				block->next->prev = block->prev;
+			} else {
+				heap_end = block->prev;
 			}
+
+			heap_block_count--;
 		}
 	}
 
-	// Memory mapping
-	void *map_physical(uint64_t physical_addr, size_t size, uint64_t flags) {
-		// Map physical memory to kernel virtual space
-		uint64_t virtual_addr =
-		    KERNEL_BASE + 0x1000000;  // Temporary mapping area
-		for( size_t i = 0; i < (size + PAGE_SIZE - 1) / PAGE_SIZE; i++ ) {
-			uint64_t page_virt = virtual_addr + i * PAGE_SIZE;
-			uint64_t page_phys = physical_addr + i * PAGE_SIZE;
+	// ====================================================================
+	// Physical Memory Mapping
+	// ====================================================================
 
-			if( !vm::map_page(page_virt, page_phys, flags) ) {
+	void *map_physical(uint64_t physical_addr, size_t size, uint64_t flags) {
+		if( size == 0 ) {
+			return nullptr;
+		}
+
+		// Align physical address and size to page boundaries
+		uint64_t phys_aligned = PAGE_ALIGN_DOWN(physical_addr);
+		size_t   offset       = physical_addr - phys_aligned;
+		size_t   size_aligned = PAGE_ALIGN_UP(size + offset);
+
+		// Use KERNEL_VMALLOC_BASE for temporary mappings
+		// In a real implementation, this would use a vmalloc allocator
+		uint64_t virtual_addr = KERNEL_VMALLOC_BASE;
+
+		// Map all pages
+		size_t num_pages = size_aligned / PAGE_SIZE;
+		for( size_t i = 0; i < num_pages; i++ ) {
+			uint64_t page_virt = virtual_addr + i * PAGE_SIZE;
+			uint64_t page_phys = phys_aligned + i * PAGE_SIZE;
+
+			if( !vm::map_page(page_virt, page_phys, flags | PAGE_PRESENT) ) {
+				// Rollback on failure
+				for( size_t j = 0; j < i; j++ ) {
+					vm::unmap_page(virtual_addr + j * PAGE_SIZE);
+				}
 				return nullptr;
 			}
 		}
 
-		return (void *) virtual_addr;
+		// Return virtual address with original offset
+		return (void *) (virtual_addr + offset);
 	}
 
 	void unmap_physical(void *virtual_addr, size_t size) {
-		uint64_t addr = (uint64_t) virtual_addr;
+		if( !virtual_addr || size == 0 ) {
+			return;
+		}
 
-		for( size_t i = 0; i < (size + PAGE_SIZE - 1) / PAGE_SIZE; i++ ) {
-			vm::unmap_page(addr + i * PAGE_SIZE);
+		// Align to page boundaries
+		uint64_t virt_aligned = PAGE_ALIGN_DOWN((uint64_t) virtual_addr);
+		size_t   offset       = (uint64_t) virtual_addr - virt_aligned;
+		size_t   size_aligned = PAGE_ALIGN_UP(size + offset);
+
+		// Unmap all pages
+		size_t num_pages = size_aligned / PAGE_SIZE;
+		for( size_t i = 0; i < num_pages; i++ ) {
+			vm::unmap_page(virt_aligned + i * PAGE_SIZE);
 		}
 	}
+
 }  // namespace memory
