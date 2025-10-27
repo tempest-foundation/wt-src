@@ -9,17 +9,43 @@
  * Copyright (c) Tempest Foundation, 2025
  * -- END OF METADATA HEADER --
  */
-// SPDX-License-Identifier: GPL-3.0-only
-/*
- * sys/kern/loader/elf_loader.h
- * ELF binary loader for user-space programs
- */
 #pragma once
 
 #include <kstddef.h>
 #include <kstdint.h>
 
-// ELF64 Header
+// ============================================================================
+// ELF Constants and Magic Numbers
+// ============================================================================
+
+// ELF identification indices
+#define EI_MAG0    0
+#define EI_MAG1    1
+#define EI_MAG2    2
+#define EI_MAG3    3
+#define EI_CLASS   4
+
+// ELF magic numbers
+#define ELFMAG0    0x7f
+#define ELFMAG1    'E'
+#define ELFMAG2    'L'
+#define ELFMAG3    'F'
+
+// ELF classes
+#define ELFCLASS64 2
+
+// Program header segment types
+#define PT_NULL    0
+#define PT_LOAD    1
+#define PT_DYNAMIC 2
+#define PT_INTERP  3
+#define PT_NOTE    4
+
+// ============================================================================
+// ELF Data Structures
+// ============================================================================
+
+// ELF64 file header
 typedef struct {
 	uint8_t  e_ident[16];  // Magic number and other info
 	uint16_t e_type;       // Object file type
@@ -37,7 +63,7 @@ typedef struct {
 	uint16_t e_shstrndx;   // Section header string table index
 } __attribute__((packed)) Elf64_Ehdr;
 
-// ELF64 Program Header
+// ELF64 program header
 typedef struct {
 	uint32_t p_type;    // Segment type
 	uint32_t p_flags;   // Segment flags
@@ -49,27 +75,26 @@ typedef struct {
 	uint64_t p_align;   // Segment alignment
 } __attribute__((packed)) Elf64_Phdr;
 
-// Program header types
-#define PT_NULL    0
-#define PT_LOAD    1
-#define PT_DYNAMIC 2
-#define PT_INTERP  3
-#define PT_NOTE    4
-
-// ELF magic numbers
-#define EI_MAG0 0
-#define EI_MAG1 1
-#define EI_MAG2 2
-#define EI_MAG3 3
-#define ELFMAG0 0x7f
-#define ELFMAG1 'E'
-#define ELFMAG2 'L'
-#define ELFMAG3 'F'
-
-#define EI_CLASS   4
-#define ELFCLASS64 2
+// ============================================================================
+// ELF Loader Interface
+// ============================================================================
 
 namespace elf_loader {
-	int  load_elf(const void *elf_data, size_t size, uint64_t *entry_point);
-	bool is_valid_elf(const void *elf_data);
+
+/*
+ * Validate ELF file format
+ * Returns: true if valid ELF64 file, false otherwise
+ */
+bool is_valid_elf(const void *elf_data);
+
+/*
+ * Load ELF binary into memory
+ * Args:
+ *   elf_data    - Pointer to ELF file data
+ *   size        - Size of ELF file
+ *   entry_point - Output pointer for entry point address
+ * Returns: 0 on success, -1 on error
+ */
+int load_elf(const void *elf_data, size_t size, uint64_t *entry_point);
+
 }  // namespace elf_loader
