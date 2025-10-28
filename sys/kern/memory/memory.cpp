@@ -147,23 +147,47 @@ namespace memory {
 		free_pages = total_pages;
 		used_pages = 0;
 
-		// Place page frame array at KERNEL_HEAP_BASE
-		// (identity-mapped by boot loader)
-		page_frames = (page_frame_t *) KERNEL_HEAP_BASE;
+		// Place page frame array at a safe location after kernel data
+		// Use 32MB to be safe (well above kernel .data/.bss at ~17MB)
+		page_frames = (page_frame_t *) 0x02000000ULL;  // 32MB
 
-		// Initialize page frame descriptors
-		for( uint64_t i = 0; i < total_pages; i++ ) {
-			page_frames[i].next          = nullptr;
-			page_frames[i].physical_addr = i * PAGE_SIZE;
-			page_frames[i].ref_count     = 0;
-			page_frames[i].flags         = 0;
+		// Initialize page frame descriptors with ACTUAL physical addresses from memory map
+		uint64_t frame_index = 0;
+		for( uint32_t i = 0; i < memory_map_entries; i++ ) {
+			if( memory_map[i].type != MEMORY_USABLE || memory_map[i].length == 0 ) {
+				continue;
+			}
+
+			uint64_t region_start = memory_map[i].base_addr;
+			uint64_t region_end   = memory_map[i].base_addr + memory_map[i].length;
+			
+			// Align region to page boundaries
+			uint64_t page_start = (region_start + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
+			uint64_t page_end   = region_end & ~(PAGE_SIZE - 1);
+
+			// Create page frames for each page in this usable region
+			for( uint64_t addr = page_start; addr < page_end; addr += PAGE_SIZE ) {
+				if( frame_index >= total_pages ) {
+					break;
+				}
+				
+				page_frames[frame_index].next          = nullptr;
+				page_frames[frame_index].physical_addr = addr;
+				page_frames[frame_index].ref_count     = 0;
+				page_frames[frame_index].flags         = 0;
+				frame_index++;
+			}
 		}
 
-		// Build free list, excluding kernel memory
+		// Build free list, excluding kernel memory and page frame array
 		free_page_list = nullptr;
+		uint64_t page_frames_size = total_pages * sizeof(page_frame_t);
+		uint64_t page_frames_end = 0x02000000ULL + page_frames_size;
+		
 		for( uint64_t i = 0; i < total_pages; i++ ) {
-			// Skip pages below KERNEL_HEAP_BASE (used by kernel code/data)
-			if( page_frames[i].physical_addr < KERNEL_HEAP_BASE ) {
+			// Skip pages used by kernel code/data and page frame array
+			// This includes everything from 0 to end of page_frames array
+			if( page_frames[i].physical_addr < page_frames_end ) {
 				page_frames[i].ref_count = 1;  // Mark as used
 				used_pages++;
 				free_pages--;

@@ -64,7 +64,6 @@ static void isHardware_minReq(void) {
 
 extern "C" void load_gdt(void);
 extern "C" void set_kernel_stack(uint64_t rsp);
-
 extern "C" void enter_userspace(uint64_t rip, uint64_t rsp);
 
 /**
@@ -82,6 +81,13 @@ extern "C" void start_kernel(void *mb_info) {
 	isHardware_minReq();
 
 	load_gdt();
+	
+	// Set TSS.RSP0 immediately after loading GDT
+	// This ensures exceptions from userspace can be handled properly
+	uint64_t kernel_stack;
+	__asm__ volatile("mov %%rsp, %0" : "=r"(kernel_stack));
+	set_kernel_stack(kernel_stack);
+	
 #ifdef ARCH_AMD64
 	amd64::idt::init();
 #endif
@@ -146,8 +152,6 @@ extern "C" void start_kernel(void *mb_info) {
 		amd64::halt();
 	}
 
-	logger::info("init", "Init binary loaded, parsing ELF...", nullptr);
-
 	// Load ELF and get entry point
 	uint64_t entry_point = 0;
 	if( elf_loader::load_elf(init_buffer, init_size, &entry_point) != 0 ) {
@@ -155,11 +159,9 @@ extern "C" void start_kernel(void *mb_info) {
 		memory::free(init_buffer);
 		amd64::halt();
 	}
-
+	
+	// Free init buffer now that ELF is loaded into memory
 	memory::free(init_buffer);
-
-	// Note: logger hex formatting is broken, so just log that we're jumping
-	logger::info("init", "Jumping to init program", nullptr);
 
 	// Set up user stack (allocate and map stack pages)
 	// Use address within first 4GB since bootloader only identity-maps 0-4GB
@@ -167,9 +169,8 @@ extern "C" void start_kernel(void *mb_info) {
 	uint64_t stack_size      = 8 * PAGE_SIZE;  // 32KB stack
 	uint64_t user_stack_base = user_stack_top - stack_size;
 
-	// Allocate and map stack pages (inclusive of stack_top page)
-	for( uint64_t addr = user_stack_base; addr <= user_stack_top;
-	     addr += PAGE_SIZE ) {
+	// Allocate and map stack pages
+	for( uint64_t addr = user_stack_base; addr < user_stack_top; addr += PAGE_SIZE ) {
 		page_frame_t *frame = memory::allocate_page_frame();
 		if( !frame ) {
 			logger::error("init", "Failed to allocate stack page\n", nullptr);
@@ -180,25 +181,8 @@ extern "C" void start_kernel(void *mb_info) {
 		uint64_t flags     = PAGE_PRESENT | PAGE_WRITABLE | PAGE_USER;
 		memory::vm::map_page(addr, phys_addr, flags);
 	}
-
-	logger::info("init", "User stack allocated and mapped", nullptr);
-
-	// Set kernel stack in TSS (current RSP will be used for kernel mode)
-	uint64_t kernel_stack;
-	__asm__ volatile("mov %%rsp, %0" : "=r"(kernel_stack));
-	set_kernel_stack(kernel_stack);
-
-	// Debug: Log what we're about to do
-	serial::writes("About to enter userspace: entry=0x");
-	char buf[32];
-	kstd::utoa(buf, buf + 32, entry_point, 16, 16);
-	serial::writes(buf);
-	serial::writes(" stack=0x");
-	kstd::utoa(buf, buf + 32, user_stack_top, 16, 16);
-	serial::writes(buf);
-	serial::writes("\n");
-
-	// Enter userspace and execute init
+	
+	// Enter userspace (TSS.RSP0 was set early in boot, exceptions will work)
 	enter_userspace(entry_point, user_stack_top);
 
 	// Should never reach here

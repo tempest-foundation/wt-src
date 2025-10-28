@@ -9,89 +9,42 @@
 ; Copyright (c) Tempest Foundation, 2025
 ; -- END OF METADATA HEADER --
 ;
+[BITS 64]
+DEFAULT REL
+
 global enter_userspace
 
 ; void enter_userspace(uint64_t rip, uint64_t rsp)
 ; RDI = user RIP
 ; RSI = user RSP
 enter_userspace:
-    cli  ; Disable interrupts during transition
+    cli
     
-    ; Save user RIP and RSP
-    mov rax, rdi  ; User RIP
-    mov rbx, rsi  ; User RSP
+    ; Save arguments to non-volatile registers
+    mov r10, rdi
+    mov r11, rsi
     
-    ; Set up initial stack for C program (argc, argv, envp)
-    ; Stack layout: [argc] [argv[0]] [NULL] [NULL] [auxv...] [strings...]
-    mov rcx, rbx
+    ; Build iretq frame - push SS
+    mov rax, 0x23
+    push rax
     
-    ; Put program name string at top of stack
-    sub rcx, 8
-    mov qword [rcx], 0x74696e692f  ; "/init" (with null terminator, little endian)
-    mov r8, rcx                     ; Save pointer to program name
+    ; Push user RSP
+    push r11
     
-    ; Set up the main stack structure
-    sub rcx, 8
-    mov qword [rcx], 0      ; AT_NULL (auxv terminator)
-    sub rcx, 8  
-    mov qword [rcx], 0      ; envp[0] = NULL (no environment)
-    sub rcx, 8
-    mov qword [rcx], 0      ; argv[1] = NULL (end of argv)
-    sub rcx, 8
-    mov qword [rcx], r8     ; argv[0] = pointer to "/init"
-    sub rcx, 8
-    mov qword [rcx], 1      ; argc = 1
-    mov rbx, rcx            ; Update stack pointer
+    ; Push RFLAGS with IF set
+    pushfq
+    pop rax
+    or rax, 0x200
+    push rax
     
-    ; Set up segments for user mode (ring 3)
-    ; GDT entries: 0x08 = kernel code, 0x10 = kernel data
-    ;              0x18 = user code, 0x20 = user data
-    ; For user mode we need: 0x23 = user data (0x20 | 3), 0x1B = user code (0x18 | 3)
+    ; Push CS  
+    mov rax, 0x1B
+    push rax
     
-    ; Set up data segments
-    mov cx, 0x23        ; User data segment with RPL=3
-    mov ds, cx
-    mov es, cx
-    mov fs, cx
-    mov gs, cx
+    ; Push RIP
+    push r10
     
-    ; Push stack frame for iretq
-    ; Stack frame (pushed in reverse order):
-    ; SS (stack segment)
-    ; RSP (stack pointer)
-    ; RFLAGS (flags register)
-    ; CS (code segment)
-    ; RIP (instruction pointer)
-    
-    push 0x23           ; SS (user data segment)
-    push rbx            ; RSP (user stack pointer)
-    pushfq              ; RFLAGS
-    pop rcx
-    or rcx, 0x200       ; Enable interrupts (IF flag)
-    push rcx            ; Push modified RFLAGS
-    push 0x1B           ; CS (user code segment with RPL=3)
-    push rax            ; RIP (user entry point)
-    
-    ; Clear all general purpose registers for security
-    xor rax, rax
-    xor rbx, rbx
-    xor rcx, rcx
-    xor rdx, rdx
-    xor rsi, rsi
-    xor rdi, rdi
-    xor r8, r8
-    xor r9, r9
-    xor r10, r10
-    xor r11, r11
-    xor r12, r12
-    xor r13, r13
-    xor r14, r14
-    xor r15, r15
-    xor rbp, rbp
-    
-    ; Jump to user mode (this will pop all the values we pushed)
     iretq
     
-    ; Should never reach here
     cli
     hlt

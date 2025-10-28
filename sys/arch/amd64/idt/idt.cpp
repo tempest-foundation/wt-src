@@ -155,19 +155,48 @@ static int get_panic_code_for_interrupt(uint8_t int_no) {
 }
 
 extern "C" void isr_handler(registers_t *regs) {
+	// Log ALL exceptions for debugging
+	if( regs->int_no == 13 ) {
+		// General Protection Fault
+		serial::writes("[GPF] err=");
+		for(int i = 3; i >= 0; i--) {
+			int nibble = (int)((regs->err_code >> (i * 4)) & 0xF);
+			char c = (char)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
+			serial::write(c);
+		}
+		serial::writes("\n");
+	}
+	
 	// Special handling for page faults - log details before panicking
 	if( regs->int_no == 14 ) {
 		uint64_t cr2;
 		__asm__ volatile("mov %%cr2, %0" : "=r"(cr2));
+		
+		// Stack layout: [registers_t: 15 fields] [int_no] [err_code] [RIP] [CS] [RFLAGS] [RSP] [SS]
+		// registers_t has 15 uint64_t fields, int_no and err_code are 2 more, so RIP is at offset 17
+		uint64_t *stack_ptr = (uint64_t *)regs;
+		uint64_t rip = stack_ptr[17];
 
-		char buf[32];
-
-		serial::writes("[PAGE FAULT] addr=0x");
-		kstd::utoa(buf, buf + 32, cr2, 16, 16);
-		serial::writes(buf);
-		serial::writes(" err=0x");
-		kstd::utoa(buf, buf + 32, regs->err_code, 16, 1);
-		serial::writes(buf);
+		serial::writes("[PAGE FAULT] ");
+		// Use simple hex output
+		serial::writes("addr=");
+		for(int i = 15; i >= 0; i--) {
+			int nibble = (int)((cr2 >> (i * 4)) & 0xF);
+			char c = (char)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
+			serial::write(c);
+		}
+		serial::writes(" rip=");
+		for(int i = 15; i >= 0; i--) {
+			int nibble = (int)((rip >> (i * 4)) & 0xF);
+			char c = (char)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
+			serial::write(c);
+		}
+		serial::writes(" err=");
+		for(int i = 1; i >= 0; i--) {
+			int nibble = (int)((regs->err_code >> (i * 4)) & 0xF);
+			char c = (char)(nibble < 10 ? '0' + nibble : 'a' + nibble - 10);
+			serial::write(c);
+		}
 		
 		// Decode error code
 		serial::writes(" (");
@@ -180,12 +209,12 @@ extern "C" void isr_handler(registers_t *regs) {
 		serial::writes(")\n");
 		
 		// Now panic with details
-		int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);
+		int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);	
 		panic::init(panic_code, regs);
 		return;
 	}
 
-	int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);
+	int panic_code = get_panic_code_for_interrupt((uint8_t) regs->int_no);	
 	panic::init(panic_code, regs);
 }
 
